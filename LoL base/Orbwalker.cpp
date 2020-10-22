@@ -18,9 +18,9 @@ void COrbWalker::tryFindTarget()
 
 	if (m_pTarget != nullptr)
 	{
-		if (/* consertar pObject->IsAlive() &&*/ m_pTarget->GetHealth() > .0f)
+		if (m_pTarget->IsAlive() && m_pTarget->IsTargetable() && m_pTarget->IsVisible() && !m_pTarget->IsInvalidObject())
 		{
-			if (m_pTarget->GetPos().DistTo(pLocal->GetPos()) <= pLocal->GetAttackRange() + 2 * pLocal->GetBoundingRadius())
+			if (m_pTarget->GetDistanceToMe() <= pLocal->GetAttackRange() + 2 * pLocal->GetBoundingRadius())
 			{
 				return;
 			}
@@ -40,7 +40,8 @@ void COrbWalker::tryFindTarget()
 		{
 			if (pObject->IsHero() || pObject->IsMinion() || pObject->IsTurret())
 			{
-				if ( /* consertar pObject->IsAlive() &&*/ pObject->GetHealth() > .0f && pLocal->GetPos().DistTo(pObject->GetPos()) <= pLocal->GetAttackRange() + 2 * pLocal->GetBoundingRadius())
+				if (pObject->IsAlive() && pObject->IsTargetable() && pObject->IsVisible() && !pObject->IsInvalidObject() &&
+					pLocal->GetPos().DistTo(pObject->GetPos()) <= pLocal->GetAttackRange() + 2 * pLocal->GetBoundingRadius())
 				{
 					possibleTargets.push_back(pObject);
 				}
@@ -52,7 +53,6 @@ void COrbWalker::tryFindTarget()
 	if (possibleTargets.empty())
 		return;
 
-
 	if (possibleTargets.size() > 1)
 	{
 		std::sort(possibleTargets.begin(), possibleTargets.end(),
@@ -62,10 +62,9 @@ void COrbWalker::tryFindTarget()
 			});
 	}
 
-
 	m_pTarget = possibleTargets.front();
 
-	if (lastHitOnly && ((pLocal->GetBaseAttackDamage() + pLocal->GetBonusAttackDamage()) < m_pTarget->GetHealth())) {
+	if (lastHitOnly && (pLocal->GetEffectiveDamageOnTarget(m_pTarget) < m_pTarget->GetHealth())) {
 		m_pTarget = nullptr;
 	}
 
@@ -91,7 +90,8 @@ void COrbWalker::drawEvent()
 			float flTimeToMove = pLocal->GetAttackCastDelay();
 			int nTicksToMove = (int)(flTimeToMove * 1000) + 35;
 
-			if ((int)(Engine::GetGameTime() * 1000) >= (m_nLastAttackCmdTick + nTicksToMove) && (int)(Engine::GetGameTime() * 1000) >= m_nLastMoveCmdTick + 60)
+			if ((int)(Engine::GetGameTime() * 1000) >= (m_nLastAttackCmdTick + nTicksToMove)
+				&& (int)(Engine::GetGameTime() * 1000) >= m_nLastMoveCmdTick + 60)
 			{
 				if (autoMove) {
 					Engine::MoveTo(&Engine::GetMouseWorldPosition());
@@ -99,6 +99,7 @@ void COrbWalker::drawEvent()
 				m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);
 			}
 		}
+
 		auto color = createRGB(255, 255, 255);
 		Functions.DrawCircle(&m_pTarget->GetPos(), m_pTarget->GetBoundingRadius(), &color, 0, 10.0f, 0, .8f);
 	}

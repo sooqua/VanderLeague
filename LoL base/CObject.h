@@ -25,20 +25,23 @@ enum class ObjectTypeFlags {
 
 class CObject {
 public:
-
 	bool IsTurret();
 	bool IsMinion();
 	bool IsAlive();
+	bool IsDead();
+	bool IsInvalidObject();
 	bool IsHero();
 	bool IsBuilding();
 	bool IsMissile();
 	bool IsWard();
 	bool IsNexus();
-
 	bool IsInhibitor();
 	bool IsTroyEnt();
-
 	bool IsTargetable();
+	bool IsNeutral();
+	bool IsVisible();
+	bool IsEnemyTo(CObject* objToCheck);
+
 	bool CObject::CompareObjectTypeFlags(int objectTypeFlag)
 	{
 		unsigned __int8* v2; // edi
@@ -85,109 +88,29 @@ public:
 
 		return (objectId & objectTypeFlag) != 0;
 	}
-	CObject* GetFirstObject()
-	{
-		typedef CObject* (__thiscall* fnGetFirst)(void*);
-		return ((fnGetFirst)(baseAddr + offsets::global::oGetFirstObject))(*(void**)(baseAddr + offsets::global::oObjManager));
-	}
-	CObject* GetNextObject(CObject* object)
-	{
+	CObject* GetFirstObject();
+	CObject* GetNextObject(CObject* object);
 
-		typedef CObject* (__thiscall* fnGetNext)(void*, CObject*);
-		return ((fnGetNext)(baseAddr + offsets::global::oGetNextObject))(*(void**)(baseAddr + offsets::global::oObjManager), object);
-	}
-
-	short GetIndex() {
-		return *(short*)((DWORD)this + offsets::cobject::oObjIndex);
-	}
-
-	DWORD GetNetworkID() {
-		return *(DWORD*)((DWORD)this + offsets::cobject::oObjNetworkID);
-	}
-
-	Vector GetPos() {
-		return *(Vector*)((DWORD)this + offsets::cobject::oObjPos);
-	}
-
-	int GetLevel() {
-		return *(int*)((DWORD)this + offsets::cobject::oObjLevel);
-	}
-
-	float GetHealth() {
-		return *(float*)((DWORD)this + offsets::cobject::oObjHealth);
-	}
-
-	float GetMaxHealth() {
-		return *(float*)((DWORD)this + offsets::cobject::oObjMaxHealth);
-	}
-
-	float GetBaseAttackDamage() {
-		return *(float*)((DWORD)this + offsets::cobject::oObjBaseAtk);
-	}
-
-
-	float GetBonusAttackDamage() {
-		return *(float*)((DWORD)this + offsets::cobject::oObjBonusAtk);
-	}
-
-	float GetTotalAttackDamage() {
-		return this->GetBonusAttackDamage() + this->GetBaseAttackDamage();
-	}
-
-	float GetArmor() {
-		return *(float*)((DWORD)this + offsets::cobject::oObjArmor);
-	}
-
-	float GetAttackRange() {
-		return *(float*)((DWORD)this + offsets::cobject::oObjAtkRange);
-	}
-
-	bool IsVisible() {
-		return *(bool*)((DWORD)this + offsets::cobject::oObjVisibility);
-	}
-
-	float GetBoundingRadius() {
-		typedef float(__thiscall* OriginalFn)(PVOID);
-		return CallVirtual<OriginalFn>(this, 36)(this);
-	}
-
-	bool IsEnemyTo(CObject* Obj) {
-		if (Obj->GetTeam() == 100 && this->GetTeam() == 200)
-			return true;
-
-		else if (Obj->GetTeam() == 200 && this->GetTeam() == 100)
-			return true;
-
-		return false;
-	}
-	bool Isjungle(CObject* Obj) {
-
-		if (Obj->GetTeam() == 300 && this->GetTeam() == 100)
-			return true;
-		return false;
-	}
-
-
-
-	char* GetName() {
-		return GetStr((DWORD)this + offsets::cobject::oObjName);
-	}
-
-	char* GetChampionName() {
-		return GetStr((DWORD)this + offsets::cobject::oObjChampionName);
-	}
-
-	int GetTeam() {
-		return *(int*)((DWORD)this + offsets::cobject::oObjTeam);
-	}
-	
-	CSpellBook * GetSpellBook () {  
-		return (CSpellBook*) (( DWORD ) this + offsets::cobject::oObjSpellBook );
-	}
-
-
+	short GetIndex();
+	DWORD GetNetworkID();
+	Vector GetPos();
+	int GetLevel();
+	float GetHealth();
+	float GetMaxHealth();
+	float GetBaseAttackDamage();
+	float GetBonusAttackDamage();
+	float GetTotalAttackDamage();
+	float GetArmor();
+	float GetAttackRange();
+	float GetBoundingRadius();
+	char* GetName();
+	char* GetChampionName();
+	int GetTeam();
+	CSpellBook* GetSpellBook();
 	float GetAttackDelay();
 	float GetAttackCastDelay();
-
-	float GetDistance(CObject* target, CObject* target2);
+	float GetEffectiveHealth();
+	float GetEffectiveDamageOnTarget(CObject* target);
+	float GetDistanceToMe();
+	float GetTrueAttackRange();
 };
