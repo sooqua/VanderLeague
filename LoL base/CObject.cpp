@@ -174,3 +174,29 @@ float CObject::GetDistanceToMe() {
 float CObject::GetTrueAttackRange() {
 	return this->GetAttackRange() + this->GetBoundingRadius();
 }
+
+// Spell related
+
+Vector CObject::GetMissileEndPos() {
+	Vector spellEndPos = *(Vector*)((DWORD)this + offsets::cobject::oMissileEndPos);
+	spellEndPos.Y += 100;
+	return spellEndPos;
+}
+
+Vector CObject::GetMissileStartPos() {
+	Vector startPos = *(Vector*)((DWORD)this + offsets::cobject::oMissileStartPos);
+	startPos.Y += 100;
+	return startPos;
+}
+
+short CObject::GetMissileSourceIndex() {
+	return *(short*)((DWORD)this + offsets::cobject::oMissileSourceIndex);
+}
+
+short CObject::GetMissileTargetIndex() {
+	return *(short*)((DWORD)this + offsets::cobject::oMissileTargetIndex);
+}
+
+float CObject::GetSpellSpeed() {
+	return *(float*)(DWORD)this + 0x418;
+}

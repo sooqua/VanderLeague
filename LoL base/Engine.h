@@ -62,9 +62,11 @@ public:
 
 	static CObject* Engine::GetObjectByID(int ID)
 	{
-		if (ObjManager != NULL && ID >= 0 && ID <= 10000) {
-			//return ObjManager->objectArray[ID];
+		if (ObjManager && ID >= 0 && ID <= ObjManager->GetHighestIndex()) {
+			return ObjManager->GetObjByIndex(ID);
 		}
+
+		return nullptr;
 	}
 
 	static void MoveTo(Vector* pos) {

@@ -162,6 +162,7 @@
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="ESpellSlot.h" />
+    <ClInclude Include="Evader.h" />
     <ClInclude Include="Hooks.h" />
     <ClInclude Include="imgui\dx9\imgui_impl_dx9.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -202,6 +203,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Evader.cpp" />
     <ClCompile Include="imgui\dx9\imgui_impl_dx9.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />

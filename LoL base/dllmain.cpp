@@ -106,7 +106,31 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	//orbwalker
 	if ((GetAsyncKeyState(VK_MBUTTON) & (1 << 15)) != 0) {
 
-		orbWalker.drawEvent();
+		//orbWalker.drawEvent();
+
+		CObject holzer;
+		auto obj = holzer.GetFirstObject();
+		while (obj)
+		{
+			if (obj->IsMissile())
+			{
+				auto casterObj = Engine::GetObjectByID(obj->GetMissileSourceIndex());
+				Vector casterPos = casterObj->GetPos();
+				Vector casterPos_w2s;
+				Functions.WorldToScreen(&casterPos, &casterPos_w2s);
+				render.draw_text(casterPos_w2s.X, casterPos_w2s.Y + 15, casterObj->GetName(), true, ImColor(255, 255, 255));
+
+				Vector start_pos = obj->GetMissileStartPos();
+				Vector start_pos_w2s;
+				Functions.WorldToScreen(&start_pos, &start_pos_w2s);
+				Vector end_pos = obj->GetMissileEndPos();
+				Vector end_pos_w2s;
+				Functions.WorldToScreen(&end_pos, &end_pos_w2s);
+				render.draw_line(start_pos_w2s.X, start_pos_w2s.Y, end_pos_w2s.X, end_pos_w2s.Y, ImColor(255, 255, 255), 5.0f);
+			}
+
+			obj = holzer.GetNextObject(obj);
+		}
 	}
 
 	//Me Range

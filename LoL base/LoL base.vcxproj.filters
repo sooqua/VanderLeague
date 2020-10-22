@@ -161,6 +161,9 @@
     <ClInclude Include="Autokey.h">
       <Filter>Header\Autokey</Filter>
     </ClInclude>
+    <ClInclude Include="Evader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LoL base.cpp">
@@ -210,6 +213,9 @@
     </ClCompile>
     <ClCompile Include="Autokey.cpp">
       <Filter>Source\Autokey</Filter>
+    </ClCompile>
+    <ClCompile Include="Evader.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

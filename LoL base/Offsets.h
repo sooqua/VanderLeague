@@ -43,6 +43,7 @@ namespace offsets {
 		extern uint32_t oObjNetworkID;
 		extern uint32_t oObjPos;
 		extern uint32_t oObjVisibility;
+		extern uint32_t oObjSourceIndex;
 		extern uint32_t oObjHealth;
 		extern uint32_t oObjMaxHealth;
 		extern uint32_t oObjMana;
@@ -58,6 +59,12 @@ namespace offsets {
 		extern uint32_t oObjSpellBook;
 		extern uint32_t oObjChampionName;
 		extern uint32_t oObjLevel;
+
+		extern uint32_t oMissileSpellInfo;
+		extern uint32_t oMissileSourceIndex;
+		extern uint32_t oMissileTargetIndex;
+		extern uint32_t oMissileStartPos;
+		extern uint32_t oMissileEndPos;
 	};
 
 	namespace functions {

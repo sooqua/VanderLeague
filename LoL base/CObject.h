@@ -113,4 +113,11 @@ public:
 	float GetEffectiveDamageOnTarget(CObject* target);
 	float GetDistanceToMe();
 	float GetTrueAttackRange();
+
+	// Spell related
+	Vector GetMissileEndPos();
+	Vector GetMissileStartPos();
+	float GetSpellSpeed();
+	short GetMissileSourceIndex();
+	short GetMissileTargetIndex();
 };

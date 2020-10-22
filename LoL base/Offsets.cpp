@@ -41,6 +41,7 @@ namespace offsets {
 		uint32_t oObjNetworkID = 0xCC;
 		uint32_t oObjPos = 0x220;
 		uint32_t oObjVisibility = 0x270;
+		uint32_t oObjSourceIndex = 0x290;
 		uint32_t oObjHealth = 0xDC4;
 		uint32_t oObjMaxHealth = 0xDD4;
 		uint32_t oObjMana = 0x298;
@@ -56,6 +57,12 @@ namespace offsets {
 		uint32_t oObjSpellBook = 0x2720;
 		uint32_t oObjChampionName = 0x314C;
 		uint32_t oObjLevel = 0x36BC;
+
+		uint32_t oMissileSpellInfo = 0x230;
+		uint32_t oMissileSourceIndex = 0x290;
+		uint32_t oMissileTargetIndex = 0x2DC;
+		uint32_t oMissileStartPos = 0x2A8;
+		uint32_t oMissileEndPos = 0x2B4;
 	}
 
 	namespace functions {
