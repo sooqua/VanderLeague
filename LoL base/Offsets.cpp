@@ -42,6 +42,7 @@ namespace offsets {
 		uint32_t oObjPos = 0x220;
 		uint32_t oObjVisibility = 0x270;
 		uint32_t oObjHealth = 0xDC4;
+		uint32_t oObjMaxHealth = 0xDD4;
 		uint32_t oObjMana = 0x298;
 		uint32_t oObjMaxMana = 0x2A8;
 		uint32_t oObjArmor = 0x12B0;

@@ -30,7 +30,9 @@ public:
 	bool IsMinion();
 	bool IsAlive();
 	bool IsHero();
+	bool IsBuilding();
 	bool IsMissile();
+	bool IsWard();
 	bool IsNexus();
 
 	bool IsInhibitor();
@@ -115,6 +117,10 @@ public:
 		return *(float*)((DWORD)this + offsets::cobject::oObjHealth);
 	}
 
+	float GetMaxHealth() {
+		return *(float*)((DWORD)this + offsets::cobject::oObjMaxHealth);
+	}
+
 	float GetBaseAttackDamage() {
 		return *(float*)((DWORD)this + offsets::cobject::oObjBaseAtk);
 	}
@@ -130,10 +136,6 @@ public:
 
 	float GetArmor() {
 		return *(float*)((DWORD)this + offsets::cobject::oObjArmor);
-	}
-
-	float GetMaxHealth() {
-		return *(float*)((DWORD)this + offsets::cobject::oObjHealth + 0x10);
 	}
 
 	float GetAttackRange() {
@@ -185,7 +187,7 @@ public:
 
 
 	float GetAttackDelay();
-
 	float GetAttackCastDelay();
+
 	float GetDistance(CObject* target, CObject* target2);
 };

@@ -44,6 +44,7 @@ namespace offsets {
 		extern uint32_t oObjPos;
 		extern uint32_t oObjVisibility;
 		extern uint32_t oObjHealth;
+		extern uint32_t oObjMaxHealth;
 		extern uint32_t oObjMana;
 		extern uint32_t oObjMaxMana;
 		extern uint32_t oObjArmor;

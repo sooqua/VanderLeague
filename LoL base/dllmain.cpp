@@ -5,6 +5,7 @@
 #include "detours.h"
 #include "ImRender.hpp"
 #include "Autoupdater.h"
+#include "Orbwalker.h"
 #include <mutex>
 
 #include "Debug.h"
@@ -30,6 +31,7 @@ CObjectManager* ObjManager;
 CFunctions Functions;
 
 Autoupdater autoUpdater;
+COrbWalker orbWalker;
 
 HMODULE g_module = nullptr;
 HWND g_hwnd = nullptr;
@@ -63,28 +65,17 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	render.begin_draw();//begin for draw rende.drawline.... and etc
 
 
-
-
-	///////////////////////////////////////////////
-	///				\\	Print Chat	//			///	
-	//from float to char///////////////////////////
-	char Get_Healthe[100];						///					
-	sprintf_s(Get_Healthe, "%f", me->GetHealth());///
-	////////////////////////////////////////////////////////////////////
-																	////
-	if (OnStartMessage == false) {									//// need fix ofset for print chat
-		Engine::PrintChat("///////  Kmsmym update lolbase");		////
-		Engine::PrintChat("///////  Unknowncheats.me");				////	
-		Engine::PrintChat("///////  My health");					////
-		Engine::PrintChat("///////////////////////////////	 ");	////
-		Engine::PrintChat(Get_Healthe);								////
-		Engine::PrintChat("///////////////////////////////	 ");	////
-		OnStartMessage = true;										////
-	}																////
-	////////////////////////////////////////////////////////////////////
-
-
-
+	char Get_Healthe[100];		
+	sprintf_s(Get_Healthe, "%f", Engine::GetLocalObject()->GetHealth());
+	if (OnStartMessage == false) {
+		Engine::PrintChat("///////  Kmsmym update lolbase");
+		Engine::PrintChat("///////  Unknowncheats.me");
+		Engine::PrintChat("///////  My health");
+		Engine::PrintChat("///////////////////////////////	 ");
+		Engine::PrintChat(Get_Healthe);
+		Engine::PrintChat("///////////////////////////////	 ");
+		OnStartMessage = true;
+	}
 
 
 	if (ImGui_ImplWin32_Init(g_hwnd))
@@ -112,20 +103,25 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 	//Below are just examples, for ease of understanding, some are placed in a separate cycle. Do not repeat this. Do one cycle to get objects.
 
+	//orbwalker
+	if ((GetAsyncKeyState(VK_MBUTTON) & (1 << 15)) != 0) {
+		orbWalker.drawEvent();
+	}
+
 	//Me Range
 	if (g_range == true) {
-		if (me) {
+		if (Engine::GetLocalObject()) {
 
-			if (me->IsAlive()) {
+			if (Engine::GetLocalObject()->IsAlive()) {
 				auto color = createRGB(0, 255, 0);
-				Functions.DrawCircle(&me->GetPos(), me->GetAttackRange() + me->GetBoundingRadius(), &color, 0, 0.0f, 0, 0.5f);
+				Functions.DrawCircle(&Engine::GetLocalObject()->GetPos(), Engine::GetLocalObject()->GetAttackRange() + Engine::GetLocalObject()->GetBoundingRadius(), &color, 0, 0.0f, 0, 0.5f);
 			}
 		}
 	}
 
 	//line to mouse
 	if (g_w2s_line == true) {
-		Vector me_pos = me->GetPos();
+		Vector me_pos = Engine::GetLocalObject()->GetPos();
 		Vector mepos_w2s;
 		Functions.WorldToScreen(&me_pos, &mepos_w2s);
 		Vector mouse_pos_w2s;
@@ -233,7 +229,7 @@ void __stdcall Start() {
 	debug::init();
 	autoUpdater.Start();
 
-	while (Engine::GetGameTime() < 1.0f || !me)
+	while (Engine::GetGameTime() < 1.0f || !Engine::GetLocalObject())
 		Sleep(1);
 
 #ifdef _DEBUG
@@ -261,7 +257,7 @@ void __stdcall Start() {
 	//Functions.CastSpell = (Typedefs::fnCastSpell)((DWORD)GetModuleHandle(NULL) + oCastSpell);
 	Functions.IssueOrder = (Typedefs::fnIssueOrder)((DWORD)GetModuleHandle(NULL) + offsets::functions::oIssueOrder);
 	Functions.DrawCircle = (Typedefs::fnDrawCircle)((DWORD)GetModuleHandle(NULL) + offsets::functions::oDrawCircle);
-	Functions.WorldToScreen = (Typedefs::WorldToScreen)(baseAddr + (DWORD)offsets::global::oWorldToScreen);
+	Functions.WorldToScreen = (Typedefs::fnWorldToScreen)(baseAddr + (DWORD)offsets::global::oWorldToScreen);
 
 	Functions.GetAttackCastDelay = (Typedefs::fnGetAttackCastDelay)((DWORD)GetModuleHandle(NULL) + offsets::functions::oGetAttackCastDelay);
 	Functions.GetAttackDelay = (Typedefs::fnGetAttackDelay)((DWORD)GetModuleHandle(NULL) + offsets::functions::oGetAttackDelay);

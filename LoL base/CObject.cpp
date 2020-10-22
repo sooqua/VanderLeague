@@ -18,8 +18,17 @@ bool CObject::IsHero() {
 	return CompareObjectTypeFlags((int)ObjectTypeFlags::Hero);
 }
 
+bool CObject::IsBuilding() {
+	return CompareObjectTypeFlags((int)ObjectTypeFlags::Building);
+}
+
 bool CObject::IsMissile() {
 	return Functions.IsMissile(this);
+}
+
+bool CObject::IsWard()
+{
+	return this->GetMaxHP() == 3.f;
 }
 
 bool CObject::IsTargetable() {
@@ -36,4 +45,12 @@ bool CObject::IsInhibitor() {
 
 bool CObject::IsTroyEnt() {
 	return Functions.IsTroyEnt(this);
+}
+
+float CObject::GetAttackDelay() {
+	return Functions.GetAttackDelay(this);
+}
+
+float CObject::GetAttackCastDelay() {
+	return Functions.GetAttackCastDelay(this);
 }

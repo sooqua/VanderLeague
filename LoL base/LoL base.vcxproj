@@ -172,6 +172,7 @@
     <ClInclude Include="imgui\win32\imgui_impl_win32.h" />
     <ClInclude Include="ImRender.hpp" />
     <ClInclude Include="Offsets.h" />
+    <ClInclude Include="Orbwalker.h" />
     <ClInclude Include="SpellData.h" />
     <ClInclude Include="SpellInfo.h" />
     <ClInclude Include="SpellSlot.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="ImRender.cpp" />
     <ClCompile Include="LoL base.cpp" />
     <ClCompile Include="Offsets.cpp" />
+    <ClCompile Include="Orbwalker.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

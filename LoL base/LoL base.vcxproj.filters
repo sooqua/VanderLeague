@@ -57,6 +57,18 @@
     <Filter Include="Source\Autoupdater">
       <UniqueIdentifier>{160e23ab-ca22-4b61-83b7-d3511791ac3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header\Debug">
+      <UniqueIdentifier>{a5ad98fc-843e-4416-8944-59a92e007659}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Debug">
+      <UniqueIdentifier>{ab739b70-f367-4dfe-9c7c-453600a1431f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Orbwalker">
+      <UniqueIdentifier>{b24e8208-8523-4d3b-a3c5-a68d638f72b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Orbwalker">
+      <UniqueIdentifier>{c4c0267e-9b6e-44f9-b318-83a2a829895a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -135,7 +147,10 @@
       <Filter>Header\Autoupdater</Filter>
     </ClInclude>
     <ClInclude Include="Debug.h">
-      <Filter>Header</Filter>
+      <Filter>Header\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Orbwalker.h">
+      <Filter>Header\Orbwalker</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -179,7 +194,10 @@
       <Filter>Source\Autoupdater</Filter>
     </ClCompile>
     <ClCompile Include="Debug.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Orbwalker.cpp">
+      <Filter>Source\Orbwalker</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

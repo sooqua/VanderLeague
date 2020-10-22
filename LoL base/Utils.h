@@ -30,10 +30,6 @@ inline char* GetStr(DWORD offset) {
 		return (char*)offset;
 }
 
-inline float GetEffectiveHP(float Armor, float HP) {
-	return HP * (100.0f + Armor) / 100.0f;
-}
-
 inline int createRGB(int r, int g, int b)
 {
 	return ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);

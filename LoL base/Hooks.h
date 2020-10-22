@@ -12,7 +12,7 @@ public:
 	typedef int* (__thiscall* fnCastSpell)(DWORD spellbook_addr, SpellSlot* spellslot, int SlotID, Vector* targetpos, Vector* startpos, DWORD NetworkID);
 	typedef void(__thiscall* fnPrintChat)(DWORD ChatClient, const char* Message, int Color);
 
-	typedef bool(__cdecl* WorldToScreen)(Vector* vectorIn, Vector* vectorOut);
+	typedef bool(__cdecl* fnWorldToScreen)(Vector* vectorIn, Vector* vectorOut);
 
 	typedef bool(__cdecl* fnIsHero)(CObject* pObj);
 	typedef bool(__cdecl* fnIsMissile)(CObject* pObj);
@@ -25,7 +25,7 @@ public:
 	typedef float(__cdecl* fnGetAttackDelay)(CObject* pObj);
 	typedef bool(__thiscall* fnIsAlive)(CObject* pObj);
 	typedef bool(__thiscall* fnIsTargetable)(CObject* pObj);
-	typedef bool(__thiscall* fnGetPing)(CObject* pObj);
+	typedef int(__thiscall* fnGetPing)(void* thisptr);
 
 
 
@@ -40,7 +40,7 @@ public:
 	Typedefs::fnIsTroyEnt IsTroyEnt;
 	Typedefs::fnIsNexus IsNexus;
 	Typedefs::fnIsInhibitor IsInhibitor;
-	Typedefs::WorldToScreen WorldToScreen;
+	Typedefs::fnWorldToScreen WorldToScreen;
 	Typedefs::fnIsTargetable IsTargetable;
 	Typedefs::fnIsAlive IsAlive;
 
