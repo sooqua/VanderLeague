@@ -69,6 +69,12 @@
     <Filter Include="Source\Orbwalker">
       <UniqueIdentifier>{c4c0267e-9b6e-44f9-b318-83a2a829895a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header\Autokey">
+      <UniqueIdentifier>{e7241f11-edc0-4fb8-855b-6709419e3100}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Autokey">
+      <UniqueIdentifier>{bb33b2c2-a594-4d1b-927d-0964ac6c44fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -152,6 +158,9 @@
     <ClInclude Include="Orbwalker.h">
       <Filter>Header\Orbwalker</Filter>
     </ClInclude>
+    <ClInclude Include="Autokey.h">
+      <Filter>Header\Autokey</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LoL base.cpp">
@@ -198,6 +207,9 @@
     </ClCompile>
     <ClCompile Include="Orbwalker.cpp">
       <Filter>Source\Orbwalker</Filter>
+    </ClCompile>
+    <ClCompile Include="Autokey.cpp">
+      <Filter>Source\Autokey</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

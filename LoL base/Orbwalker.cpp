@@ -1,8 +1,10 @@
+#include "Orbwalker.h"
+#include "Engine.h"
+#include "Autokey.h"
+
 #include <vector>
 #include <algorithm>
-
-#include "Engine.h"
-#include "Orbwalker.h"
+#include <chrono>
 
 // AttackCastDelay = time until u can move without canceling attack
 // AttackDelay = time until u can attack again
@@ -82,7 +84,14 @@ void COrbWalker::drawEvent()
 		int nTicksTilAttack = (int)(flTimeTilAttack * 1000);
 		if ((int)(Engine::GetGameTime() * 1000) >= (m_nLastAttackCmdTick + nTicksTilAttack))
 		{
-			Engine::AttackTarget(m_pTarget);
+			if (useAutokey) {
+				Autokey::MoveMouse(m_pTarget->GetPos());
+				Autokey::Click();
+			}
+			else {
+				Engine::AttackTarget(m_pTarget);
+			}
+
 			m_nLastAttackCmdTick = (int)(Engine::GetGameTime() * 1000);
 		}
 		else
@@ -94,7 +103,17 @@ void COrbWalker::drawEvent()
 				&& (int)(Engine::GetGameTime() * 1000) >= m_nLastMoveCmdTick + 60)
 			{
 				if (autoMove) {
-					Engine::MoveTo(&Engine::GetMouseWorldPosition());
+					if (useAutokey) {
+						std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
+							std::chrono::system_clock::now().time_since_epoch());
+						if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
+							Autokey::Click();
+							m_lastMoveClickTime = now;
+						}
+					}
+					else {
+						Engine::MoveTo(&Engine::GetMouseWorldPosition());
+					}
 				}
 				m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);
 			}
@@ -108,7 +127,17 @@ void COrbWalker::drawEvent()
 		if ((int)(Engine::GetGameTime() * 1000) >= (m_nLastMoveCmdTick + 60))
 		{
 			if (autoMove) {
-				Engine::MoveTo(&Engine::GetMouseWorldPosition());
+				if (useAutokey) {
+					std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
+						std::chrono::system_clock::now().time_since_epoch());
+					if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
+						Autokey::Click();
+						m_lastMoveClickTime = now;
+					}
+				}
+				else {
+					Engine::MoveTo(&Engine::GetMouseWorldPosition());
+				}
 			}
 			m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);
 		}

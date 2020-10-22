@@ -6,10 +6,10 @@
 #include "ImRender.hpp"
 #include "Autoupdater.h"
 #include "Orbwalker.h"
-#include <mutex>
 
 #include "Debug.h"
 
+#include <mutex>
 
 #ifdef _DEBUG
 #include "CConsole.h"
@@ -105,6 +105,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 	//orbwalker
 	if ((GetAsyncKeyState(VK_MBUTTON) & (1 << 15)) != 0) {
+
 		orbWalker.drawEvent();
 	}
 

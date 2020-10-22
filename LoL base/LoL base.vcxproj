@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Autokey.h" />
     <ClInclude Include="Autoupdater.h" />
     <ClInclude Include="CConsole.h" />
     <ClInclude Include="CObject.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Autokey.cpp" />
     <ClCompile Include="Autoupdater.cpp" />
     <ClCompile Include="CConsole.cpp" />
     <ClCompile Include="CObject.cpp" />
