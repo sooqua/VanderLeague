@@ -10,6 +10,8 @@
 #include "Debug.h"
 
 #include <mutex>
+#include <algorithm>
+#include <vector>
 
 #ifdef _DEBUG
 #include "CConsole.h"
@@ -114,19 +116,33 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 		{
 			if (obj->IsMissile())
 			{
-				auto casterObj = Engine::GetObjectByID(obj->GetMissileSourceIndex());
-				Vector casterPos = casterObj->GetPos();
-				Vector casterPos_w2s;
-				Functions.WorldToScreen(&casterPos, &casterPos_w2s);
-				render.draw_text(casterPos_w2s.X, casterPos_w2s.Y + 15, casterObj->GetName(), true, ImColor(255, 255, 255));
+				auto objCaster = Engine::GetObjectByID(obj->GetMissileSourceIndex());
+				if (objCaster->IsHero() && objCaster->IsEnemyTo(Engine::GetLocalObject())) {
+					Vector start_pos = obj->GetMissileStartPos();
+					Vector start_pos_w2s;
+					Functions.WorldToScreen(&start_pos, &start_pos_w2s);
+					Vector end_pos = obj->GetMissileEndPos();
+					Vector end_pos_w2s;
+					Functions.WorldToScreen(&end_pos, &end_pos_w2s);
+					render.draw_line(start_pos_w2s.X, start_pos_w2s.Y, end_pos_w2s.X, end_pos_w2s.Y, ImColor(255, 255, 255), 5.0f);
 
-				Vector start_pos = obj->GetMissileStartPos();
-				Vector start_pos_w2s;
-				Functions.WorldToScreen(&start_pos, &start_pos_w2s);
-				Vector end_pos = obj->GetMissileEndPos();
-				Vector end_pos_w2s;
-				Functions.WorldToScreen(&end_pos, &end_pos_w2s);
-				render.draw_line(start_pos_w2s.X, start_pos_w2s.Y, end_pos_w2s.X, end_pos_w2s.Y, ImColor(255, 255, 255), 5.0f);
+					Vector direction = end_pos - start_pos;
+
+					auto localObjPos = Engine::GetLocalObject()->GetPos();
+					std::vector<Vector> points;
+					points.push_back(start_pos + Vector(direction.Z * -1.0f, direction.Y, direction.X * 1.0f));
+					points.push_back(start_pos + Vector(direction.Z * 1.0f, direction.Y, direction.X * -1.0f));
+					points.push_back(end_pos + Vector(direction.Z * -1.0f, direction.Y, direction.X * 1.0f));
+					points.push_back(end_pos + Vector(direction.Z * 1.0f, direction.Y, direction.X * -1.0f));
+					std::sort(points.begin(), points.end(),
+						[&localObjPos](Vector first, Vector second)
+						{
+							return (localObjPos.DistTo(first) < localObjPos.DistTo(second));
+						});
+					auto closestPos = points.front();
+
+					Engine::MoveTo(&closestPos);
+				}
 			}
 
 			obj = holzer.GetNextObject(obj);
