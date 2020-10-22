@@ -83,7 +83,7 @@ namespace offsets {
 		extern uint32_t oIssueOrder;
 		extern uint32_t oPrintChat;
 		extern uint32_t oSendChat;
-		extern uint32_t oGetTimerExpiry;
+		//extern uint32_t oGetTimerExpiry;
 		/*extern uint32_t Riot__Renderer__MaterialRegistry__GetSingletonPtr;
 		extern uint32_t translateString_UNSAFE_DONOTUSE;
 		extern uint32_t CharacterDataStack__Push;

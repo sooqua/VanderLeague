@@ -81,7 +81,7 @@ namespace offsets {
 		uint32_t oIssueOrder = 0x172910; // 			81 EC ? ? ? ? 56 57 8B F9 C7 // fn
 		uint32_t oPrintChat = 0x579BF0; //				E8 ? ? ? ? 33 C0 5F C2 // sub_[offset]
 		uint32_t oSendChat = 0x5F4C00; //				A1 ? ? ? ? 56 6A FF // fn // E8 ? ? ? ? 8D 4C 24 04 C6 // sub_[offset]
-		uint32_t oGetTimerExpiry = 0x16C420; // 		E8 ? ? ? ? 51 D9 1C 24 E8 ? ? ? ? 8B // sub_[offset]
+		//uint32_t oGetTimerExpiry = 0x16C420; // 		E8 ? ? ? ? 51 D9 1C 24 E8 ? ? ? ? 8B // sub_[offset]
 		/*uint32_t Riot__Renderer__MaterialRegistry__GetSingletonPtr = 0x0099A6C0;
 		uint32_t translateString_UNSAFE_DONOTUSE = 0x00A7E720;
 		uint32_t CharacterDataStack__Push = 0x0013FD00;

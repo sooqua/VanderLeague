@@ -230,7 +230,7 @@ DWORD GetDeviceAddress(int VTableIndex)
 LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param);
 typedef long(__stdcall* tEndScene)(LPDIRECT3DDEVICE9);
 void __stdcall Start() {
-
+	debug::init();
 	autoUpdater.Start();
 
 	while (Engine::GetGameTime() < 1.0f || !me)
@@ -277,6 +277,8 @@ void __stdcall Start() {
 	ImGui_ImplDX9_Shutdown();
 
 	ImGui::DestroyContext(ImGui::GetCurrentContext());
+
+	debug::cleanUp();
 
 	FreeLibraryAndExitThread(g_module, 0);
 }
