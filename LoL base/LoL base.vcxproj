@@ -156,6 +156,8 @@
     <ClInclude Include="AIManager.h" />
     <ClInclude Include="Autokey.h" />
     <ClInclude Include="Autoupdater.h" />
+    <ClInclude Include="BuffEntry.h" />
+    <ClInclude Include="BuffManager.h" />
     <ClInclude Include="CConsole.h" />
     <ClInclude Include="CObject.h" />
     <ClInclude Include="CObjectManager.h" />
@@ -190,8 +192,11 @@
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AIManager.cpp" />
     <ClCompile Include="Autokey.cpp" />
     <ClCompile Include="Autoupdater.cpp" />
+    <ClCompile Include="BuffEntry.cpp" />
+    <ClCompile Include="BuffManager.cpp" />
     <ClCompile Include="CConsole.cpp" />
     <ClCompile Include="CObject.cpp" />
     <ClCompile Include="CSpellData.cpp" />

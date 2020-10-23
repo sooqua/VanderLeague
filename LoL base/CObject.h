@@ -6,6 +6,7 @@
 #include "CSpellBook.h"
 #include "CSpellCastInfo.h"
 #include "AIManager.h"
+#include "BuffManager.h"
 
 enum class ObjectTypeFlags {
 	GameObject = (1 << 0),  //0x1
@@ -108,7 +109,6 @@ public:
 	char* GetName();
 	char* GetChampionName();
 	int GetTeam();
-	CSpellBook* GetSpellBook();
 	float GetAttackDelay();
 	float GetAttackCastDelay();
 	float GetEffectiveHealth();
@@ -117,6 +117,12 @@ public:
 	float GetTrueAttackRange();
 	float GetMoveSpeed();
 
+	BuffManager* GetBuffMgr();
+
+	AIManager* GetAIManager();
+
+	CSpellBook* GetSpellBook();
+
 	// Spell related
 	CSpellCastInfo* GetSpellCastInfo();
 	Vector GetMissileEndPos();
@@ -124,7 +130,4 @@ public:
 	float GetSpellSpeed();
 	short GetMissileSourceIndex();
 	short GetMissileTargetIndex();
-
-	//In your object class
-	AIManager* GetAIManager();
 };

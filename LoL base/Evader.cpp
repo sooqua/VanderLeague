@@ -10,7 +10,6 @@
 #include <vector>
 #include <algorithm>
 #include <chrono>
-#include <map>
 #include <math.h>
 
 extern Prediction prediction;
@@ -78,34 +77,23 @@ bool CEvader::drawEvent() {
 					auto bIsLeft = isLeft(start_pos_w2s, end_pos_w2s, localObjPos_w2s);
 					Vector direction4 = bIsLeft ? direction3 : direction2;
 
-					//auto isDodgedIt = m_isDodged.find(pObject);
-					//if (isDodgedIt == m_isDodged.end() || !isDodgedIt->second) {
-						Vector evadePos = localObjPos + direction4;
-						Vector evadePos_w2s;
-						Functions.WorldToScreen(&evadePos, &evadePos_w2s);
-						render.draw_line(localObjPos_w2s.X, localObjPos_w2s.Y, evadePos_w2s.X, evadePos_w2s.Y, ImColor(0, 255, 0), 5.0f);
+					Vector evadePos = localObjPos + direction4;
 
-						if (useAutokey) {
-							std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
-								std::chrono::system_clock::now().time_since_epoch());
-							if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
-								Autokey::MoveMouse(evadePos);
-								Autokey::Click();
-								m_lastMoveClickTime = now;
-							}
+					if (useAutokey) {
+						std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
+							std::chrono::system_clock::now().time_since_epoch());
+						if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
+							Autokey::MoveMouse(evadePos);
+							Autokey::Click();
+							m_lastMoveClickTime = now;
 						}
-						else {
-							if ((int)(Engine::GetGameTime() * 1000) >= m_nLastMoveCmdTick + 60) {
-								Engine::MoveTo(&evadePos);
-								m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);
-							}
+					}
+					else {
+						if ((int)(Engine::GetGameTime() * 1000) >= m_nLastMoveCmdTick + 60) {
+							Engine::MoveTo(&evadePos);
+							m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);
 						}
-
-						//m_isDodged.insert(std::make_pair(pObject, true));
-					//}
-				}
-				else {
-					m_isDodged.clear();
+					}
 				}
 			}
 		}

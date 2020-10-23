@@ -93,6 +93,18 @@
     <Filter Include="Source\Prediction">
       <UniqueIdentifier>{793c60a4-d7a8-4520-b040-148657966d5f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header\Buff">
+      <UniqueIdentifier>{f43d2fd6-85dc-4786-94cd-bc8ea08732f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\AIManager">
+      <UniqueIdentifier>{2ee7fd93-b69f-43b3-aa89-4e572c3a28c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Buff">
+      <UniqueIdentifier>{a172d198-61a8-4c51-924d-5fe591451099}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\AIManager">
+      <UniqueIdentifier>{48ef5967-32cf-47f4-874f-7f49f9a8395e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -197,8 +209,14 @@
     <ClInclude Include="Prediction.h">
       <Filter>Header\Prediction</Filter>
     </ClInclude>
+    <ClInclude Include="BuffEntry.h">
+      <Filter>Header\Buff</Filter>
+    </ClInclude>
+    <ClInclude Include="BuffManager.h">
+      <Filter>Header\Buff</Filter>
+    </ClInclude>
     <ClInclude Include="AIManager.h">
-      <Filter>Header</Filter>
+      <Filter>Header\AIManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -261,6 +279,15 @@
     </ClCompile>
     <ClCompile Include="Prediction.cpp">
       <Filter>Source\Prediction</Filter>
+    </ClCompile>
+    <ClCompile Include="BuffEntry.cpp">
+      <Filter>Source\Buff</Filter>
+    </ClCompile>
+    <ClCompile Include="BuffManager.cpp">
+      <Filter>Source\Buff</Filter>
+    </ClCompile>
+    <ClCompile Include="AIManager.cpp">
+      <Filter>Source\AIManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

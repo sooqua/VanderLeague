@@ -135,10 +135,6 @@ int CObject::GetTeam() {
 	return *(int*)((DWORD)this + offsets::cobject::oObjTeam);
 }
 
-CSpellBook* CObject::GetSpellBook() {
-	return (CSpellBook*)((DWORD)this + offsets::cobject::oObjSpellBook);
-}
-
 bool CObject::IsNexus() {
 	return Functions.IsNexus(this);
 }
@@ -179,6 +175,19 @@ float CObject::GetMoveSpeed() {
 	return *(float*)((DWORD)this + offsets::cobject::oObjMoveSpeed);
 }
 
+BuffManager* CObject::GetBuffMgr() {
+	return (BuffManager*)((DWORD)this + offsets::cobject::oObjBuffMgr);
+}
+
+AIManager* CObject::GetAIManager() {
+	typedef AIManager* (__thiscall* OriginalFn)(PVOID);
+	return CallVirtual<OriginalFn>(this, 147)(this);
+}
+
+CSpellBook* CObject::GetSpellBook() {
+	return (CSpellBook*)((DWORD)this + offsets::cobject::oObjSpellBook);
+}
+
 // Spell related
 
 CSpellCastInfo* CObject::GetSpellCastInfo() {
@@ -197,21 +206,14 @@ Vector CObject::GetMissileStartPos() {
 	return startPos;
 }
 
+float CObject::GetSpellSpeed() {
+	return *(float*)(DWORD)this + 0x418;
+}
+
 short CObject::GetMissileSourceIndex() {
 	return *(short*)((DWORD)this + offsets::cobject::oMissileSourceIndex);
 }
 
 short CObject::GetMissileTargetIndex() {
 	return *(short*)((DWORD)this + offsets::cobject::oMissileTargetIndex);
-}
-
-//In your object class
-
-AIManager* CObject::GetAIManager() {
-	typedef AIManager* (__thiscall* OriginalFn)(PVOID);
-	return CallVirtual<OriginalFn>(this, 147)(this);
-}
-
-float CObject::GetSpellSpeed() {
-	return *(float*)(DWORD)this + 0x418;
 }

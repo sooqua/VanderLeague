@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "Windows.h"
 #include "Engine.h"
 #include "Hooks.h"
 #include "detours.h"
 #include "ImRender.hpp"
+
 #include "Autoupdater.h"
 #include "Orbwalker.h"
 #include "Evader.h"
@@ -11,6 +11,7 @@
 
 #include "Debug.h"
 
+#include <Windows.h>
 #include <mutex>
 
 #ifdef _DEBUG
