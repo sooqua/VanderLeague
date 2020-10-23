@@ -5,6 +5,7 @@
 #include "Utils.h"
 #include "CSpellBook.h"
 #include "CSpellCastInfo.h"
+#include "AIManager.h"
 
 enum class ObjectTypeFlags {
 	GameObject = (1 << 0),  //0x1
@@ -114,6 +115,7 @@ public:
 	float GetEffectiveDamageOnTarget(CObject* target);
 	float GetDistanceToMe();
 	float GetTrueAttackRange();
+	float GetMoveSpeed();
 
 	// Spell related
 	CSpellCastInfo* GetSpellCastInfo();
@@ -122,4 +124,7 @@ public:
 	float GetSpellSpeed();
 	short GetMissileSourceIndex();
 	short GetMissileTargetIndex();
+
+	//In your object class
+	AIManager* GetAIManager();
 };

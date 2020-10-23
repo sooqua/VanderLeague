@@ -30,9 +30,6 @@
     <Filter Include="Header\Enum">
       <UniqueIdentifier>{b5a32d95-8c62-4a82-ba4a-c35aba1579ba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header\spell">
-      <UniqueIdentifier>{4e090b58-a006-4eab-ac43-e58b8ded7e7e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\ImGui">
       <UniqueIdentifier>{918ef40d-57b1-4e54-8ec9-4cdb415dc646}</UniqueIdentifier>
     </Filter>
@@ -75,6 +72,27 @@
     <Filter Include="Source\Autokey">
       <UniqueIdentifier>{bb33b2c2-a594-4d1b-927d-0964ac6c44fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Spell">
+      <UniqueIdentifier>{7c805136-0bff-4dc0-9bd4-278139ac4df7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utils">
+      <UniqueIdentifier>{9b9fd5b4-72f0-4734-8e94-bfd7fb14a854}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Spell">
+      <UniqueIdentifier>{4e090b58-a006-4eab-ac43-e58b8ded7e7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Evader">
+      <UniqueIdentifier>{bf1be334-31ab-4a6e-845d-eb30d2f22bd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Evader">
+      <UniqueIdentifier>{ebfecab9-482a-42b7-9924-08341b25cae2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Prediction">
+      <UniqueIdentifier>{6aececaa-95ca-4f38-8f10-c3320e1c323c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Prediction">
+      <UniqueIdentifier>{793c60a4-d7a8-4520-b040-148657966d5f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -105,16 +123,16 @@
       <Filter>Header\Enum</Filter>
     </ClInclude>
     <ClInclude Include="SpellData.h">
-      <Filter>Header\spell</Filter>
+      <Filter>Header\Spell</Filter>
     </ClInclude>
     <ClInclude Include="SpellSlot.h">
-      <Filter>Header\spell</Filter>
+      <Filter>Header\Spell</Filter>
     </ClInclude>
     <ClInclude Include="SpellInfo.h">
-      <Filter>Header\spell</Filter>
+      <Filter>Header\Spell</Filter>
     </ClInclude>
     <ClInclude Include="CSpellBook.h">
-      <Filter>Header\spell</Filter>
+      <Filter>Header\Spell</Filter>
     </ClInclude>
     <ClInclude Include="imgui\dx9\imgui_impl_dx9.h">
       <Filter>Header\ImGui\dx9</Filter>
@@ -146,9 +164,6 @@
     <ClInclude Include="Autoupdater.h">
       <Filter>Header\Autoupdater</Filter>
     </ClInclude>
-    <ClInclude Include="CConsole.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Offsets.h">
       <Filter>Header\Autoupdater</Filter>
     </ClInclude>
@@ -161,19 +176,28 @@
     <ClInclude Include="Autokey.h">
       <Filter>Header\Autokey</Filter>
     </ClInclude>
-    <ClInclude Include="Evader.h">
-      <Filter>Header</Filter>
+    <ClInclude Include="CSpell.h">
+      <Filter>Header\Spell</Filter>
     </ClInclude>
     <ClInclude Include="CSpellCastInfo.h">
-      <Filter>Header</Filter>
+      <Filter>Header\Spell</Filter>
     </ClInclude>
     <ClInclude Include="CSpellData.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="CSpell.h">
-      <Filter>Header</Filter>
+      <Filter>Header\Spell</Filter>
     </ClInclude>
     <ClInclude Include="CSpellInfo.h">
+      <Filter>Header\Spell</Filter>
+    </ClInclude>
+    <ClInclude Include="Evader.h">
+      <Filter>Header\Evader</Filter>
+    </ClInclude>
+    <ClInclude Include="CConsole.h">
+      <Filter>Header\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Prediction.h">
+      <Filter>Header\Prediction</Filter>
+    </ClInclude>
+    <ClInclude Include="AIManager.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
@@ -211,9 +235,6 @@
     <ClCompile Include="Autoupdater.cpp">
       <Filter>Source\Autoupdater</Filter>
     </ClCompile>
-    <ClCompile Include="CConsole.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Offsets.cpp">
       <Filter>Source\Autoupdater</Filter>
     </ClCompile>
@@ -226,14 +247,20 @@
     <ClCompile Include="Autokey.cpp">
       <Filter>Source\Autokey</Filter>
     </ClCompile>
-    <ClCompile Include="Evader.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="CSpellData.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source\Spell</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
-      <Filter>Source</Filter>
+      <Filter>Source\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="CConsole.cpp">
+      <Filter>Source\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Evader.cpp">
+      <Filter>Source\Evader</Filter>
+    </ClCompile>
+    <ClCompile Include="Prediction.cpp">
+      <Filter>Source\Prediction</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

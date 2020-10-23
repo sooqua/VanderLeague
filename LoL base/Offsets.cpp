@@ -104,7 +104,17 @@ namespace offsets {
 		uint32_t O_BUFFMGR_ENDTIME = 0x10;
 		uint32_t O_BUFFMGR_flBUFFCOUNT = 0x2C;
 		uint32_t O_BUFFMGR_iBUFFCOUNT = 0x70;
-	}
+	};
+
+	namespace aimgr {
+		uint32_t oAIMGR_TargetPos = 0x10;
+		uint32_t oAIMGR_IsMoving = 0x198;
+		uint32_t oAIMGR_IsDashing = 0x1E8;
+		uint32_t oAIMGR_NavBegin = 0x1BC;
+		uint32_t oAIMGR_NavEnd = 0x1C0;
+		uint32_t oAIMGR_CurrentPos = 0x2B4;
+		uint32_t oAIMGR_Velocity = 0x2C0;
+	};
 
 	/*namespace ai_base {
 		uint32_t CharacterDataStack = 0x2F58;

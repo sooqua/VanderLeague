@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AIManager.h" />
     <ClInclude Include="Autokey.h" />
     <ClInclude Include="Autoupdater.h" />
     <ClInclude Include="CConsole.h" />
@@ -179,6 +180,7 @@
     <ClInclude Include="ImRender.hpp" />
     <ClInclude Include="Offsets.h" />
     <ClInclude Include="Orbwalker.h" />
+    <ClInclude Include="Prediction.h" />
     <ClInclude Include="SpellData.h" />
     <ClInclude Include="SpellInfo.h" />
     <ClInclude Include="SpellSlot.h" />
@@ -218,6 +220,7 @@
     <ClCompile Include="LoL base.cpp" />
     <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="Orbwalker.cpp" />
+    <ClCompile Include="Prediction.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>

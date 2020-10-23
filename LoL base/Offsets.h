@@ -109,6 +109,16 @@ namespace offsets {
 		extern uint32_t O_BUFFMGR_iBUFFCOUNT;
 	};
 
+	namespace aimgr {
+		extern uint32_t oAIMGR_TargetPos;
+		extern uint32_t oAIMGR_IsMoving;
+		extern uint32_t oAIMGR_IsDashing;
+		extern uint32_t oAIMGR_NavBegin;
+		extern uint32_t oAIMGR_NavEnd;
+		extern uint32_t oAIMGR_CurrentPos;
+		extern uint32_t oAIMGR_Velocity;
+	};
+
 	/*namespace ai_base {
 		extern uint32_t CharacterDataStack;
 		extern uint32_t SkinId;

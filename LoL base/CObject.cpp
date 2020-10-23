@@ -175,6 +175,10 @@ float CObject::GetTrueAttackRange() {
 	return this->GetAttackRange() + this->GetBoundingRadius();
 }
 
+float CObject::GetMoveSpeed() {
+	return *(float*)((DWORD)this + offsets::cobject::oObjMoveSpeed);
+}
+
 // Spell related
 
 CSpellCastInfo* CObject::GetSpellCastInfo() {
@@ -199,6 +203,13 @@ short CObject::GetMissileSourceIndex() {
 
 short CObject::GetMissileTargetIndex() {
 	return *(short*)((DWORD)this + offsets::cobject::oMissileTargetIndex);
+}
+
+//In your object class
+
+AIManager* CObject::GetAIManager() {
+	typedef AIManager* (__thiscall* OriginalFn)(PVOID);
+	return CallVirtual<OriginalFn>(this, 147)(this);
 }
 
 float CObject::GetSpellSpeed() {
