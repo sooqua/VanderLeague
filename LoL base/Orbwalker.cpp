@@ -1,6 +1,7 @@
 #include "Orbwalker.h"
 #include "Engine.h"
 #include "Autokey.h"
+#include "CycleManager.h"
 
 #include <vector>
 #include <algorithm>
@@ -32,11 +33,7 @@ void COrbWalker::tryFindTarget()
 
 	std::vector<CObject*> possibleTargets;
 
-	CObject object;
-	CObject* pObject = object.GetFirstObject();
-
-
-	while (pObject)
+	for (auto pObject : CycleManager::GetObjects())
 	{
 		if (pObject != nullptr && pObject->IsEnemyTo(pLocal))
 		{
@@ -49,7 +46,6 @@ void COrbWalker::tryFindTarget()
 				}
 			}
 		}
-		pObject = object.GetNextObject(pObject);
 	}
 
 	if (possibleTargets.empty())

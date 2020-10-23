@@ -8,6 +8,7 @@
 #include "Orbwalker.h"
 #include "Evader.h"
 #include "Prediction.h"
+#include "CycleManager.h"
 
 #include "Debug.h"
 
@@ -42,7 +43,7 @@ HMODULE g_module = nullptr;
 HWND g_hwnd = nullptr;
 WNDPROC g_wndproc = nullptr;
 bool g_menu_opened = false;
-bool g_range = false;
+bool g_range = true;
 bool g_unload = false;
 bool g_2range_objmanager = false;
 bool g_champ_info = false;
@@ -100,25 +101,28 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	}
 
 	//Below are just examples, for ease of understanding, some are placed in a separate cycle. Do not repeat this. Do one cycle to get objects.
+	CycleManager::NewCycle();
+
+	auto localObj = Engine::GetLocalObject();
 
 	bool noAction = false;
 
-	noAction = evader.drawEvent();
+	//evader
+	if (localObj && localObj->IsAlive()) {
+		noAction = evader.drawEvent();
+	}
 
 	//orbwalker
-	if (!noAction && (GetAsyncKeyState(0x58) & (1 << 15)) != 0) {
-		orbWalker.drawEvent();
+	if (!noAction && localObj && localObj->IsAlive()) {
+		if ((GetAsyncKeyState(0x58) & (1 << 15)) != 0) {
+			orbWalker.drawEvent();
+		}
 	}
 
 	//Me Range
-	if (g_range == true) {
-		if (Engine::GetLocalObject()) {
-
-			if (Engine::GetLocalObject()->IsAlive()) {
-				auto color = createRGB(0, 255, 0);
-				Functions.DrawCircle(&Engine::GetLocalObject()->GetPos(), Engine::GetLocalObject()->GetAttackRange() + Engine::GetLocalObject()->GetBoundingRadius(), &color, 0, 0.0f, 0, 0.5f);
-			}
-		}
+	if (g_range == true && localObj && localObj->IsAlive()) {
+		auto color = createRGB(0, 255, 0);
+		Functions.DrawCircle(&Engine::GetLocalObject()->GetPos(), Engine::GetLocalObject()->GetAttackRange() + Engine::GetLocalObject()->GetBoundingRadius(), &color, 0, 0.0f, 0, 0.5f);
 	}
 
 	//line to mouse
@@ -142,41 +146,35 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 	//draw range all hero using getfirst/getnext obj
 	if (g_2range_objmanager == true) {
-		CObject holzer;
-		auto obj = holzer.GetFirstObject();
-		while (obj)
+		for (auto pObject : CycleManager::GetObjects())
 		{
-			if (obj->IsHero())
+			if (pObject->IsHero())
 			{
 				auto color = createRGB(255, 0, 0);
-				Functions.DrawCircle(&obj->GetPos(), obj->GetAttackRange(), &color, 0, 0.0f, 0, 0.5f);
+				Functions.DrawCircle(&pObject->GetPos(), pObject->GetAttackRange(), &color, 0, 0.0f, 0, 0.5f);
 			}
-			obj = holzer.GetNextObject(obj);
 		}
 	}
 	//champion info demonstration
 	if (g_champ_info == true) {
-		CObject holzer;
-		auto obj = holzer.GetFirstObject();
-		while (obj)
+		for (auto pObject : CycleManager::GetObjects())
 		{
-			if (obj->IsHero())
+			if (pObject->IsHero())
 			{
-				Vector obj_pos = obj->GetPos();
+				Vector obj_pos = pObject->GetPos();
 				Vector objpos_w2s;
 				Functions.WorldToScreen(&obj_pos, &objpos_w2s);
-				render.draw_text(objpos_w2s.X, objpos_w2s.Y + 15, obj->GetName(), true, ImColor(255, 0, 0, 255));
-				render.draw_text(objpos_w2s.X, objpos_w2s.Y + 30, obj->GetChampionName(), true, ImColor(255, 0, 0, 255));
+				render.draw_text(objpos_w2s.X, objpos_w2s.Y + 15, pObject->GetName(), true, ImColor(255, 0, 0, 255));
+				render.draw_text(objpos_w2s.X, objpos_w2s.Y + 30, pObject->GetChampionName(), true, ImColor(255, 0, 0, 255));
 
 				//from float to char///////////////////////////
 				char Get_Health[100];						///					
-				sprintf_s(Get_Health, "%f", obj->GetHealth());///
+				sprintf_s(Get_Health, "%f", pObject->GetHealth());///
 				///////////////////////////////////////////////
 
 				render.draw_text(objpos_w2s.X, objpos_w2s.Y + 45, Get_Health, true, ImColor(255, 0, 0, 255));
 
 			}
-			obj = holzer.GetNextObject(obj);
 		}
 	}
 

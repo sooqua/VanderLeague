@@ -4,6 +4,7 @@
 #include "Prediction.h"
 #include "Autokey.h"
 #include "ImRender.hpp"
+#include "CycleManager.h"
 
 #include "Debug.h"
 
@@ -27,10 +28,8 @@ Vector clamp_norm_2d(Vector v, float n_max) {
 
 bool CEvader::drawEvent() {
 	bool noAction = false;
-	CObject object;
-	CObject* pObject = object.GetFirstObject();
 
-	while (pObject)
+	for (auto pObject : CycleManager::GetObjects())
 	{
 		if (pObject->IsMissile())
 		{
@@ -97,8 +96,6 @@ bool CEvader::drawEvent() {
 				}
 			}
 		}
-
-		pObject = object.GetNextObject(pObject);
 	}
 
 	return noAction;

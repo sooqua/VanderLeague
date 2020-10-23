@@ -105,6 +105,12 @@
     <Filter Include="Source\AIManager">
       <UniqueIdentifier>{48ef5967-32cf-47f4-874f-7f49f9a8395e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header\CycleManager">
+      <UniqueIdentifier>{1463445b-adc1-4343-bf98-5a2840b6ac37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\CycleManager">
+      <UniqueIdentifier>{79b048e9-1518-4f1a-bf43-544eb22269c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -218,6 +224,9 @@
     <ClInclude Include="AIManager.h">
       <Filter>Header\AIManager</Filter>
     </ClInclude>
+    <ClInclude Include="CycleManager.h">
+      <Filter>Header\CycleManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LoL base.cpp">
@@ -288,6 +297,9 @@
     </ClCompile>
     <ClCompile Include="AIManager.cpp">
       <Filter>Source\AIManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CycleManager.cpp">
+      <Filter>Source\CycleManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
