@@ -3,9 +3,11 @@
 #include "CObject.h"
 
 #include <chrono>
+#include <map>
 
 class CEvader {
 private:
+	std::map<CObject*, bool> m_isDodged;
 	int m_nLastMoveCmdTick;
 	std::chrono::milliseconds m_lastMoveClickTime;
 	bool useAutokey;

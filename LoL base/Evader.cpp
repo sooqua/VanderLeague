@@ -11,11 +11,19 @@
 #include <algorithm>
 #include <chrono>
 #include <map>
+#include <math.h>
 
 extern Prediction prediction;
 
 bool isLeft(Vector a, Vector b, Vector c) {
 	return ((b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X)) > 0;
+}
+
+Vector clamp_norm_2d(Vector v, float n_max) {
+	float vx = v.X, vy = v.Y, vz = v.Z;
+	float n = sqrt(pow(vx, 2.f) + pow(vz, 2.f));
+	float f = min(n, n_max) / n;
+	return Vector(f * vx, vy, f * vz);
 }
 
 bool CEvader::drawEvent() {
@@ -41,12 +49,12 @@ bool CEvader::drawEvent() {
 				Vector localObjPos_w2s;
 				Functions.WorldToScreen(&localObjPos, &localObjPos_w2s);
 
-				static std::map<CObject*, bool> isDodged;
+				auto br = localObj->GetBoundingRadius() * 2.f;
 
 				if (prediction.PointOnLineSegment(
 					D3DXVECTOR2(start_pos_w2s.X, start_pos_w2s.Y),
 					D3DXVECTOR2(end_pos_w2s.X, end_pos_w2s.Y),
-					D3DXVECTOR2(localObjPos_w2s.X, localObjPos_w2s.Y), static_cast<double>(localObj->GetBoundingRadius())))
+					D3DXVECTOR2(localObjPos_w2s.X, localObjPos_w2s.Y), static_cast<double>(br)))
 				{
 					noAction = true;
 
@@ -61,13 +69,7 @@ bool CEvader::drawEvent() {
 
 					Vector direction2 = pos3 - pos4;
 
-					auto br = localObj->GetBoundingRadius() * 2;
-					direction2.X = direction2.X > br ? br : direction2.X;
-					direction2.X = direction2.X < -br ? -br : direction2.X;
-					direction2.Y = direction2.Y > br ? br : direction2.Y;
-					direction2.Y = direction2.Y < -br ? -br : direction2.Y;
-					direction2.Z = direction2.Z > br ? br : direction2.Z;
-					direction2.Z = direction2.Z < -br ? -br : direction2.Z;
+					direction2 = clamp_norm_2d(direction2, br);
 
 					Vector direction3;
 					direction3.X = -direction2.X;
@@ -76,8 +78,8 @@ bool CEvader::drawEvent() {
 					auto bIsLeft = isLeft(start_pos_w2s, end_pos_w2s, localObjPos_w2s);
 					Vector direction4 = bIsLeft ? direction3 : direction2;
 
-					auto isDodgedIt = isDodged.find(pObject);
-					if (isDodgedIt == isDodged.end() || !isDodgedIt->second) {
+					//auto isDodgedIt = m_isDodged.find(pObject);
+					//if (isDodgedIt == m_isDodged.end() || !isDodgedIt->second) {
 						Vector evadePos = localObjPos + direction4;
 						Vector evadePos_w2s;
 						Functions.WorldToScreen(&evadePos, &evadePos_w2s);
@@ -99,11 +101,11 @@ bool CEvader::drawEvent() {
 							}
 						}
 
-						isDodged.insert(std::make_pair(pObject, true));
-					}
+						//m_isDodged.insert(std::make_pair(pObject, true));
+					//}
 				}
 				else {
-					isDodged.clear();
+					m_isDodged.clear();
 				}
 			}
 		}
