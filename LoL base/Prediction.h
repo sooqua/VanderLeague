@@ -5422,6 +5422,7 @@ public:
 
 		return true;
 	}
+
 	bool PointOnLineSegment(D3DXVECTOR2 pt1, D3DXVECTOR2 pt2, D3DXVECTOR2 pt, double epsilon = 0.001)
 	{
 		if (pt.x - std::fmax(pt1.x, pt2.x) > epsilon ||
@@ -5441,7 +5442,6 @@ public:
 		return abs(pt.x - x) < epsilon || abs(pt.y - y) < epsilon;
 	}
 
-
 	std::vector<CObject*> getEnemyMinions() {
 		std::vector<CObject*> objets;
 		if (ObjManager) {
@@ -5460,7 +5460,6 @@ public:
 		}
 		return objets;
 	};
-
 
 	bool IsCollisioned(CollisionType type, Vector vec, float radius)
 	{
@@ -5713,7 +5712,6 @@ public:
 			dist = walls.getBottomBlueJungle_RedBuffWall().points.at(0)->distTo(vec);
 			selected = walls.getBottomBlueJungle_RedBuffWall();
 		}
-		Engine* engine = new Engine();
 		for (int i = 0; i < selected.points.size() / 2; i++) {
 			Vector2* q11 = selected.points.at(2 * i);
 			Vector2* q12 = selected.points.at(2 * i + 1);
