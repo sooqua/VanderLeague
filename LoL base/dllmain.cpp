@@ -108,7 +108,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	//orbwalker
 	if ((GetAsyncKeyState(VK_MBUTTON) & (1 << 15)) != 0) {
 
-		//orbWalker.drawEvent();
+		//orbWalker.drawEvent(); 
 
 		CObject holzer;
 		auto obj = holzer.GetFirstObject();
@@ -117,7 +117,8 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 			if (obj->IsMissile())
 			{
 				auto objCaster = Engine::GetObjectByID(obj->GetMissileSourceIndex());
-				if (objCaster->IsHero() && objCaster->IsEnemyTo(Engine::GetLocalObject())) {
+
+				if (objCaster->IsHero() && objCaster->IsEnemyTo(Engine::GetLocalObject()) && !stristr(obj->GetName(), "basic")) {
 					Vector start_pos = obj->GetMissileStartPos();
 					Vector start_pos_w2s;
 					Functions.WorldToScreen(&start_pos, &start_pos_w2s);

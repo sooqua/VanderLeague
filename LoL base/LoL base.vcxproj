@@ -158,7 +158,11 @@
     <ClInclude Include="CConsole.h" />
     <ClInclude Include="CObject.h" />
     <ClInclude Include="CObjectManager.h" />
+    <ClInclude Include="CSpell.h" />
     <ClInclude Include="CSpellBook.h" />
+    <ClInclude Include="CSpellCastInfo.h" />
+    <ClInclude Include="CSpellData.h" />
+    <ClInclude Include="CSpellInfo.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="ESpellSlot.h" />
@@ -188,6 +192,7 @@
     <ClCompile Include="Autoupdater.cpp" />
     <ClCompile Include="CConsole.cpp" />
     <ClCompile Include="CObject.cpp" />
+    <ClCompile Include="CSpellData.cpp" />
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
@@ -214,6 +219,7 @@
     <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="Orbwalker.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

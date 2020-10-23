@@ -177,6 +177,10 @@ float CObject::GetTrueAttackRange() {
 
 // Spell related
 
+CSpellCastInfo* CObject::GetSpellCastInfo() {
+	return *(CSpellCastInfo**)((DWORD)this + offsets::cobject::oMissileSpellInfo);
+}
+
 Vector CObject::GetMissileEndPos() {
 	Vector spellEndPos = *(Vector*)((DWORD)this + offsets::cobject::oMissileEndPos);
 	spellEndPos.Y += 100;

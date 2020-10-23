@@ -4,6 +4,7 @@
 #include "Vector.h"
 #include "Utils.h"
 #include "CSpellBook.h"
+#include "CSpellCastInfo.h"
 
 enum class ObjectTypeFlags {
 	GameObject = (1 << 0),  //0x1
@@ -115,6 +116,7 @@ public:
 	float GetTrueAttackRange();
 
 	// Spell related
+	CSpellCastInfo* GetSpellCastInfo();
 	Vector GetMissileEndPos();
 	Vector GetMissileStartPos();
 	float GetSpellSpeed();

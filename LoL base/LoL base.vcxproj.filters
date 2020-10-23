@@ -164,6 +164,18 @@
     <ClInclude Include="Evader.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="CSpellCastInfo.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpellData.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpell.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="CSpellInfo.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LoL base.cpp">
@@ -215,6 +227,12 @@
       <Filter>Source\Autokey</Filter>
     </ClCompile>
     <ClCompile Include="Evader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpellData.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

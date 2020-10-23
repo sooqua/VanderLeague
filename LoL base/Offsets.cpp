@@ -60,7 +60,7 @@ namespace offsets {
 
 		uint32_t oMissileSpellInfo = 0x230;
 		uint32_t oMissileSourceIndex = 0x290;
-		uint32_t oMissileTargetIndex = 0x2DC;
+		uint32_t oMissileTargetIndex = 0x2E8; // 0x2DC?
 		uint32_t oMissileStartPos = 0x2A8;
 		uint32_t oMissileEndPos = 0x2B4;
 	}
