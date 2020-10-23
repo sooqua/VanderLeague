@@ -12,7 +12,7 @@ private:
 
 public:
 	CEvader::CEvader() : m_nLastMoveCmdTick(0), m_lastMoveClickTime(0),
-		useAutokey(false)
+		useAutokey(true)
 	{
 	}
 

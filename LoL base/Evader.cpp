@@ -14,6 +14,10 @@
 
 extern Prediction prediction;
 
+bool isLeft(Vector a, Vector b, Vector c) {
+	return ((b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X)) > 0;
+}
+
 bool CEvader::drawEvent() {
 	bool noAction = false;
 	CObject object;
@@ -24,15 +28,16 @@ bool CEvader::drawEvent() {
 		if (pObject->IsMissile())
 		{
 			auto objCaster = Engine::GetObjectByID(pObject->GetMissileSourceIndex());
+			auto localObj = Engine::GetLocalObject();
 
-			if (objCaster->IsHero() && objCaster->IsEnemyTo(Engine::GetLocalObject()) && !stristr(pObject->GetName(), "basic")) {
+			if (objCaster->IsHero() && objCaster->IsEnemyTo(localObj) && !stristr(pObject->GetName(), "basic")) {
 				Vector start_pos = pObject->GetMissileStartPos();
 				Vector start_pos_w2s;
 				Functions.WorldToScreen(&start_pos, &start_pos_w2s);
 				Vector end_pos = pObject->GetMissileEndPos();
 				Vector end_pos_w2s;
 				Functions.WorldToScreen(&end_pos, &end_pos_w2s);
-				auto localObjPos = Engine::GetLocalObject()->GetPos();
+				auto localObjPos = localObj->GetPos();
 				Vector localObjPos_w2s;
 				Functions.WorldToScreen(&localObjPos, &localObjPos_w2s);
 
@@ -41,7 +46,7 @@ bool CEvader::drawEvent() {
 				if (prediction.PointOnLineSegment(
 					D3DXVECTOR2(start_pos_w2s.X, start_pos_w2s.Y),
 					D3DXVECTOR2(end_pos_w2s.X, end_pos_w2s.Y),
-					D3DXVECTOR2(localObjPos_w2s.X, localObjPos_w2s.Y), static_cast<double>(Engine::GetLocalObject()->GetBoundingRadius())))
+					D3DXVECTOR2(localObjPos_w2s.X, localObjPos_w2s.Y), static_cast<double>(localObj->GetBoundingRadius())))
 				{
 					noAction = true;
 
@@ -54,36 +59,29 @@ bool CEvader::drawEvent() {
 					Vector pos3 = end_pos + Vector(direction.Z * -1.0f, direction.Y, direction.X * 1.0f);
 					Vector pos4 = end_pos + Vector(direction.Z * 1.0f, direction.Y, direction.X * -1.0f);
 
-					Vector pos3_w2s;
-					Vector pos4_w2s;
-					Functions.WorldToScreen(&pos3, &pos3_w2s);
-					Functions.WorldToScreen(&pos4, &pos4_w2s);
-					render.draw_line(pos4_w2s.X, pos4_w2s.Y, pos3_w2s.X, pos3_w2s.Y, ImColor(255, 0, 0), 5.0f);
+					Vector direction2 = pos3 - pos4;
 
-					Vector direction2;
-					direction2.X = pos4.X - pos3.X;
-					direction2.Y = pos4.Y - pos3.Y;
-					direction2.Z = pos4.Z - pos3.Z;
+					auto br = localObj->GetBoundingRadius() * 2;
+					direction2.X = direction2.X > br ? br : direction2.X;
+					direction2.X = direction2.X < -br ? -br : direction2.X;
+					direction2.Y = direction2.Y > br ? br : direction2.Y;
+					direction2.Y = direction2.Y < -br ? -br : direction2.Y;
+					direction2.Z = direction2.Z > br ? br : direction2.Z;
+					direction2.Z = direction2.Z < -br ? -br : direction2.Z;
 
-					debug::printConsoleOrChat("DIRECTION: %.6f %.6f %.6f", direction2.X, direction2.Y, direction2.Z);
-					debug::printConsoleOrChat("pos3: %.6f %.6f %.6f", pos3.X, pos3.Y, pos3.Z);
-					debug::printConsoleOrChat("pos4: %.6f %.6f %.6f", pos4.X, pos4.Y, pos4.Z);
-					 
-					//auto isDodgedIt = isDodged.find(pObject);
-					//if (isDodgedIt == isDodged.end() || !isDodgedIt->second) {
-						/*points.push_back(pos3);
-						points.push_back(pos4);
-						std::sort(points.begin(), points.end(),
-							[&localObjPos](Vector first, Vector second)
-							{
-								return (localObjPos.DistTo(first) < localObjPos.DistTo(second));
-							});
-						auto closestPos = points.front();*/
+					Vector direction3;
+					direction3.X = -direction2.X;
+					direction3.Y = -direction2.Y;
+					direction3.Z = -direction2.Z;
+					auto bIsLeft = isLeft(start_pos_w2s, end_pos_w2s, localObjPos_w2s);
+					Vector direction4 = bIsLeft ? direction3 : direction2;
 
-					Vector evadePos = Engine::GetLocalObject()->GetPos() + direction2;
-					Vector evadePos_w2s;
-					Functions.WorldToScreen(&evadePos, &evadePos_w2s);
-					render.draw_line(Engine::GetLocalObject()->GetPos().X, Engine::GetLocalObject()->GetPos().Y, evadePos_w2s.X, evadePos_w2s.Y, ImColor(255, 255, 255), 5.0f);
+					auto isDodgedIt = isDodged.find(pObject);
+					if (isDodgedIt == isDodged.end() || !isDodgedIt->second) {
+						Vector evadePos = localObjPos + direction4;
+						Vector evadePos_w2s;
+						Functions.WorldToScreen(&evadePos, &evadePos_w2s);
+						render.draw_line(localObjPos_w2s.X, localObjPos_w2s.Y, evadePos_w2s.X, evadePos_w2s.Y, ImColor(0, 255, 0), 5.0f);
 
 						if (useAutokey) {
 							std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -94,14 +92,15 @@ bool CEvader::drawEvent() {
 								m_lastMoveClickTime = now;
 							}
 						}
-						else if ((int)(Engine::GetGameTime() * 1000) >= m_nLastMoveCmdTick + 60) {
-							Engine::MoveTo(&evadePos);
-							m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);
+						else {
+							if ((int)(Engine::GetGameTime() * 1000) >= m_nLastMoveCmdTick + 60) {
+								Engine::MoveTo(&evadePos);
+								m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);
+							}
 						}
 
-						//isDodged.insert(std::make_pair(pObject, true));
-						//debug::printConsoleOrChat("DODGING NOW");
-					//}
+						isDodged.insert(std::make_pair(pObject, true));
+					}
 				}
 				else {
 					isDodged.clear();
