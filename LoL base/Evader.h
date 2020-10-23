@@ -12,10 +12,10 @@ private:
 
 public:
 	CEvader::CEvader() : m_nLastMoveCmdTick(0), m_lastMoveClickTime(0),
-		useAutokey(true)
+		useAutokey(false)
 	{
 	}
 
 public:
-	void CEvader::drawEvent();
+	bool CEvader::drawEvent();
 };
