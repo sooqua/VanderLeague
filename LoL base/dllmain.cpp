@@ -7,6 +7,7 @@
 #include "Autoupdater.h"
 #include "Orbwalker.h"
 #include "Evader.h"
+#include "ZoomHack.h"
 #include "Prediction.h"
 #include "CycleManager.h"
 #include "ESpellSlot.h"
@@ -50,6 +51,7 @@ bool g_2range_objmanager = false;
 bool g_champ_info = true;
 bool g_turret_range = true;
 bool g_auto_evade = true;
+bool g_zoom_hack = true;
 bool OnStartMessage = false;
 
 bool g_interface = false;
@@ -58,7 +60,6 @@ clock_t lastmove = NULL;
 using namespace std;
 typedef HRESULT(WINAPI* Prototype_Present)(LPDIRECT3DDEVICE9, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*);
 Prototype_Present Original_Present;
-
 
 HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CONST RECT* pDestRect, HWND hDestWindow, CONST RGNDATA* pDirtyRegion)
 {
@@ -89,6 +90,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 					ImGui::BeginChild("##child", ImVec2(450.0f, 450.0f), false, ImGuiWindowFlags_NoSavedSettings);
 					{
 						ImGui::Checkbox("Auto evade", &g_auto_evade);
+						ImGui::Checkbox("Zoom hack", &g_zoom_hack);
 						ImGui::Checkbox("My range", &g_range);
 						ImGui::Checkbox("All hero range", &g_2range_objmanager);
 						ImGui::Checkbox("Text champ info", &g_champ_info);
@@ -116,7 +118,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 	//orbwalker
 	if (!noAction && localObj && localObj->IsAlive()) {
-		if ((GetAsyncKeyState(0x58) & (1 << 15)) != 0) {
+		if ((GetAsyncKeyState(0x58 /* X key */) & (1 << 15)) != 0) {
 			orbWalker.drawEvent();
 		}
 	}
@@ -166,7 +168,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 		//turret range
 		if (g_turret_range == true) {
 			if (pObject->IsTurret() && pObject->IsEnemyTo(localObj)) {
-				static auto turretRange = 850.f;
+				static const auto turretRange = 850.f;
 				if (pObject->GetDistanceToMe() < (turretRange + 300.f)) {
 					auto color = createRGB(255, 255, 255);
 					Functions.DrawCircle(&pObject->GetPos(), turretRange, &color, 0, 0.0f, 0, 0.5f);
@@ -342,9 +344,17 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 	switch (u_msg)
 	{
 	case WM_KEYDOWN:
-		if (w_param == VK_END) /* твоя кнопка тут */
+		if (w_param == VK_END)
 			g_menu_opened = !g_menu_opened;
 		break;
+	case WM_MOUSEWHEEL: {
+		//Zoom hack
+		if (g_zoom_hack) {
+			auto wheelDelta = static_cast<int>(GET_WHEEL_DELTA_WPARAM(w_param));
+			ZoomHack::ChangeMaximumZoom(-wheelDelta);
+		}
+		break;
+	}
 	default:
 		break;
 	}

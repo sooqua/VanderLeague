@@ -191,6 +191,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vector.h" />
+    <ClInclude Include="ZoomHack.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AIManager.cpp" />
@@ -236,6 +237,7 @@
     <ClCompile Include="SpellInfo.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="ZoomHack.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

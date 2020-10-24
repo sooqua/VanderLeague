@@ -108,6 +108,12 @@
     <Filter Include="Source\CycleManager">
       <UniqueIdentifier>{79b048e9-1518-4f1a-bf43-544eb22269c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header\ZoomHack">
+      <UniqueIdentifier>{91f3bb9b-a62a-44f7-a398-de183a5635a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ZoomHack">
+      <UniqueIdentifier>{d4b53cb6-a5b0-49d6-b500-dd75a4063c19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -224,6 +230,9 @@
     <ClInclude Include="ESpellSlot.h">
       <Filter>Header\Spell</Filter>
     </ClInclude>
+    <ClInclude Include="ZoomHack.h">
+      <Filter>Header\ZoomHack</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LoL base.cpp">
@@ -315,6 +324,9 @@
     </ClCompile>
     <ClCompile Include="CSpellInfo.cpp">
       <Filter>Source\Spell</Filter>
+    </ClCompile>
+    <ClCompile Include="ZoomHack.cpp">
+      <Filter>Source\ZoomHack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
