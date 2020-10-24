@@ -1,16 +1,16 @@
 #pragma once
-#include <Windows.h>
+
 #include "Offsets.h"
 #include "Vector.h"
 #include "Utils.h"
-#include "SpellSlot.h"
+#include "CSpell.h"
+#include "CSpellEntry.h"
+
+#include <Windows.h>
 
 class CSpellBook {
 public:
+	CSpellEntry* GetActiveSpellEntry();
 
-	SpellSlot* GetSpellSlotByID(int ID) {
-		return *(SpellSlot**)((DWORD)this + 0x508 + (0x4 * ID));
-
-	}
-
+	CSpell* GetSpellByID(int ID);
 };

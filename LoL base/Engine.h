@@ -84,43 +84,43 @@ public:
 	static void Engine::CastSpellSelf(int SlotID) {
 		if (Engine::GetLocalObject()->IsAlive()) {
 			auto spellbook = (DWORD)Engine::GetLocalObject() + offsets::cobject::oObjSpellBook;
-			auto spellslot = Engine::GetLocalObject()->GetSpellBook()->GetSpellSlotByID(SlotID);
-			Functions.CastSpell(spellbook, spellslot, SlotID, &Engine::GetLocalObject()->GetPos(), &Engine::GetLocalObject()->GetPos(), 0);
+			auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(SlotID);
+			Functions.CastSpell(spellbook, spell, SlotID, &Engine::GetLocalObject()->GetPos(), &Engine::GetLocalObject()->GetPos(), 0);
 		}
 	}
 
 	static void Engine::CastSpellPos(int SlotID, Vector pos) {
 		auto spellbook = (DWORD)Engine::GetLocalObject() + offsets::cobject::oObjSpellBook;
-		auto spellslot = Engine::GetLocalObject()->GetSpellBook()->GetSpellSlotByID(SlotID);
+		auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(SlotID);
 		auto targetpos = &pos;
 
-		Functions.CastSpell(spellbook, spellslot, SlotID, targetpos, new Vector(0, 0, 0), 0x0);
+		Functions.CastSpell(spellbook, spell, SlotID, targetpos, new Vector(0, 0, 0), 0x0);
 	}
 
 	static void Engine::CastSpellPos(int SlotID, float x, float y, float z, CObject* obj) {
 		auto spellbook = (DWORD)Engine::GetLocalObject() + offsets::cobject::oObjSpellBook;
-		auto spellslot = Engine::GetLocalObject()->GetSpellBook()->GetSpellSlotByID(SlotID);
+		auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(SlotID);
 		Vector* pos = new Vector(x, y, z);
-		Functions.CastSpell(spellbook, spellslot, SlotID, &obj->GetPos(), &Engine::GetLocalObject()->GetPos(), obj->GetNetworkID());
+		Functions.CastSpell(spellbook, spell, SlotID, &obj->GetPos(), &Engine::GetLocalObject()->GetPos(), obj->GetNetworkID());
 		delete pos;
 	}
 
 	static void Engine::CastSpellTargetted(int SlotID, CObject* obj) {
 		auto spellbook = (DWORD)Engine::GetLocalObject() + offsets::cobject::oObjSpellBook;
-		auto spellslot = Engine::GetLocalObject()->GetSpellBook()->GetSpellSlotByID(SlotID);
+		auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(SlotID);
 
-		Functions.CastSpell(spellbook, spellslot, SlotID, &obj->GetPos(), &Engine::GetLocalObject()->GetPos(), obj->GetNetworkID());
+		Functions.CastSpell(spellbook, spell, SlotID, &obj->GetPos(), &Engine::GetLocalObject()->GetPos(), obj->GetNetworkID());
 	}
 
-	static float Engine::getCD(int slot, CObject* obj) {
+	//static float Engine::getCD(int slot, CObject* obj) {
 
-		//Console.print("CD : %f", obj->GetSpellBook()->GetSpellSlotByID(slot)->GetCD() - Engine::GetGameTime());
-		return obj->GetSpellBook()->GetSpellSlotByID(slot)->GetCD();
-	}
+	//	//Console.print("CD : %f", obj->GetSpellBook()->GetSpellByID(slot)->GetCD() - Engine::GetGameTime());
+	//	return obj->GetSpellBook()->GetSpellByID(slot)->Cooldown();
+	//}
 
-	static bool Engine::IsReady(int slot, CObject* obj) {
-		//Console.print("LEVEL : %i", obj->GetSpellBook()->GetSpellSlotByID(slot)->GetLevel());
-		return obj->GetSpellBook()->GetSpellSlotByID(slot)->GetLevel() >= 1 && getCD(slot, obj) == 0.0f;
-	}
+	//static bool Engine::IsReady(int slot, CObject* obj) {
+	//	//Console.print("LEVEL : %i", obj->GetSpellBook()->GetSpellByID(slot)->GetLevel());
+	//	return obj->GetSpellBook()->GetSpellByID(slot)->Level() >= 1 && getCD(slot, obj) == 0.0f;
+	//}
 };
 

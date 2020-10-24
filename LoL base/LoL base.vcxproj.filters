@@ -27,9 +27,6 @@
     <Filter Include="Source\Objects">
       <UniqueIdentifier>{465ade86-a295-40ee-9231-ef935f9fdfc5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header\Enum">
-      <UniqueIdentifier>{b5a32d95-8c62-4a82-ba4a-c35aba1579ba}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\ImGui">
       <UniqueIdentifier>{918ef40d-57b1-4e54-8ec9-4cdb415dc646}</UniqueIdentifier>
     </Filter>
@@ -137,13 +134,7 @@
     <ClInclude Include="Hooks.h">
       <Filter>Header\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="ESpellSlot.h">
-      <Filter>Header\Enum</Filter>
-    </ClInclude>
     <ClInclude Include="SpellData.h">
-      <Filter>Header\Spell</Filter>
-    </ClInclude>
-    <ClInclude Include="SpellSlot.h">
       <Filter>Header\Spell</Filter>
     </ClInclude>
     <ClInclude Include="SpellInfo.h">
@@ -227,6 +218,12 @@
     <ClInclude Include="CycleManager.h">
       <Filter>Header\CycleManager</Filter>
     </ClInclude>
+    <ClInclude Include="CSpellEntry.h">
+      <Filter>Header\Spell</Filter>
+    </ClInclude>
+    <ClInclude Include="ESpellSlot.h">
+      <Filter>Header\Spell</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LoL base.cpp">
@@ -300,6 +297,24 @@
     </ClCompile>
     <ClCompile Include="CycleManager.cpp">
       <Filter>Source\CycleManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpellBook.cpp">
+      <Filter>Source\Spell</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpellEntry.cpp">
+      <Filter>Source\Spell</Filter>
+    </ClCompile>
+    <ClCompile Include="SpellInfo.cpp">
+      <Filter>Source\Spell</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpellCastInfo.cpp">
+      <Filter>Source\Spell</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpell.cpp">
+      <Filter>Source\Spell</Filter>
+    </ClCompile>
+    <ClCompile Include="CSpellInfo.cpp">
+      <Filter>Source\Spell</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

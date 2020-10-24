@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <chrono>
 
+#include "Debug.h"
+
 // AttackCastDelay = time until u can move without canceling attack
 // AttackDelay = time until u can attack again
 

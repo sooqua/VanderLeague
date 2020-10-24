@@ -9,6 +9,7 @@
 #include "Evader.h"
 #include "Prediction.h"
 #include "CycleManager.h"
+#include "ESpellSlot.h"
 
 #include "Debug.h"
 
@@ -43,12 +44,10 @@ HMODULE g_module = nullptr;
 HWND g_hwnd = nullptr;
 WNDPROC g_wndproc = nullptr;
 bool g_menu_opened = false;
-bool g_range = true;
+bool g_range = false;
 bool g_unload = false;
 bool g_2range_objmanager = false;
 bool g_champ_info = false;
-bool g_move_to_mouse = false;
-bool g_w2s_line = false;
 bool OnStartMessage = false;
 
 bool g_interface = false;
@@ -68,7 +67,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 		});
 
 	ImGui::CreateContext();
-	render.begin_draw();//begin for draw rende.drawline.... and etc
+	render.begin_draw();
 
 	if (OnStartMessage == false) {
 		Engine::PrintChat("[ SpaghettiHack ]");
@@ -89,8 +88,6 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 					{
 						ImGui::Checkbox("My range demostration", &g_range);
 						ImGui::Checkbox("All hero range demostration", &g_2range_objmanager);
-						ImGui::Checkbox("Move to mouse demostration", &g_move_to_mouse);
-						ImGui::Checkbox("W2S/Line demostration", &g_w2s_line);
 						ImGui::Checkbox("Text champ info demostration", &g_champ_info);
 					}
 					ImGui::EndChild();
@@ -100,7 +97,6 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 		}
 	}
 
-	//Below are just examples, for ease of understanding, some are placed in a separate cycle. Do not repeat this. Do one cycle to get objects.
 	CycleManager::NewCycle();
 
 	auto localObj = Engine::GetLocalObject();
@@ -119,32 +115,13 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 		}
 	}
 
-	//Me Range
+	//me Range
 	if (g_range == true && localObj && localObj->IsAlive()) {
 		auto color = createRGB(0, 255, 0);
 		Functions.DrawCircle(&Engine::GetLocalObject()->GetPos(), Engine::GetLocalObject()->GetAttackRange() + Engine::GetLocalObject()->GetBoundingRadius(), &color, 0, 0.0f, 0, 0.5f);
 	}
 
-	//line to mouse
-	if (g_w2s_line == true) {
-		Vector me_pos = Engine::GetLocalObject()->GetPos();
-		Vector mepos_w2s;
-		Functions.WorldToScreen(&me_pos, &mepos_w2s);
-		Vector mouse_pos_w2s;
-		Vector mouse_pos = Engine::GetMouseWorldPosition();
-		Functions.WorldToScreen(&mouse_pos, &mouse_pos_w2s);
-		render.draw_line(mepos_w2s.X, mepos_w2s.Y, mouse_pos_w2s.X, mouse_pos_w2s.Y, ImColor(15, 150, 40, 255), 5.0f);
-	}
-
-	//move to mouse
-	if (!noAction && g_move_to_mouse == true) {
-		if (lastmove == NULL || clock() - lastmove > 30.0f) {
-			lastmove = clock();
-			Engine::MoveTo(&Engine::GetMouseWorldPosition());
-		}
-	}
-
-	//draw range all hero using getfirst/getnext obj
+	//draw range all hero
 	if (g_2range_objmanager == true) {
 		for (auto pObject : CycleManager::GetObjects())
 		{
@@ -155,6 +132,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 			}
 		}
 	}
+
 	//champion info demonstration
 	if (g_champ_info == true) {
 		for (auto pObject : CycleManager::GetObjects())
@@ -164,23 +142,31 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 				Vector obj_pos = pObject->GetPos();
 				Vector objpos_w2s;
 				Functions.WorldToScreen(&obj_pos, &objpos_w2s);
-				render.draw_text(objpos_w2s.X, objpos_w2s.Y + 15, pObject->GetName(), true, ImColor(255, 0, 0, 255));
-				render.draw_text(objpos_w2s.X, objpos_w2s.Y + 30, pObject->GetChampionName(), true, ImColor(255, 0, 0, 255));
 
-				//from float to char///////////////////////////
-				char Get_Health[100];						///					
-				sprintf_s(Get_Health, "%f", pObject->GetHealth());///
-				///////////////////////////////////////////////
+				auto objSpellBook = pObject->GetSpellBook();
 
-				render.draw_text(objpos_w2s.X, objpos_w2s.Y + 45, Get_Health, true, ImColor(255, 0, 0, 255));
-
+				auto spellQ = objSpellBook->GetSpellByID(static_cast<int>(ESpellSlot::Q));
+				auto spellW = objSpellBook->GetSpellByID(static_cast<int>(ESpellSlot::W));
+				auto spellE = objSpellBook->GetSpellByID(static_cast<int>(ESpellSlot::E));
+				auto spellR = objSpellBook->GetSpellByID(static_cast<int>(ESpellSlot::R));
+				 
+				//render.draw_text(objpos_w2s.X, objpos_w2s.Y + 15, pObject->GetChampionName(), true, ImColor(255, 0, 0, 255));
+				render.draw_text(objpos_w2s.X, objpos_w2s.Y + 30, "[Q]", true, spellQ->IsSpellReady() ? ImColor(0, 255, 0, 255) : ImColor(255, 255, 255, 255));
+				render.draw_text(objpos_w2s.X + 20, objpos_w2s.Y + 30, "[W]", true, spellW->IsSpellReady() ? ImColor(0, 255, 0, 255) : ImColor(255, 255, 255, 255));
+				render.draw_text(objpos_w2s.X + 40, objpos_w2s.Y + 30, "[E]", true, spellE->IsSpellReady() ? ImColor(0, 255, 0, 255) : ImColor(255, 255, 255, 255));
+				render.draw_text(objpos_w2s.X + 60, objpos_w2s.Y + 30, "[R]", true, spellR->IsSpellReady() ? ImColor(0, 255, 0, 255) : ImColor(255, 255, 255, 255));
+			}
+			else if (pObject->IsTurret() && pObject->IsEnemyTo(localObj)) {
+				static auto turretRange = 850.f;
+				if (pObject->GetDistanceToMe() < (turretRange + 300.f)) {
+					auto color = createRGB(255, 255, 255);
+					Functions.DrawCircle(&pObject->GetPos(), turretRange, &color, 0, 0.0f, 0, 0.5f);
+				}
 			}
 		}
 	}
 
-
-
-	render.end_draw();//end for draw render.drawline.... and etc
+	render.end_draw();
 	return Original_Present(Device, pSrcRect, pDestRect, hDestWindow, pDirtyRegion);
 }
 
@@ -235,7 +221,6 @@ void __stdcall Start() {
 #ifdef _DEBUG
 	//CConsole console;
 #endif
-
 
 	g_hwnd = FindWindowA(nullptr, "League of Legends (TM) Client");
 	g_wndproc = WNDPROC(SetWindowLongA(g_hwnd, GWL_WNDPROC, LONG_PTR(WndProc)));

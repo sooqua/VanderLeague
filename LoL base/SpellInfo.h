@@ -6,7 +6,5 @@
 class SpellInfo
 {
 public:
-	SpellData* GetSpellData() {
-		return (SpellData*)((DWORD)this + 0x38);
-	}
+	SpellData* GetSpellData();
 };
