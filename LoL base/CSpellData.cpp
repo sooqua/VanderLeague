@@ -3,7 +3,7 @@
 #include <Windows.h>
 
 float CSpellData::GetSpellWidth() {
-	return *(float*)(DWORD)this + 0x458;
+	return *(float*)(DWORD)this + 0x44C;
 }
 
 char* CSpellData::GetMissileName() {

@@ -175,6 +175,14 @@ float CObject::GetMoveSpeed() {
 	return *(float*)((DWORD)this + offsets::cobject::oObjMoveSpeed);
 }
 
+float CObject::GetMana() {
+	return *(float*)((DWORD)this + offsets::cobject::oObjMana);
+}
+
+float CObject::GetMaxMana() {
+	return *(float*)((DWORD)this + offsets::cobject::oObjMaxMana);
+}
+
 BuffManager* CObject::GetBuffMgr() {
 	return (BuffManager*)((DWORD)this + offsets::cobject::oObjBuffMgr);
 }

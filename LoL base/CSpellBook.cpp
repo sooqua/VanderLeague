@@ -1,7 +1,7 @@
 #include "CSpellBook.h"
 
 CSpellEntry* CSpellBook::GetActiveSpellEntry() {
-	return *(CSpellEntry**)((DWORD)this + 0x24); // 0x74? 0x4A? 0x20?
+	return *(CSpellEntry**)((DWORD)this + 0x20); // 0x24? 0x74? 0x4A? 0x20?
 }
 
 CSpell* CSpellBook::GetSpellByID(int ID) {

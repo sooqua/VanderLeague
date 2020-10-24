@@ -5,6 +5,8 @@
 
 #include <Windows.h>
 
+#include "SpellInfo.h"
+
 /*
 v10.21
 internal static class ActiveSpellEntry
@@ -33,10 +35,10 @@ internal static class ActiveSpellEntry
 
 class CSpellEntry {
 public:
-	SpellData* GetSpellData();
+	SpellInfo* GetSpellInfo();
 
-	bool isAutoAttack();
-	int targetID();
+	bool IsBasicAttack();
+	int GetTargetIndex();
 	Vector GetStartPos();
 	Vector GetEndPos();
 };

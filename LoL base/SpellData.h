@@ -178,7 +178,7 @@ public:
 	}
 
 	float GetMissileSpeed() {
-		return *(float*)((DWORD)this + 0x450);
+		return *(float*)((DWORD)this + 0x424);
 	}
 	SpellData* GetSpellData() {
 		return *(SpellData**)((DWORD)this + 0x38);

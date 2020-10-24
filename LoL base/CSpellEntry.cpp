@@ -1,22 +1,19 @@
 #include "CSpellEntry.h"
 
-SpellData* CSpellEntry::GetSpellData() {
+SpellInfo* CSpellEntry::GetSpellInfo() {
 	auto retaddr = *(DWORD*)(this + 0x8);
 	if (retaddr == NULL)
 		return NULL;
-	auto ret = *(DWORD*)(retaddr + 0x38);
-	if (ret == NULL)
-		return NULL;
-	return (SpellData*)(ret);
+	return (SpellInfo*)(retaddr);
 }
 
-bool CSpellEntry::isAutoAttack() {
+bool CSpellEntry::IsBasicAttack() {
 	return *(bool*)((DWORD)this + 0xBC);
 
 }
 
-int CSpellEntry::targetID() {
-	return *(int*)((DWORD)this + 0xC0);
+int CSpellEntry::GetTargetIndex() {
+	return *(int*)((DWORD)this + 0xc0);
 }
 
 Vector CSpellEntry::GetStartPos() {

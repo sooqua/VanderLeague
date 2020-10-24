@@ -116,6 +116,8 @@ public:
 	float GetDistanceToMe();
 	float GetTrueAttackRange();
 	float GetMoveSpeed();
+	float GetMana();
+	float GetMaxMana();
 
 	BuffManager* GetBuffMgr();
 
