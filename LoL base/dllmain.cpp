@@ -47,7 +47,9 @@ bool g_menu_opened = false;
 bool g_range = false;
 bool g_unload = false;
 bool g_2range_objmanager = false;
-bool g_champ_info = false;
+bool g_champ_info = true;
+bool g_turret_range = true;
+bool g_auto_evade = true;
 bool OnStartMessage = false;
 
 bool g_interface = false;
@@ -86,9 +88,11 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 				{
 					ImGui::BeginChild("##child", ImVec2(450.0f, 450.0f), false, ImGuiWindowFlags_NoSavedSettings);
 					{
-						ImGui::Checkbox("My range demostration", &g_range);
-						ImGui::Checkbox("All hero range demostration", &g_2range_objmanager);
-						ImGui::Checkbox("Text champ info demostration", &g_champ_info);
+						ImGui::Checkbox("Auto evade", &g_auto_evade);
+						ImGui::Checkbox("My range", &g_range);
+						ImGui::Checkbox("All hero range", &g_2range_objmanager);
+						ImGui::Checkbox("Text champ info", &g_champ_info);
+						ImGui::Checkbox("Turret range", &g_turret_range);
 					}
 					ImGui::EndChild();
 				}
@@ -104,8 +108,10 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	bool noAction = false;
 
 	//evader
-	if (localObj && localObj->IsAlive()) {
-		noAction = evader.drawEvent();
+	if (g_auto_evade == true) {
+		if (localObj && localObj->IsAlive()) {
+			noAction = evader.drawEvent();
+		}
 	}
 
 	//orbwalker
@@ -116,27 +122,26 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	}
 
 	//me Range
-	if (g_range == true && localObj && localObj->IsAlive()) {
-		auto color = createRGB(0, 255, 0);
-		Functions.DrawCircle(&Engine::GetLocalObject()->GetPos(), Engine::GetLocalObject()->GetAttackRange() + Engine::GetLocalObject()->GetBoundingRadius(), &color, 0, 0.0f, 0, 0.5f);
+	if (g_range == true) {
+		if (localObj && localObj->IsAlive()) {
+			auto color = createRGB(0, 255, 0);
+			Functions.DrawCircle(&Engine::GetLocalObject()->GetPos(), Engine::GetLocalObject()->GetAttackRange() + Engine::GetLocalObject()->GetBoundingRadius(), &color, 0, 0.0f, 0, 0.5f);
+		}
 	}
 
-	//draw range all hero
-	if (g_2range_objmanager == true) {
-		for (auto pObject : CycleManager::GetObjects())
-		{
+	for (auto pObject : CycleManager::GetObjects())
+	{
+		//draw range all hero
+		if (g_2range_objmanager == true) {
 			if (pObject->IsHero())
 			{
 				auto color = createRGB(255, 0, 0);
 				Functions.DrawCircle(&pObject->GetPos(), pObject->GetAttackRange(), &color, 0, 0.0f, 0, 0.5f);
 			}
 		}
-	}
 
-	//champion info demonstration
-	if (g_champ_info == true) {
-		for (auto pObject : CycleManager::GetObjects())
-		{
+		//champion info demonstration
+		if (g_champ_info == true) {
 			if (pObject->IsHero())
 			{
 				Vector obj_pos = pObject->GetPos();
@@ -149,14 +154,18 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 				auto spellW = objSpellBook->GetSpellByID(static_cast<int>(ESpellSlot::W));
 				auto spellE = objSpellBook->GetSpellByID(static_cast<int>(ESpellSlot::E));
 				auto spellR = objSpellBook->GetSpellByID(static_cast<int>(ESpellSlot::R));
-				 
+
 				//render.draw_text(objpos_w2s.X, objpos_w2s.Y + 15, pObject->GetChampionName(), true, ImColor(255, 0, 0, 255));
 				render.draw_text(objpos_w2s.X, objpos_w2s.Y + 30, "[Q]", true, spellQ->IsSpellReady() ? ImColor(0, 255, 0, 255) : ImColor(255, 255, 255, 255));
 				render.draw_text(objpos_w2s.X + 20, objpos_w2s.Y + 30, "[W]", true, spellW->IsSpellReady() ? ImColor(0, 255, 0, 255) : ImColor(255, 255, 255, 255));
 				render.draw_text(objpos_w2s.X + 40, objpos_w2s.Y + 30, "[E]", true, spellE->IsSpellReady() ? ImColor(0, 255, 0, 255) : ImColor(255, 255, 255, 255));
 				render.draw_text(objpos_w2s.X + 60, objpos_w2s.Y + 30, "[R]", true, spellR->IsSpellReady() ? ImColor(0, 255, 0, 255) : ImColor(255, 255, 255, 255));
 			}
-			else if (pObject->IsTurret() && pObject->IsEnemyTo(localObj)) {
+		}
+
+		//turret range
+		if (g_turret_range == true) {
+			if (pObject->IsTurret() && pObject->IsEnemyTo(localObj)) {
 				static auto turretRange = 850.f;
 				if (pObject->GetDistanceToMe() < (turretRange + 300.f)) {
 					auto color = createRGB(255, 255, 255);
