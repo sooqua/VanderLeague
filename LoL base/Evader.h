@@ -17,5 +17,5 @@ public:
 	}
 
 public:
-	bool CEvader::drawEvent();
+	void CEvader::drawEvent();
 };

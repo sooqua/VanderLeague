@@ -43,8 +43,6 @@ public:
 
 	Vector Calculate(CObject* target, float range, float missilespeed, float casttime);
 
-	Vector Predict(CObject* target, float range, float missilespeed, float casttime);
-
 	~LinePrediction()
 	{
 	}

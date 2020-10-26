@@ -9,7 +9,7 @@
 #include <thread>
 #include <chrono>
 
-static void ResetMouse(int x, int y)
+void Autokey::ResetMouse(int x, int y)
 {
 	double fScreenWidth = static_cast<double>(GetSystemMetrics(SM_CXSCREEN)) - 1.0;
 	double fScreenHeight = static_cast<double>(GetSystemMetrics(SM_CYSCREEN)) - 1.0;

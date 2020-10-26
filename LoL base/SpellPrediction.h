@@ -14,18 +14,11 @@ class SpellPrediction {
 public:
 	Vector PredictSkillshot(CObject* target, ESpellSlot slot) {
 		auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(static_cast<int>(slot));
+		if (!spell->IsSpellReady()) return Vector(0.f, 0.f, 0.f);
 		auto spellData = spell->GetSpellInfo()->GetSpellData();
-		
-		//float timeToTravel = (target->GetPos() - Engine::GetLocalObject()->GetPos()).length() / spellData->GetMissileSpeed();
-		//Vector vec1 = target->GetAIManager()->GetVelocity().Normalize() * target->GetMoveSpeed() * timeToTravel;
-	 	//auto vec = target->GetPos() + vec1;
 
 		static LinePrediction linePrediction;
 		auto vec = linePrediction.Calculate(target, spellData->GetSpellRange(), spellData->GetMissileSpeed(), 0.f);
-
-		if (!(vec == Vector(0.f, 0.f, 0.f))) {
-			Autokey::MoveMouse(vec);
-		}
 
 		return vec;
 	}

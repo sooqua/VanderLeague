@@ -38,5 +38,5 @@
 #define VK_KEY_Z 0x5A
 
 bool IsKeyDown(int vKey) {
-	return (GetAsyncKeyState(VK_LSHIFT) & (1 << 15)) != 0;
+	return (GetAsyncKeyState(vKey) & (1 << 15)) != 0;
 }

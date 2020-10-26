@@ -4,7 +4,6 @@
 #include "detours.h"
 #include "ImRender.hpp"
 
-#include "SpellPrediction.h"
 #include "Autoupdater.h"
 #include "Orbwalker.h"
 #include "Evader.h"
@@ -13,11 +12,13 @@
 #include "CycleManager.h"
 #include "ESpellSlot.h"
 #include "Keyboard.h"
+#include "SpellPrediction.h"
 
 #include "Debug.h"
 
 #include <Windows.h>
 #include <mutex>
+#include <algorithm>
 
 #ifdef _DEBUG
 #include "CConsole.h"
@@ -55,11 +56,11 @@ bool g_champ_info = true;
 bool g_turret_range = true;
 bool g_auto_evade = true;
 bool g_zoom_hack = true;
+bool g_spell_prediction = true;
 bool OnStartMessage = false;
 
 bool g_interface = false;
 IDirect3DDevice9* myDevice;
-clock_t lastmove = NULL;
 using namespace std;
 typedef HRESULT(WINAPI* Prototype_Present)(LPDIRECT3DDEVICE9, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*);
 Prototype_Present Original_Present;
@@ -94,6 +95,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 					{
 						ImGui::Checkbox("Auto evade", &g_auto_evade);
 						ImGui::Checkbox("Zoom hack", &g_zoom_hack);
+						ImGui::Checkbox("Spell prediction", &g_spell_prediction);
 						ImGui::Checkbox("My range", &g_range);
 						ImGui::Checkbox("All hero range", &g_2range_objmanager);
 						ImGui::Checkbox("Text champ info", &g_champ_info);
@@ -110,17 +112,15 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 	auto localObj = Engine::GetLocalObject();
 
-	bool noAction = false;
-
 	//evader
 	if (g_auto_evade == true) {
 		if (localObj && localObj->IsAlive() && Engine::IsLeagueInForeground()) {
-			noAction = evader.drawEvent();
+			evader.drawEvent();
 		}
 	}
 
 	//orbwalker
-	if (!noAction && localObj && localObj->IsAlive()) {
+	if (localObj && localObj->IsAlive()) {
 		if (IsKeyDown(VK_KEY_C) && Engine::IsLeagueInForeground()) {
 			orbWalker.drawEvent();
 		}
@@ -128,7 +128,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 	//me Range
 	if (g_range == true) {
-		if (localObj && localObj->IsAlive()) {
+		if (localObj && localObj->IsAlive()) { 
 			auto color = createRGB(0, 255, 0);
 			Functions.DrawCircle(&Engine::GetLocalObject()->GetPos(), Engine::GetLocalObject()->GetAttackRange() + Engine::GetLocalObject()->GetBoundingRadius(), &color, 0, 0.0f, 0, 0.5f);
 		}
@@ -359,27 +359,46 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 		case VK_KEY_E:
 		case VK_KEY_R: {
 			//Spell Prediction
-			ESpellSlot slot{};
-			switch (w_param) {
-			case VK_KEY_Q:
-				slot = ESpellSlot::Q;
-				break;
-			case VK_KEY_W:
-				slot = ESpellSlot::W;
-				break;
-			case VK_KEY_E:
-				slot = ESpellSlot::E;
-				break;
-			case VK_KEY_R:
-				slot = ESpellSlot::R;
-				break;
-			default:
-				break;
-			}
-			if (IsKeyDown(VK_LSHIFT)) {
-				for (auto pObject : CycleManager::GetObjects()) {
-					if (pObject->IsHero() && pObject->IsEnemyTo(Engine::GetLocalObject())) {
-						spellPrediction.PredictSkillshot(pObject, slot);
+			if (g_spell_prediction) {
+				ESpellSlot slot{};
+				switch (w_param) {
+				case VK_KEY_Q:
+					slot = ESpellSlot::Q;
+					break;
+				case VK_KEY_W:
+					slot = ESpellSlot::W;
+					break;
+				case VK_KEY_E:
+					slot = ESpellSlot::E;
+					break;
+				case VK_KEY_R:
+					slot = ESpellSlot::R;
+					break;
+				default:
+					break;
+				}
+				if (IsKeyDown(VK_LSHIFT)) {
+					static std::vector<CObject*> possibleTargets;
+					for (auto pObject : CycleManager::GetObjects()) {
+						if (pObject->IsHero() && pObject->IsEnemyTo(Engine::GetLocalObject())) {
+							possibleTargets.push_back(pObject);
+						}
+					}
+					if (possibleTargets.size() > 1)
+					{
+						std::sort(possibleTargets.begin(), possibleTargets.end(),
+							[](CObject* pFirst, CObject* pSecond)
+							{
+								return (pFirst->GetDistanceToMe() < pSecond->GetDistanceToMe());
+							});
+						auto vec = spellPrediction.PredictSkillshot(possibleTargets.front(), slot);
+						if (!(vec == Vector(0.f, 0.f, 0.f))) {
+							POINT previousMousePos;
+							GetCursorPos(&previousMousePos);
+							CycleManager::SetPreviousMousePos(previousMousePos);
+							Autokey::MoveMouse(vec);
+							CycleManager::ResetMouseAtNextCycle();
+						}
 					}
 				}
 			}

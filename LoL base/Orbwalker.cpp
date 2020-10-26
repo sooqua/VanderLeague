@@ -73,6 +73,7 @@ void COrbWalker::tryFindTarget()
 
 void COrbWalker::drawEvent()
 {
+	if (CycleManager::GetBlockAllActions()) return;
 	CObject* pLocal = Engine::GetLocalObject();
 
 	tryFindTarget();
@@ -83,7 +84,11 @@ void COrbWalker::drawEvent()
 		if ((int)(Engine::GetGameTime() * 1000) >= (m_nLastAttackCmdTick + nTicksTilAttack))
 		{
 			if (useAutokey) {
+				POINT previousMousePos;
+				GetCursorPos(&previousMousePos);
+				CycleManager::SetPreviousMousePos(previousMousePos);
 				Autokey::MoveMouse(m_pTarget->GetPos());
+				CycleManager::ResetMouseAtNextCycle();
 				Autokey::Click();
 			}
 			else {

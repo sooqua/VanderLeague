@@ -26,9 +26,8 @@ Vector clamp_norm_2d(Vector v, float n_max) {
 	return Vector(f * vx, vy, f * vz);
 }
 
-bool CEvader::drawEvent() {
-	bool noAction = false;
-
+void CEvader::drawEvent() {
+	if (CycleManager::GetBlockAllActions()) return;
 	for (auto pObject : CycleManager::GetObjects())
 	{
 		if (pObject->IsMissile())
@@ -54,7 +53,7 @@ bool CEvader::drawEvent() {
 					D3DXVECTOR2(end_pos_w2s.X, end_pos_w2s.Y),
 					D3DXVECTOR2(localObjPos_w2s.X, localObjPos_w2s.Y), static_cast<double>(br)))
 				{
-					noAction = true;
+					CycleManager::SetBlockAllActions(true);
 
 					render.draw_line(start_pos_w2s.X, start_pos_w2s.Y, end_pos_w2s.X, end_pos_w2s.Y, ImColor(255, 255, 255), 5.0f);
 
@@ -82,7 +81,11 @@ bool CEvader::drawEvent() {
 						std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
 							std::chrono::system_clock::now().time_since_epoch());
 						if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
+							POINT previousMousePos;
+							GetCursorPos(&previousMousePos);
+							CycleManager::SetPreviousMousePos(previousMousePos);
 							Autokey::MoveMouse(evadePos);
+							CycleManager::ResetMouseAtNextCycle();
 							Autokey::Click();
 							m_lastMoveClickTime = now;
 						}
@@ -97,6 +100,4 @@ bool CEvader::drawEvent() {
 			}
 		}
 	}
-
-	return noAction;
 }
