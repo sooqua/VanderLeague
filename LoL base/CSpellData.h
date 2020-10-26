@@ -30,4 +30,6 @@ public:
 	float GetMissileSpeed();
 	float GetMaxCooldown();
 	short GetCasterIndex();
+	float GetSpellRange();
+	float GetSpellRadius();
 };

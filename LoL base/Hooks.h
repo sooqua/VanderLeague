@@ -24,7 +24,7 @@ public:
 	typedef float(__cdecl* fnGetAttackDelay)(CObject* pObj);
 	typedef bool(__thiscall* fnIsAlive)(CObject* pObj);
 	typedef bool(__thiscall* fnIsTargetable)(CObject* pObj);
-	typedef int(__thiscall* fnGetPing)(void* thisptr);
+	typedef bool(__thiscall* fnGetPing)(CObject* pObj);
 
 
 

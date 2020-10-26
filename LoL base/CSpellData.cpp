@@ -92,3 +92,13 @@ float CSpellData::GetMaxCooldown()
 short CSpellData::GetCasterIndex() {
 	return *(short*)((DWORD)this + offsets::cobject::oObjSourceIndex);
 }
+
+float CSpellData::GetSpellRange()
+{
+	return *(float*)((DWORD)this + 0x398);
+}
+
+float CSpellData::GetSpellRadius()
+{
+	return *(float*)((DWORD)this + 0x458);
+}

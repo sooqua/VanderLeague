@@ -189,7 +189,8 @@ BuffManager* CObject::GetBuffMgr() {
 
 AIManager* CObject::GetAIManager() {
 	typedef AIManager* (__thiscall* OriginalFn)(PVOID);
-	return CallVirtual<OriginalFn>(this, 147)(this);
+	return CallVirtual<OriginalFn>(this, 150)(this);
+	//return (AIManager*)((DWORD)this + offsets::cobject::oObjAIManager);
 }
 
 CSpellBook* CObject::GetSpellBook() {

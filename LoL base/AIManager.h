@@ -9,13 +9,13 @@
 class AIManager
 {
 public:
-	DWORD getStart();
+	Vector* GetNavBegin();
 
-	DWORD getEnd();
+	Vector* GetNavEnd();
 
 	Vector GetVelocity();
 
 	bool IsMoving();
 
-	std::vector<Vector*> getPathList();
+	//std::vector<Vector*> GetPathList();
 };

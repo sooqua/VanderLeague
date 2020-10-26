@@ -5,6 +5,8 @@
 #include "Hooks.h"
 #include "CObjectManager.h"
 
+#include "Debug.h"
+
 class Engine {
 public:
 	static float GetGameTime()
@@ -19,7 +21,7 @@ public:
 
 	static int GetPing()
 	{
-		return Functions.GetPing(*(void**)(baseAddr + offsets::global::oNetClient));
+		return Functions.GetPing(*(CObject**)(baseAddr + offsets::global::oNetClient));
 	}
 
 	static int GetLatencyTicks(int extraTicks = 50) {

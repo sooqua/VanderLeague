@@ -12,6 +12,11 @@ struct Vector
 		X = x; Y = y; Z = z;
 	}
 
+	inline bool operator == (const Vector& A) const
+	{
+		return A.X == X && A.Y == Y && A.Z == Z;
+	}
+
 	inline Vector operator + (const Vector& A) const
 	{
 		return Vector(X + A.X, Y + A.Y, Z + A.Z);
@@ -88,5 +93,9 @@ struct Vector
 	inline float DistTo(const Vector& A) {
 		float out = sqrtf(powf(X - A.X, 2) + powf(Y - A.Y, 2) + powf(Z - A.Z, 2));
 		return out < 0 ? out * -1 : out;
+	}
+
+	inline Vector switchYZ() {
+		return Vector(this->X, this->Z, this->Y);
 	}
 };

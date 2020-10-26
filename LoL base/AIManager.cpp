@@ -1,11 +1,11 @@
 #include "AIManager.h"
 
-DWORD AIManager::getStart() {
-	return *(DWORD*)offsets::aimgr::oAIMGR_NavBegin;
+Vector* AIManager::GetNavBegin() {
+	return *(Vector**)((DWORD)this + offsets::aimgr::oAIMGR_NavBegin);
 }
 
-DWORD AIManager::getEnd() {
-	return *(DWORD*)offsets::aimgr::oAIMGR_NavEnd;
+Vector* AIManager::GetNavEnd() {
+	return (Vector*)((DWORD)this + offsets::aimgr::oAIMGR_NavEnd);
 }
 
 Vector AIManager::GetVelocity() {
@@ -16,16 +16,16 @@ bool AIManager::IsMoving() {
 	return *(bool*)((DWORD)this + offsets::aimgr::oAIMGR_IsMoving);
 }
 
-std::vector<Vector*> AIManager::getPathList() {
-	std::vector<Vector*> test;
-	for (DWORD pBuffPtr = this->getStart(); pBuffPtr != this->getEnd(); pBuffPtr += 0x8)
-	{
-		auto pBuff = *(Vector**)pBuffPtr;
-		if (!pBuff) continue;
-		if (pBuff) {
-			test.push_back(pBuff);
-		}
-
-	}
-	return test;
-}
+//std::vector<Vector*> AIManager::GetPathList() {
+//	std::vector<Vector*> test;
+//	for (DWORD pBuffPtr = this->GetNavBegin(); pBuffPtr != this->GetNavEnd(); pBuffPtr += 0x8)
+//	{
+//		auto pBuff = *(Vector**)pBuffPtr;
+//		if (!pBuff) continue;
+//		if (pBuff) {
+//			test.push_back(pBuff);
+//		}
+//
+//	}
+//	return test;
+//}

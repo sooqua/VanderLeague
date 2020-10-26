@@ -4,6 +4,7 @@
 #include "detours.h"
 #include "ImRender.hpp"
 
+#include "SpellPrediction.h"
 #include "Autoupdater.h"
 #include "Orbwalker.h"
 #include "Evader.h"
@@ -11,6 +12,7 @@
 #include "Prediction.h"
 #include "CycleManager.h"
 #include "ESpellSlot.h"
+#include "Keyboard.h"
 
 #include "Debug.h"
 
@@ -40,6 +42,7 @@ Autoupdater autoUpdater;
 Prediction prediction;
 COrbWalker orbWalker;
 CEvader evader;
+SpellPrediction spellPrediction;
 
 HMODULE g_module = nullptr;
 HWND g_hwnd = nullptr;
@@ -111,14 +114,14 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 	//evader
 	if (g_auto_evade == true) {
-		if (localObj && localObj->IsAlive()) {
+		if (localObj && localObj->IsAlive() && Engine::IsLeagueInForeground()) {
 			noAction = evader.drawEvent();
 		}
 	}
 
 	//orbwalker
 	if (!noAction && localObj && localObj->IsAlive()) {
-		if ((GetAsyncKeyState(0x58 /* X key */) & (1 << 15)) != 0) {
+		if (IsKeyDown(VK_KEY_C) && Engine::IsLeagueInForeground()) {
 			orbWalker.drawEvent();
 		}
 	}
@@ -250,13 +253,15 @@ void __stdcall Start() {
 	Functions.IsInhibitor = (Typedefs::fnIsInhibitor)(baseAddr + offsets::functions::oIsInhib);
 	Functions.IsTroyEnt = (Typedefs::fnIsTroyEnt)(baseAddr + offsets::functions::oIsTroy);
 
-	//Functions.CastSpell = (Typedefs::fnCastSpell)((DWORD)GetModuleHandle(NULL) + oCastSpell);
+	Functions.CastSpell = (Typedefs::fnCastSpell)((DWORD)GetModuleHandle(NULL) + offsets::functions::oCastSpell);
 	Functions.IssueOrder = (Typedefs::fnIssueOrder)((DWORD)GetModuleHandle(NULL) + offsets::functions::oIssueOrder);
 	Functions.DrawCircle = (Typedefs::fnDrawCircle)((DWORD)GetModuleHandle(NULL) + offsets::functions::oDrawCircle);
 	Functions.WorldToScreen = (Typedefs::fnWorldToScreen)(baseAddr + (DWORD)offsets::global::oWorldToScreen);
 
 	Functions.GetAttackCastDelay = (Typedefs::fnGetAttackCastDelay)((DWORD)GetModuleHandle(NULL) + offsets::functions::oGetAttackCastDelay);
 	Functions.GetAttackDelay = (Typedefs::fnGetAttackDelay)((DWORD)GetModuleHandle(NULL) + offsets::functions::oGetAttackDelay);
+
+	Functions.GetPing = (Typedefs::fnGetPing)((DWORD)GetModuleHandle(NULL) + offsets::functions::oGetPing);
 
 	Original_Present = (Prototype_Present)DetourFunction((PBYTE)GetDeviceAddress(17), (PBYTE)Hooked_Present);
 	Original_Reset = (Prototype_Reset)DetourFunction((PBYTE)GetDeviceAddress(16), (PBYTE)Hooked_Reset);
@@ -343,10 +348,48 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 {
 	switch (u_msg)
 	{
-	case WM_KEYDOWN:
-		if (w_param == VK_END)
+	case WM_KEYDOWN: {
+		switch (w_param) {
+		case VK_END: {
 			g_menu_opened = !g_menu_opened;
+			break;
+		}
+		case VK_KEY_Q:
+		case VK_KEY_W:
+		case VK_KEY_E:
+		case VK_KEY_R: {
+			//Spell Prediction
+			ESpellSlot slot{};
+			switch (w_param) {
+			case VK_KEY_Q:
+				slot = ESpellSlot::Q;
+				break;
+			case VK_KEY_W:
+				slot = ESpellSlot::W;
+				break;
+			case VK_KEY_E:
+				slot = ESpellSlot::E;
+				break;
+			case VK_KEY_R:
+				slot = ESpellSlot::R;
+				break;
+			default:
+				break;
+			}
+			if (IsKeyDown(VK_LSHIFT)) {
+				for (auto pObject : CycleManager::GetObjects()) {
+					if (pObject->IsHero() && pObject->IsEnemyTo(Engine::GetLocalObject())) {
+						spellPrediction.PredictSkillshot(pObject, slot);
+					}
+				}
+			}
+			break;
+		}
+		default:
+			break;
+		};
 		break;
+	}
 	case WM_MOUSEWHEEL: {
 		//Zoom hack
 		if (g_zoom_hack) {
@@ -365,10 +408,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 	return CallWindowProcA(g_wndproc, hwnd, u_msg, w_param, l_param);
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-)
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
 	if (hModule != nullptr)
 		DisableThreadLibraryCalls(hModule);

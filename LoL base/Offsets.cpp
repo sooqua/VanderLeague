@@ -57,6 +57,7 @@ namespace offsets {
 		uint32_t oObjSpellBook = 0x2720;
 		uint32_t oObjChampionName = 0x314C;
 		uint32_t oObjLevel = 0x36BC;
+		uint32_t oObjAIManager = 0x3030;
 
 		uint32_t oMissileSpellInfo = 0x230;
 		uint32_t oMissileSourceIndex = 0x290;
@@ -111,9 +112,9 @@ namespace offsets {
 		uint32_t oAIMGR_IsMoving = 0x198;
 		uint32_t oAIMGR_IsDashing = 0x1E8;
 		uint32_t oAIMGR_NavBegin = 0x1BC;
-		uint32_t oAIMGR_NavEnd = 0x1C0;
+		uint32_t oAIMGR_NavEnd = 0x1FC;
 		uint32_t oAIMGR_CurrentPos = 0x2B4;
-		uint32_t oAIMGR_Velocity = 0x2C0;
+		uint32_t oAIMGR_Velocity = 0x2C8;
 	};
 
 	/*namespace ai_base {

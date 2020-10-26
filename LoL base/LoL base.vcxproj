@@ -182,11 +182,13 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="imgui\win32\imgui_impl_win32.h" />
     <ClInclude Include="ImRender.hpp" />
+    <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Offsets.h" />
     <ClInclude Include="Orbwalker.h" />
     <ClInclude Include="Prediction.h" />
     <ClInclude Include="SpellData.h" />
     <ClInclude Include="SpellInfo.h" />
+    <ClInclude Include="SpellPrediction.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Utils.h" />

@@ -27,5 +27,5 @@ int CSpell::GetCharges() {
 }
 
 CSpellInfo* CSpell::GetSpellInfo() {
-	return (CSpellInfo*)((DWORD)this + 0x134);
+	return *(CSpellInfo**)((DWORD)this + 0x134);
 }

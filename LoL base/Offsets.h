@@ -59,6 +59,7 @@ namespace offsets {
 		extern uint32_t oObjSpellBook;
 		extern uint32_t oObjChampionName;
 		extern uint32_t oObjLevel;
+		extern uint32_t oObjAIManager;
 
 		extern uint32_t oMissileSpellInfo;
 		extern uint32_t oMissileSourceIndex;
