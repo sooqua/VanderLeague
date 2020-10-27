@@ -71,6 +71,42 @@ void COrbWalker::tryFindTarget()
 	possibleTargets.clear();
 }
 
+CObject* COrbWalker::GetNearestToMouseMinion(float maxRadius) {
+	auto pLocal = Engine::GetLocalObject();
+	auto objects = CycleManager::GetObjects();
+	static auto newObjects = *new std::vector<CObject*>();
+	newObjects.clear();
+
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+
+	for (auto pObject : objects) {
+		if (pObject != nullptr)
+		{
+			if (pObject->IsEnemyTo(pLocal) && pObject->IsMinion() && pObject->IsAlive()
+				&& pObject->IsTargetable() && pObject->IsVisible() && !pObject->IsInvalidObject())
+			{
+				Vector objPos_w2s;
+				Functions.WorldToScreen(&pObject->GetPos(), &objPos_w2s);
+				if (calculate2dDistance(objPos_w2s.X, objPos_w2s.Y, mousePos.x, mousePos.y) < maxRadius) {
+					newObjects.push_back(pObject);
+				}
+			}
+		}
+	}
+	if (newObjects.empty()) {
+		return nullptr;
+	}
+	if (newObjects.size() > 1) {
+		std::sort(newObjects.begin(), newObjects.end(),
+			[](CObject* pFirst, CObject* pSecond)
+			{
+				return (pFirst->GetDistanceToMe() < pSecond->GetDistanceToMe());
+			});
+	}
+	return newObjects.front();
+}
+
 void COrbWalker::drawEvent()
 {
 	if (CycleManager::GetBlockAllActions()) return;
@@ -110,7 +146,10 @@ void COrbWalker::drawEvent()
 						std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
 							std::chrono::system_clock::now().time_since_epoch());
 						if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
-							Autokey::Click();
+							auto nearestToMouseMinion = GetNearestToMouseMinion(Engine::GetLocalObject()->GetBoundingRadius());
+							if (!nearestToMouseMinion) {
+								Autokey::Click();
+							}
 							m_lastMoveClickTime = now;
 						}
 					}
@@ -134,7 +173,10 @@ void COrbWalker::drawEvent()
 					std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
 						std::chrono::system_clock::now().time_since_epoch());
 					if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
-						Autokey::Click();
+						auto nearestToMouseMinion = GetNearestToMouseMinion(Engine::GetLocalObject()->GetBoundingRadius());
+						if (!nearestToMouseMinion) {
+							Autokey::Click();
+						}
 						m_lastMoveClickTime = now;
 					}
 				}

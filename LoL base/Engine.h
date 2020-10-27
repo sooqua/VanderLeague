@@ -4,8 +4,11 @@
 #include "Vector.h"
 #include "Hooks.h"
 #include "CObjectManager.h"
+#include "CycleManager.h"
 
 #include "Debug.h"
+
+#include <algorithm>
 
 class Engine {
 public:
@@ -60,6 +63,10 @@ public:
 		typedef void(__thiscall* tPrintChat)(DWORD ChatClient, const char* Message, int Color);
 		tPrintChat fnPrintChat = (tPrintChat)(baseAddr + offsets::functions::oPrintChat);
 		fnPrintChat(*(DWORD*)(baseAddr + offsets::global::oChatClientPtr), Message, 1);
+	}
+
+	static CObject* GetUnderMouseObject() {
+		return *(CObject**)(baseAddr + offsets::global::oUnderMouseObject);
 	}
 
 	static CObject* Engine::GetObjectByID(int ID)

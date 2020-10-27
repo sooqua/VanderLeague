@@ -1,5 +1,7 @@
 #include "Utils.h"
 
+#include <math.h>
+
 char* stristr(const char* str1, const char* str2)
 {
     const char* p1 = str1;
@@ -40,4 +42,11 @@ char* stristr(const char* str1, const char* str2)
     }
 
     return *p2 == 0 ? (char*)r : 0;
+}
+
+float calculate2dDistance(float x1, float y1, float x2, float y2)
+{
+    float diffY = y1 - y2;
+    float diffX = x1 - x2;
+    return sqrt((diffY * diffY) + (diffX * diffX));
 }

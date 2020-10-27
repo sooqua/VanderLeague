@@ -36,3 +36,5 @@ inline int createRGB(int r, int g, int b)
 }
 
 char* stristr(const char* str1, const char* str2);
+
+float calculate2dDistance(float x1, float y1, float x2, float y2);
