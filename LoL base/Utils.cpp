@@ -48,5 +48,5 @@ float calculate2dDistance(float x1, float y1, float x2, float y2)
 {
     float diffY = y1 - y2;
     float diffX = x1 - x2;
-    return sqrt((diffY * diffY) + (diffX * diffX));
+    return sqrt((static_cast<double>(diffY) * diffY) + (static_cast<double>(diffX) * diffX));
 }

@@ -64,6 +64,7 @@ bool g_spell_prediction = true;
 
 bool g_bInit = false;
 
+DWORD g_BaseAddr;
 bool g_interface = false;
 IDirect3DDevice9* myDevice;
 using namespace std;
@@ -236,9 +237,30 @@ DWORD GetDeviceAddress(int VTableIndex)
 	return VTable[VTableIndex];
 }
 
+void __cdecl spoofedDrawCircle(Vector* position, float range, int* color, int a4, float a5, int a6, float alpha) {
+	DWORD retnInstruction = g_BaseAddr + offsets::global::oDrawCircleRetAddr;
+	DWORD originalAddress = g_BaseAddr + offsets::functions::oDrawCircle;
+	void* localObj = Engine::GetLocalObject();
+	__asm {
+		push retnHere
+		push alpha
+		push a6
+		push a5
+		push a4
+		push color
+		push range
+		push position
+		push retnInstruction
+		jmp originalAddress
+	retnHere:
+	}
+}
+
 LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param);
 typedef long(__stdcall* tEndScene)(LPDIRECT3DDEVICE9);
 void __stdcall Start() {
+	g_BaseAddr = (DWORD)GetModuleHandle(NULL);
+
 	debug::init();
 	autoUpdater.Start();
 
@@ -252,29 +274,29 @@ void __stdcall Start() {
 	g_hwnd = FindWindowA(nullptr, "League of Legends (TM) Client");
 	g_wndproc = WNDPROC(SetWindowLongA(g_hwnd, GWL_WNDPROC, LONG_PTR(WndProc)));
 
-	ObjManager = (CObjectManager*)(*(DWORD*)(baseAddr + offsets::global::oObjManager));
+	ObjManager = (CObjectManager*)(*(DWORD*)(g_BaseAddr + offsets::global::oObjManager));
 
-	Functions.PrintChat = (Typedefs::fnPrintChat)(baseAddr + offsets::functions::oPrintChat);
-	Functions.IsTargetable = (Typedefs::fnIsTargetable)(baseAddr + offsets::functions::oIsTargetable);
-	Functions.IsAlive = (Typedefs::fnIsAlive)(baseAddr + offsets::functions::oIsAlive);
+	Functions.PrintChat = (Typedefs::fnPrintChat)(g_BaseAddr + offsets::functions::oPrintChat);
+	Functions.IsTargetable = (Typedefs::fnIsTargetable)(g_BaseAddr + offsets::functions::oIsTargetable);
+	Functions.IsAlive = (Typedefs::fnIsAlive)(g_BaseAddr + offsets::functions::oIsAlive);
 
-	Functions.IsMinion = (Typedefs::fnIsMinion)(baseAddr + offsets::functions::oIsMinion);
-	Functions.IsTurret = (Typedefs::fnIsTurret)(baseAddr + offsets::functions::oIsTurret);
-	Functions.IsHero = (Typedefs::fnIsHero)(baseAddr + offsets::functions::oIsHero);
-	Functions.IsMissile = (Typedefs::fnIsMissile)(baseAddr + offsets::functions::oIsMissile);
-	Functions.IsNexus = (Typedefs::fnIsNexus)(baseAddr + offsets::functions::oIsNexus);
-	Functions.IsInhibitor = (Typedefs::fnIsInhibitor)(baseAddr + offsets::functions::oIsInhib);
-	Functions.IsTroyEnt = (Typedefs::fnIsTroyEnt)(baseAddr + offsets::functions::oIsTroy);
+	Functions.IsMinion = (Typedefs::fnIsMinion)(g_BaseAddr + offsets::functions::oIsMinion);
+	Functions.IsTurret = (Typedefs::fnIsTurret)(g_BaseAddr + offsets::functions::oIsTurret);
+	Functions.IsHero = (Typedefs::fnIsHero)(g_BaseAddr + offsets::functions::oIsHero);
+	Functions.IsMissile = (Typedefs::fnIsMissile)(g_BaseAddr + offsets::functions::oIsMissile);
+	Functions.IsNexus = (Typedefs::fnIsNexus)(g_BaseAddr + offsets::functions::oIsNexus);
+	Functions.IsInhibitor = (Typedefs::fnIsInhibitor)(g_BaseAddr + offsets::functions::oIsInhib);
+	Functions.IsTroyEnt = (Typedefs::fnIsTroyEnt)(g_BaseAddr + offsets::functions::oIsTroy);
 
-	Functions.CastSpell = (Typedefs::fnCastSpell)((DWORD)GetModuleHandle(NULL) + offsets::functions::oCastSpell);
-	Functions.IssueOrder = (Typedefs::fnIssueOrder)((DWORD)GetModuleHandle(NULL) + offsets::functions::oIssueOrder);
-	Functions.DrawCircle = (Typedefs::fnDrawCircle)((DWORD)GetModuleHandle(NULL) + offsets::functions::oDrawCircle);
-	Functions.WorldToScreen = (Typedefs::fnWorldToScreen)(baseAddr + (DWORD)offsets::global::oWorldToScreen);
+	Functions.CastSpell = (Typedefs::fnCastSpell)(g_BaseAddr + offsets::functions::oCastSpell);
+	Functions.IssueOrder = (Typedefs::fnIssueOrder)(g_BaseAddr + offsets::functions::oIssueOrder);
+	Functions.DrawCircle = (Typedefs::fnDrawCircle)spoofedDrawCircle;
+	Functions.WorldToScreen = (Typedefs::fnWorldToScreen)(g_BaseAddr + (DWORD)offsets::global::oWorldToScreen);
 
-	Functions.GetAttackCastDelay = (Typedefs::fnGetAttackCastDelay)((DWORD)GetModuleHandle(NULL) + offsets::functions::oGetAttackCastDelay);
-	Functions.GetAttackDelay = (Typedefs::fnGetAttackDelay)((DWORD)GetModuleHandle(NULL) + offsets::functions::oGetAttackDelay);
+	Functions.GetAttackCastDelay = (Typedefs::fnGetAttackCastDelay)(g_BaseAddr + offsets::functions::oGetAttackCastDelay);
+	Functions.GetAttackDelay = (Typedefs::fnGetAttackDelay)(g_BaseAddr + offsets::functions::oGetAttackDelay);
 
-	Functions.GetPing = (Typedefs::fnGetPing)((DWORD)GetModuleHandle(NULL) + offsets::functions::oGetPing);
+	Functions.GetPing = (Typedefs::fnGetPing)(g_BaseAddr + offsets::functions::oGetPing);
 
 	Original_Present = (Prototype_Present)DetourFunction((PBYTE)GetDeviceAddress(17), (PBYTE)Hooked_Present);
 	Original_Reset = (Prototype_Reset)DetourFunction((PBYTE)GetDeviceAddress(16), (PBYTE)Hooked_Reset);

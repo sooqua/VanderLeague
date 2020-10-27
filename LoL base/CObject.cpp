@@ -46,13 +46,13 @@ bool CObject::IsTargetable() {
 CObject* CObject::GetFirstObject()
 {
 	typedef CObject* (__thiscall* fnGetFirst)(void*);
-	return ((fnGetFirst)(baseAddr + offsets::global::oGetFirstObject))(*(void**)(baseAddr + offsets::global::oObjManager));
+	return ((fnGetFirst)(g_BaseAddr + offsets::global::oGetFirstObject))(*(void**)(g_BaseAddr + offsets::global::oObjManager));
 }
 
 CObject* CObject::GetNextObject(CObject* object)
 {
 	typedef CObject* (__thiscall* fnGetNext)(void*, CObject*);
-	return ((fnGetNext)(baseAddr + offsets::global::oGetNextObject))(*(void**)(baseAddr + offsets::global::oObjManager), object);
+	return ((fnGetNext)(g_BaseAddr + offsets::global::oGetNextObject))(*(void**)(g_BaseAddr + offsets::global::oObjManager), object);
 }
 
 short CObject::GetIndex() {

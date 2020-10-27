@@ -1,8 +1,6 @@
 #pragma once
 #include <Windows.h>
 
-#define baseAddr (DWORD)GetModuleHandle(NULL)
-
 #define STR_MERGE_IMPL(x, y)				x##y
 #define STR_MERGE(x,y)						STR_MERGE_IMPL(x,y)
 #define MAKE_PAD(size)						BYTE STR_MERGE(pad_, __COUNTER__) [ size ]
@@ -13,6 +11,8 @@
 #define OBJ_MINION  1
 #define OBJ_HERO    2
 #define OBJ_MISSILE 3
+
+extern DWORD g_BaseAddr;
 
 template< typename Function > Function CallVirtual(PVOID Base, DWORD Index)
 {

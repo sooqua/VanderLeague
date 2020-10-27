@@ -14,7 +14,7 @@ class Engine {
 public:
 	static float GetGameTime()
 	{
-		return *(float*)(baseAddr + offsets::global::oGameTime);
+		return *(float*)(g_BaseAddr + offsets::global::oGameTime);
 	}
 
 	/*static int GetGameTimeTickCount()
@@ -24,7 +24,7 @@ public:
 
 	static int GetPing()
 	{
-		return Functions.GetPing(*(CObject**)(baseAddr + offsets::global::oNetClient));
+		return Functions.GetPing(*(CObject**)(g_BaseAddr + offsets::global::oNetClient));
 	}
 
 	static int GetLatencyTicks(int extraTicks = 50) {
@@ -39,7 +39,7 @@ public:
 	}
 
 	static Vector GetMouseWorldPosition() {
-		DWORD MousePtr = baseAddr + offsets::global::oHudInstance;
+		DWORD MousePtr = g_BaseAddr + offsets::global::oHudInstance;
 		auto aux1 = *(DWORD*)MousePtr;
 		aux1 += 0x14;
 		auto aux2 = *(DWORD*)aux1;
@@ -53,7 +53,7 @@ public:
 	}
 
 	static CObject* GetLocalObject() {
-		auto retaddr = *(DWORD*)(baseAddr + offsets::global::oLocalPlayer);
+		auto retaddr = *(DWORD*)(g_BaseAddr + offsets::global::oLocalPlayer);
 		if (retaddr == NULL)
 			return NULL;
 
@@ -61,12 +61,12 @@ public:
 	}
 	static void PrintChat(const char* Message) {
 		typedef void(__thiscall* tPrintChat)(DWORD ChatClient, const char* Message, int Color);
-		tPrintChat fnPrintChat = (tPrintChat)(baseAddr + offsets::functions::oPrintChat);
-		fnPrintChat(*(DWORD*)(baseAddr + offsets::global::oChatClientPtr), Message, 1);
+		tPrintChat fnPrintChat = (tPrintChat)(g_BaseAddr + offsets::functions::oPrintChat);
+		fnPrintChat(*(DWORD*)(g_BaseAddr + offsets::global::oChatClientPtr), Message, 1);
 	}
 
 	static CObject* GetUnderMouseObject() {
-		return *(CObject**)(baseAddr + offsets::global::oUnderMouseObject);
+		return *(CObject**)(g_BaseAddr + offsets::global::oUnderMouseObject);
 	}
 
 	static CObject* Engine::GetObjectByID(int ID)
