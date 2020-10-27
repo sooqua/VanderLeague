@@ -131,7 +131,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	//orbwalker
 	if (g_orbwalker == true) {
 		if (localObj && localObj->IsAlive()) {
-			if (IsKeyDown(VK_KEY_C) && leagueInForeground) {
+			if (IsKeyDown(VK_SPACE) && leagueInForeground) {
 				orbWalker.drawEvent();
 			}
 		}
