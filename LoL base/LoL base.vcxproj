@@ -189,8 +189,6 @@
     <ClInclude Include="Prediction.h" />
     <ClInclude Include="Script.h" />
     <ClInclude Include="ScriptUtils.h" />
-    <ClInclude Include="SpellData.h" />
-    <ClInclude Include="SpellInfo.h" />
     <ClInclude Include="SpellPrediction.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -242,7 +240,6 @@
     <ClCompile Include="Orbwalker.cpp" />
     <ClCompile Include="Prediction.cpp" />
     <ClCompile Include="ScriptUtils.cpp" />
-    <ClCompile Include="SpellInfo.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="ZoomHack.cpp" />

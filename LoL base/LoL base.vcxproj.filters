@@ -149,12 +149,6 @@
     <ClInclude Include="Hooks.h">
       <Filter>Header\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="SpellData.h">
-      <Filter>Header\Spell</Filter>
-    </ClInclude>
-    <ClInclude Include="SpellInfo.h">
-      <Filter>Header\Spell</Filter>
-    </ClInclude>
     <ClInclude Include="CSpellBook.h">
       <Filter>Header\Spell</Filter>
     </ClInclude>
@@ -335,9 +329,6 @@
       <Filter>Source\Spell</Filter>
     </ClCompile>
     <ClCompile Include="CSpellEntry.cpp">
-      <Filter>Source\Spell</Filter>
-    </ClCompile>
-    <ClCompile Include="SpellInfo.cpp">
       <Filter>Source\Spell</Filter>
     </ClCompile>
     <ClCompile Include="CSpellCastInfo.cpp">

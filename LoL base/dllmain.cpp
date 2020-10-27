@@ -52,6 +52,7 @@ HMODULE g_module = nullptr;
 HWND g_hwnd = nullptr;
 WNDPROC g_wndproc = nullptr;
 bool g_menu_opened = false;
+bool g_orbwalker = true;
 bool g_range = false;
 bool g_unload = false;
 bool g_2range_objmanager = false;
@@ -60,6 +61,7 @@ bool g_turret_range = true;
 bool g_auto_evade = true;
 bool g_zoom_hack = true;
 bool g_spell_prediction = true;
+
 bool g_bInit = false;
 
 bool g_interface = false;
@@ -99,6 +101,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 				{
 					ImGui::BeginChild("##child", ImVec2(450.0f, 450.0f), false, ImGuiWindowFlags_NoSavedSettings);
 					{
+						ImGui::Checkbox("Orbwalker", &g_orbwalker);
 						ImGui::Checkbox("Auto evade", &g_auto_evade);
 						ImGui::Checkbox("Zoom hack", &g_zoom_hack);
 						ImGui::Checkbox("Spell prediction", &g_spell_prediction);
@@ -116,19 +119,23 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 	CycleManager::NewCycle();
 
+	auto leagueInForeground = Engine::IsLeagueInForeground();
+
 	auto localObj = Engine::GetLocalObject();
 
 	//evader
 	if (g_auto_evade == true) {
-		if (localObj && localObj->IsAlive() && Engine::IsLeagueInForeground()) {
+		if (localObj && localObj->IsAlive() && leagueInForeground) {
 			evader.drawEvent();
 		}
 	}
 
 	//orbwalker
-	if (localObj && localObj->IsAlive()) {
-		if (IsKeyDown(VK_KEY_C) && Engine::IsLeagueInForeground()) {
-			orbWalker.drawEvent();
+	if (g_orbwalker == true) {
+		if (localObj && localObj->IsAlive()) {
+			if (IsKeyDown(VK_KEY_C) && leagueInForeground) {
+				orbWalker.drawEvent();
+			}
 		}
 	}
 
@@ -136,7 +143,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	if (g_range == true) {
 		if (localObj && localObj->IsAlive()) { 
 			auto color = createRGB(0, 255, 0);
-			Functions.DrawCircle(&Engine::GetLocalObject()->GetPos(), Engine::GetLocalObject()->GetAttackRange() + Engine::GetLocalObject()->GetBoundingRadius(), &color, 0, 0.0f, 0, 0.5f);
+			Functions.DrawCircle(&Engine::GetLocalObject()->GetPos(), Engine::GetLocalObject()->GetTrueAttackRange(), &color, 0, 0.0f, 0, 0.5f);
 		}
 	}
 

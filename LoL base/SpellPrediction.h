@@ -13,12 +13,32 @@
 class SpellPrediction {
 public:
 	Vector PredictSkillshot(CObject* target, ESpellSlot slot) {
-		auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(static_cast<int>(slot));
-		if (!spell->IsSpellReady()) return Vector(0.f, 0.f, 0.f);
+		auto localObj = Engine::GetLocalObject();
+		auto spell = localObj->GetSpellBook()->GetSpellByID(static_cast<int>(slot));
+		if (!spell->IsSpellReady())
+			return Vector(0.f, 0.f, 0.f);
 		auto spellData = spell->GetSpellInfo()->GetSpellData();
+		if (spellData->GetManaCostByLevel(spell->GetLevel()) > localObj->GetMana())
+			return Vector(0.f, 0.f, 0.f);
+		debug::flog("%p\n", spellData);
 
 		static LinePrediction linePrediction;
 		auto vec = linePrediction.Calculate(target, spellData->GetSpellRange(), spellData->GetMissileSpeed(), 0.f);
+
+		return vec;
+	}
+
+	Vector PredictCircular(CObject* target, ESpellSlot slot) {
+		auto localObj = Engine::GetLocalObject();
+		auto spell = localObj->GetSpellBook()->GetSpellByID(static_cast<int>(slot));
+		if (!spell->IsSpellReady())
+			return Vector(0.f, 0.f, 0.f);
+		auto spellData = spell->GetSpellInfo()->GetSpellData();
+		if (spellData->GetManaCostByLevel(spell->GetLevel()) > localObj->GetMana())
+			return Vector(0.f, 0.f, 0.f);
+
+		static CirclePrediction circlePrediction;
+		auto vec = circlePrediction.Calculate(target, spellData->GetSpellRange(), 0.f);
 
 		return vec;
 	}

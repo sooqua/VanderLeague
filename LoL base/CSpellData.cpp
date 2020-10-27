@@ -102,3 +102,11 @@ float CSpellData::GetSpellRadius()
 {
 	return *(float*)((DWORD)this + 0x458);
 }
+
+float CSpellData::GetManaCostByLevel(unsigned int level)
+{
+	if (level > 4) {
+		return 0.f;
+	}
+	return *(float*)((DWORD)this + 0x4FC + ((level-1) * 0x4));
+}

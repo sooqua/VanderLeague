@@ -15,7 +15,7 @@ public:
 
 	static struct LineInfo_t
 	{
-		SpellData* data;
+		CSpellData* data;
 	};
 
 	LinePrediction()
@@ -75,7 +75,7 @@ public:
 		}
 	}
 
-	Vector Calculate(CObject* target, float range, float missilespeed, float radius, float casttime);
+	Vector Calculate(CObject* target, float range, float casttime);
 
 	CirclePrediction()
 	{

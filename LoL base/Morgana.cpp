@@ -47,5 +47,15 @@ void Morgana::Harass() {
 				CycleManager::ReleaseKeyAtNextCycle(SCANCODE_Q);
 			}
 		}
+
+		if (target->GetAIManager()->GetVelocity() == Vector(0.f, 0.f, 0.f)) {
+			auto vec = spellPrediction.PredictCircular(possibleTargets.front(), ESpellSlot::W);
+			if (!(vec == Vector(0.f, 0.f, 0.f))) {
+				Autokey::MoveMouse(vec);
+				CycleManager::ResetMouseAtNextCycle();
+				Autokey::PressKey(SCANCODE_W);
+				CycleManager::ReleaseKeyAtNextCycle(SCANCODE_W);
+			}
+		}
 	}
 }

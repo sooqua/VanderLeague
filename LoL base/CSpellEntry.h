@@ -1,11 +1,10 @@
 #pragma once
 
-#include "SpellData.h"
+#include "CSpellInfo.h"
 #include "Vector.h"
 
 #include <Windows.h>
 
-#include "SpellInfo.h"
 
 /*
 v10.21
@@ -35,7 +34,7 @@ internal static class ActiveSpellEntry
 
 class CSpellEntry {
 public:
-	SpellInfo* GetSpellInfo();
+	CSpellInfo* GetSpellInfo();
 
 	bool IsBasicAttack();
 	int GetTargetIndex();

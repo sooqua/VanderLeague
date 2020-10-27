@@ -1,10 +1,10 @@
 #include "CSpellEntry.h"
 
-SpellInfo* CSpellEntry::GetSpellInfo() {
+CSpellInfo* CSpellEntry::GetSpellInfo() {
 	auto retaddr = *(DWORD*)(this + 0x8);
 	if (retaddr == NULL)
 		return NULL;
-	return (SpellInfo*)(retaddr);
+	return (CSpellInfo*)(retaddr);
 }
 
 bool CSpellEntry::IsBasicAttack() {
