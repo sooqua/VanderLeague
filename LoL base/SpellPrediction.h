@@ -82,3 +82,5 @@ public:
 		return Vector();
 	}*/
 };
+
+extern SpellPrediction spellPrediction;

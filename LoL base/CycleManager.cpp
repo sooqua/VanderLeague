@@ -10,7 +10,7 @@ std::vector<CObject*> CycleManager::m_pObjects = *new std::vector<CObject*>();
 POINT CycleManager::m_PreviousMousePos = *new POINT();
 bool CycleManager::m_bResetMouseAtNextCycle;
 bool CycleManager::m_bBlockAllActions;
-std::map<int, bool> CycleManager::m_keyDownWasPrevented;
+std::map<WORD, bool> CycleManager::m_releaseKeyAtNextCycle;
 
 void CycleManager::NewCycle() {
 	m_pObjects.clear();
@@ -24,10 +24,21 @@ void CycleManager::NewCycle() {
 		pObject = object.GetNextObject(pObject);
 	}
 
+	for (auto key : m_releaseKeyAtNextCycle) {
+		if (key.second) {
+			Autokey::ReleaseKey(key.first);
+			key.second = false;
+		}
+	}
+
 	if (m_bResetMouseAtNextCycle) {
 		Autokey::ResetMouse(m_PreviousMousePos.x, m_PreviousMousePos.y);
 		m_bResetMouseAtNextCycle = false;
 	}
+
+	POINT previousMousePos;
+	GetCursorPos(&previousMousePos);
+	SetPreviousMousePos(previousMousePos);
 
 	m_bBlockAllActions = false;
 }
@@ -61,12 +72,7 @@ void CycleManager::ResetMouseAtNextCycle()
 	m_bResetMouseAtNextCycle = true;
 }
 
-void CycleManager::SetKeyDownWasPrevented(int key, bool value)
+void CycleManager::ReleaseKeyAtNextCycle(WORD scanCode)
 {
-	m_keyDownWasPrevented[value] = value;
-}
-
-bool CycleManager::GetKeyDownWasPrevented(int key)
-{
-	return m_keyDownWasPrevented[key];
+	m_releaseKeyAtNextCycle[scanCode] = true;
 }

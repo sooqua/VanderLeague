@@ -5478,7 +5478,7 @@ public:
 					D3DXVECTOR2(localPos.X, localPos.Y),
 					D3DXVECTOR2(vecPos.X, vecPos.Y),
 					D3DXVECTOR2(minionPos.X, minionPos.Y),
-					base->GetBoundingRadius()))
+					static_cast<double>(base->GetBoundingRadius()) * 2.0))
 				{
 					return true;
 				}
@@ -5704,3 +5704,5 @@ public:
 	LinePrediction* LinePred;
 	CirclePrediction* CircPred;
 };
+
+extern Prediction prediction;

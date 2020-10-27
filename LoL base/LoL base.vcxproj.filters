@@ -117,6 +117,12 @@
     <Filter Include="Header\SpellPrediction">
       <UniqueIdentifier>{5c55f605-1c05-4fd0-9d31-0ba1f248f172}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header\Scripts">
+      <UniqueIdentifier>{4ab92fe6-8220-4121-9030-76e1df13dee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Scripts">
+      <UniqueIdentifier>{8d645327-a32a-45ff-9f70-5e60e031a856}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -242,6 +248,15 @@
     <ClInclude Include="Keyboard.h">
       <Filter>Header\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Morgana.h">
+      <Filter>Header\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Script.h">
+      <Filter>Header\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptUtils.h">
+      <Filter>Header\Scripts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LoL base.cpp">
@@ -336,6 +351,15 @@
     </ClCompile>
     <ClCompile Include="ZoomHack.cpp">
       <Filter>Source\ZoomHack</Filter>
+    </ClCompile>
+    <ClCompile Include="Keyboard.cpp">
+      <Filter>Source\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Morgana.cpp">
+      <Filter>Source\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptUtils.cpp">
+      <Filter>Source\Scripts</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -24,6 +24,32 @@ void Autokey::ResetMouse(int x, int y)
 	ZeroMemory(&Input, sizeof(INPUT));
 }
 
+UINT Autokey::PressKey(WORD scanCode)
+{
+	INPUT input[1] = { 0 };
+	input[0].type = INPUT_KEYBOARD;
+	input[0].ki.wVk = 0;
+	input[0].ki.wScan = scanCode;
+	input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
+
+	UINT ret = SendInput(1, input, sizeof(INPUT));
+
+	return ret;
+}
+
+UINT Autokey::ReleaseKey(WORD scanCode)
+{
+	INPUT input[1] = { 0 };
+	input[0].type = INPUT_KEYBOARD;
+	input[0].ki.wVk = 0;
+	input[0].ki.wScan = scanCode;
+	input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+
+	UINT ret = SendInput(1, input, sizeof(INPUT));
+
+	return ret;
+}
+
 void Autokey::ClickThere(Vector pos, int returnAfterMs)
 {
 	POINT mousePos;

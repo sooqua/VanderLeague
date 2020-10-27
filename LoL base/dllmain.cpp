@@ -13,6 +13,8 @@
 #include "ESpellSlot.h"
 #include "Keyboard.h"
 #include "SpellPrediction.h"
+#include "Script.h"
+#include "ScriptUtils.h"
 
 #include "Debug.h"
 
@@ -44,6 +46,7 @@ Prediction prediction;
 COrbWalker orbWalker;
 CEvader evader;
 SpellPrediction spellPrediction;
+IScript* championScript;
 
 HMODULE g_module = nullptr;
 HWND g_hwnd = nullptr;
@@ -57,7 +60,7 @@ bool g_turret_range = true;
 bool g_auto_evade = true;
 bool g_zoom_hack = true;
 bool g_spell_prediction = true;
-bool OnStartMessage = false;
+bool g_bInit = false;
 
 bool g_interface = false;
 IDirect3DDevice9* myDevice;
@@ -76,11 +79,14 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	ImGui::CreateContext();
 	render.begin_draw();
 
-	if (OnStartMessage == false) {
+	if (g_bInit == false) {
+		championScript = ScriptUtils::GetScriptByChampionName(Engine::GetLocalObject()->GetChampionName());
+
 		Engine::PrintChat("[ SpaghettiHack ]");
 		Engine::PrintChat("[ Credits: Kmsmym ]");
 		Engine::PrintChat("[ Unknowncheats.me ]");
-		OnStartMessage = true;
+
+		g_bInit = true;
 	}
 
 	if (ImGui_ImplWin32_Init(g_hwnd))
@@ -346,8 +352,6 @@ LRESULT ImGui_ImplDX9_WndProcHandler(HWND, UINT msg, WPARAM wParam, LPARAM lPara
 
 LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 {
-	bool preventDefault = false;
-
 	switch (u_msg)
 	{
 	case WM_KEYDOWN: {
@@ -356,83 +360,14 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 			g_menu_opened = !g_menu_opened;
 			break;
 		}
-		case VK_KEY_Q:
-		case VK_KEY_W:
-		case VK_KEY_E:
-		case VK_KEY_R: {
-			//Spell Prediction
-			if (g_spell_prediction) {
-				ESpellSlot slot{};
-				switch (w_param) {
-				case VK_KEY_Q:
-					slot = ESpellSlot::Q;
-					break;
-				case VK_KEY_W:
-					slot = ESpellSlot::W;
-					break;
-				case VK_KEY_E:
-					slot = ESpellSlot::E;
-					break;
-				case VK_KEY_R:
-					slot = ESpellSlot::R;
-					break;
-				default:
-					break;
-				}
-				if (IsKeyDown(VK_LSHIFT)) {
-					static std::vector<CObject*> possibleTargets;
-					for (auto pObject : CycleManager::GetObjects()) {
-						if (pObject->IsHero() && pObject->IsEnemyTo(Engine::GetLocalObject())) {
-							possibleTargets.push_back(pObject);
-						}
-					}
-					if (possibleTargets.size() > 1)
-					{
-						std::sort(possibleTargets.begin(), possibleTargets.end(),
-							[](CObject* pFirst, CObject* pSecond)
-							{
-								return (pFirst->GetDistanceToMe() < pSecond->GetDistanceToMe());
-							});
-						auto target = possibleTargets.front();
-
-						auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(static_cast<int>(slot));
-						auto spellData = spell->GetSpellInfo()->GetSpellData();
-
-						if (prediction.IsCollisioned(Prediction::CollisionType::Minion, target->GetPos())) {
-							preventDefault = true;
-							CycleManager::SetKeyDownWasPrevented(w_param, true);
-						}
-						else {
-							auto vec = spellPrediction.PredictSkillshot(possibleTargets.front(), slot);
-							if (!(vec == Vector(0.f, 0.f, 0.f))) {
-								POINT previousMousePos;
-								GetCursorPos(&previousMousePos);
-								CycleManager::SetPreviousMousePos(previousMousePos);
-								Autokey::MoveMouse(vec);
-								CycleManager::ResetMouseAtNextCycle();
-							}
-						}
-					}
-				}
-			}
-			break;
-		}
 		default:
 			break;
 		};
 		break;
 	}
-	case WM_KEYUP: {
-		auto keyDownWasPrevented = CycleManager::GetKeyDownWasPrevented(w_param);
-		if (keyDownWasPrevented) {
-			preventDefault = true;
-			CycleManager::SetKeyDownWasPrevented(w_param, false);
-		}
-		break;
-	}
 	case WM_MOUSEWHEEL: {
 		//Zoom hack
-		if (g_zoom_hack) {
+		if (g_zoom_hack) { // TODO: check if game menu opened
 			auto wheelDelta = static_cast<int>(GET_WHEEL_DELTA_WPARAM(w_param));
 			ZoomHack::ChangeMaximumZoom(-wheelDelta);
 		}
@@ -443,10 +378,6 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 	}
 
 	if (g_menu_opened && ImGui_ImplDX9_WndProcHandler(hwnd, u_msg, w_param, l_param)) {
-		return true;
-	}
-
-	if (preventDefault) {
 		return true;
 	}
 

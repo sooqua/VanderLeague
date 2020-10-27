@@ -81,9 +81,6 @@ void CEvader::drawEvent() {
 						std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
 							std::chrono::system_clock::now().time_since_epoch());
 						if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
-							POINT previousMousePos;
-							GetCursorPos(&previousMousePos);
-							CycleManager::SetPreviousMousePos(previousMousePos);
 							Autokey::MoveMouse(evadePos);
 							CycleManager::ResetMouseAtNextCycle();
 							Autokey::Click();

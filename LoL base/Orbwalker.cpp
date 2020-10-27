@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Autokey.h"
 #include "CycleManager.h"
+#include "Script.h"
 
 #include <vector>
 #include <algorithm>
@@ -114,15 +115,16 @@ void COrbWalker::drawEvent()
 
 	tryFindTarget();
 
+	if (championScript) {
+		championScript->Harass();
+	}
+
 	if (m_pTarget != nullptr) {
 		float flTimeTilAttack = pLocal->GetAttackDelay();
 		int nTicksTilAttack = (int)(flTimeTilAttack * 1000);
 		if ((int)(Engine::GetGameTime() * 1000) >= (m_nLastAttackCmdTick + nTicksTilAttack))
 		{
 			if (useAutokey) {
-				POINT previousMousePos;
-				GetCursorPos(&previousMousePos);
-				CycleManager::SetPreviousMousePos(previousMousePos);
 				Autokey::MoveMouse(m_pTarget->GetPos());
 				CycleManager::ResetMouseAtNextCycle();
 				Autokey::Click();

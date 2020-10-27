@@ -37,6 +37,6 @@
 #define VK_KEY_Y 0x59
 #define VK_KEY_Z 0x5A
 
-bool IsKeyDown(int vKey) {
-	return (GetAsyncKeyState(vKey) & (1 << 15)) != 0;
-}
+#define SCANCODE_Q 0x10
+
+bool IsKeyDown(int vKey);
