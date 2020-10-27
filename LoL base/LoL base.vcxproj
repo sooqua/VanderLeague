@@ -122,7 +122,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -137,9 +137,10 @@
       <AdditionalIncludeDirectories>$(ProjectDir)zydis\include;$(ProjectDir)dependencies\zycore\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OmitFramePointers>true</OmitFramePointers>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <AdditionalOptions>/Gw</AdditionalOptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -209,8 +210,6 @@
     <ClInclude Include="Script.h" />
     <ClInclude Include="ScriptUtils.h" />
     <ClInclude Include="SpellPrediction.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="ZoomHack.h" />
@@ -253,13 +252,11 @@
     <ClCompile Include="imgui\win32\imgui_impl_win32.cpp" />
     <ClCompile Include="ImRender.cpp" />
     <ClCompile Include="Keyboard.cpp" />
-    <ClCompile Include="LoL base.cpp" />
     <ClCompile Include="Morgana.cpp" />
     <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="Orbwalker.cpp" />
     <ClCompile Include="Prediction.cpp" />
     <ClCompile Include="ScriptUtils.cpp" />
-    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="ZoomHack.cpp" />
   </ItemGroup>

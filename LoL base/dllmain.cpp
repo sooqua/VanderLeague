@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Engine.h"
 #include "Hooks.h"
 #include "ImRender.hpp"
@@ -19,9 +18,12 @@
 
 #include "Debug.h"
 
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <mutex>
 #include <algorithm>
+#include <d3d9.h>
+#include <d3dx9.h>
 
 #ifdef _DEBUG
 #include "CConsole.h"
@@ -31,6 +33,9 @@
 #include "imgui\imgui_internal.h"
 #include "imgui\dx9\imgui_impl_dx9.h"
 #include "imgui\win32\imgui_impl_win32.h"
+
+#pragma comment(lib, "d3d9.lib")
+#pragma comment(lib, "d3dx9.lib")
 
 using namespace std;
 #define DO_ONCE(todo) do { \
@@ -144,7 +149,8 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	if (g_range == true) {
 		if (localObj && localObj->IsAlive()) { 
 			auto color = createRGB(0, 255, 0);
-			Functions.DrawCircle(&Engine::GetLocalObject()->GetPos(), Engine::GetLocalObject()->GetTrueAttackRange(), &color, 0, 0.0f, 0, 0.5f);
+			auto localPos = Engine::GetLocalObject()->GetPos();
+			Functions.DrawCircle(&localPos, Engine::GetLocalObject()->GetTrueAttackRange(), &color, 0, 0.0f, 0, 0.5f);
 		}
 	}
 
@@ -155,7 +161,8 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 			if (pObject->IsHero())
 			{
 				auto color = createRGB(255, 0, 0);
-				Functions.DrawCircle(&pObject->GetPos(), pObject->GetAttackRange(), &color, 0, 0.0f, 0, 0.5f);
+				auto objPos = pObject->GetPos();
+				Functions.DrawCircle(&objPos, pObject->GetAttackRange(), &color, 0, 0.0f, 0, 0.5f);
 			}
 		}
 
@@ -188,7 +195,8 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 				static const auto turretRange = 850.f;
 				if (pObject->GetDistanceToMe() < (turretRange + 300.f)) {
 					auto color = createRGB(255, 255, 255);
-					Functions.DrawCircle(&pObject->GetPos(), turretRange, &color, 0, 0.0f, 0, 0.5f);
+					auto turretPos = pObject->GetPos();
+					Functions.DrawCircle(&turretPos, turretRange, &color, 0, 0.0f, 0, 0.5f);
 				}
 			}
 		}
@@ -237,10 +245,11 @@ DWORD GetDeviceAddress(int VTableIndex)
 	return VTable[VTableIndex];
 }
 
+#pragma warning(push)
+#pragma warning(disable : 4740)
 void __cdecl spoofedDrawCircle(Vector* position, float range, int* color, int a4, float a5, int a6, float alpha) {
 	DWORD retnInstruction = g_BaseAddr + offsets::global::oDrawCircleRetAddr;
 	DWORD originalAddress = g_BaseAddr + offsets::functions::oDrawCircle;
-	void* localObj = Engine::GetLocalObject();
 	__asm {
 		push retnHere
 		push alpha
@@ -255,6 +264,7 @@ void __cdecl spoofedDrawCircle(Vector* position, float range, int* color, int a4
 	retnHere:
 	}
 }
+#pragma warning(pop) 
 
 LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param);
 typedef long(__stdcall* tEndScene)(LPDIRECT3DDEVICE9);
@@ -397,7 +407,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 	case WM_MOUSEWHEEL: {
 		//Zoom hack
 		if (g_zoom_hack) { // TODO: check if game menu opened
-			auto wheelDelta = static_cast<int>(GET_WHEEL_DELTA_WPARAM(w_param));
+			auto wheelDelta = static_cast<float>(GET_WHEEL_DELTA_WPARAM(w_param));
 			ZoomHack::ChangeMaximumZoom(-wheelDelta);
 		}
 		break;
@@ -413,7 +423,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 	return CallWindowProcA(g_wndproc, hwnd, u_msg, w_param, l_param);
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID)
 {
 	if (hModule != nullptr)
 		DisableThreadLibraryCalls(hModule);

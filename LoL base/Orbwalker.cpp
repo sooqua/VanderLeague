@@ -68,11 +68,11 @@ void COrbWalker::tryFindTarget()
 
 		if (preferHarassOverFarm && heroesInRange)
 		{
-			std::remove_if(possibleTargets.begin(), possibleTargets.end(),
+			static_cast<void>(std::remove_if(possibleTargets.begin(), possibleTargets.end(),
 				[](CObject* pObject)
 				{
 					return !(pObject->IsHero());
-				});
+				}));
 		}
 	}
 
@@ -102,8 +102,9 @@ CObject* COrbWalker::GetNearestToMouseMinion(float maxRadius) {
 				&& pObject->IsTargetable() && pObject->IsVisible() && !pObject->IsInvalidObject())
 			{
 				Vector objPos_w2s;
-				Functions.WorldToScreen(&pObject->GetPos(), &objPos_w2s);
-				if (calculate2dDistance(objPos_w2s.X, objPos_w2s.Y, mousePos.x, mousePos.y) < maxRadius) {
+				auto objPos = pObject->GetPos();
+				Functions.WorldToScreen(&objPos, &objPos_w2s);
+				if (calculate2dDistance(objPos_w2s.X, objPos_w2s.Y, static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)) < maxRadius) {
 					newObjects.push_back(pObject);
 				}
 			}
@@ -170,7 +171,8 @@ void COrbWalker::drawEvent()
 						}
 					}
 					else {
-						Engine::MoveTo(&Engine::GetMouseWorldPosition());
+						auto mouseWorldPos = Engine::GetMouseWorldPosition();
+						Engine::MoveTo(&mouseWorldPos);
 					}
 				}
 				m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);
@@ -178,7 +180,8 @@ void COrbWalker::drawEvent()
 		}
 
 		auto color = createRGB(255, 255, 255);
-		Functions.DrawCircle(&m_pTarget->GetPos(), m_pTarget->GetBoundingRadius(), &color, 0, 10.0f, 0, .8f);
+		auto targetPos = m_pTarget->GetPos();
+		Functions.DrawCircle(&targetPos, m_pTarget->GetBoundingRadius(), &color, 0, 10.0f, 0, .8f);
 	}
 	else
 	{
@@ -197,7 +200,8 @@ void COrbWalker::drawEvent()
 					}
 				}
 				else {
-					Engine::MoveTo(&Engine::GetMouseWorldPosition());
+					auto mouseWorldPos = Engine::GetMouseWorldPosition();
+					Engine::MoveTo(&mouseWorldPos);
 				}
 			}
 			m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);

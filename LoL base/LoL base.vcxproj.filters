@@ -5,9 +5,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Header\Base">
-      <UniqueIdentifier>{c2d869c7-98dd-473f-8b0b-8483f5d9acc0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header\Engine">
       <UniqueIdentifier>{8c33f709-f8ad-41dd-85eb-7cc2ddbb92eb}</UniqueIdentifier>
     </Filter>
@@ -20,9 +17,6 @@
     <Filter Include="Source">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Source\Base">
-      <UniqueIdentifier>{83f7b97d-b7c7-4617-8123-fa6c39a51d0f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Objects">
       <UniqueIdentifier>{465ade86-a295-40ee-9231-ef935f9fdfc5}</UniqueIdentifier>
@@ -125,12 +119,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="targetver.h">
-      <Filter>Header\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Header\Engine</Filter>
     </ClInclude>
@@ -256,12 +244,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="LoL base.cpp">
-      <Filter>Source\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source\Base</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source</Filter>
     </ClCompile>

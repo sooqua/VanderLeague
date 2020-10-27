@@ -13,7 +13,7 @@ class LinePrediction
 {
 public:
 
-	static struct LineInfo_t
+	struct LineInfo_t
 	{
 		CSpellData* data;
 	};
@@ -5381,12 +5381,12 @@ public:
 	Prediction(LinePrediction* pred)
 	{
 		LinePred = pred;
-		Walls walls = Walls();
+		walls = Walls();
 	}
 	Prediction(CirclePrediction* pred)
 	{
 		CircPred = pred;
-		Walls walls = Walls();
+		walls = Walls();
 	}
 
 	enum class CollisionType
@@ -5467,7 +5467,9 @@ public:
 				Vector localPos, vecPos, minionPos;
 				if (!Functions.WorldToScreen(&basecord, &minionPos))
 					continue;
-				Functions.WorldToScreen(&local->GetPos(), &localPos);
+
+				auto localWorldPos = local->GetPos();
+				Functions.WorldToScreen(&localWorldPos, &localPos);
 				Functions.WorldToScreen(&vec, &vecPos);
 #ifdef linepred
 				render.DrawLine(pt.x, pt.y, pt2.x, pt2.y, 10, D3DCOLOR_ARGB(255, 255, 20, 147));
@@ -5682,7 +5684,7 @@ public:
 			dist = walls.getBottomBlueJungle_RedBuffWall().points.at(0)->distTo(vec);
 			selected = walls.getBottomBlueJungle_RedBuffWall();
 		}
-		for (int i = 0; i < selected.points.size() / 2; i++) {
+		for (unsigned int i = 0; i < selected.points.size() / 2; i++) {
 			Vector2* q11 = selected.points.at(2 * i);
 			Vector2* q12 = selected.points.at(2 * i + 1);
 			Vector2 q1 = Vector2(q11->x, q11->y);

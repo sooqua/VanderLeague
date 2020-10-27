@@ -1,8 +1,18 @@
 #include "BuffManager.h"
 
+DWORD BuffManager::getStart()
+{
+	return *(DWORD*)(this + 0x10);
+}
+
+DWORD BuffManager::getEnd()
+{
+	return *(DWORD*)(this + 0x14);
+}
+
 BuffEntry* BuffManager::GetBuffEntryByName(char* BuffName) {
 	int i = -1;
-	for (DWORD pBuffPtr = this->pStart; pBuffPtr != this->pEnd; pBuffPtr += 0x8)
+	for (DWORD pBuffPtr = this->getStart(); pBuffPtr != this->getEnd(); pBuffPtr += 0x8)
 	{
 		auto pBuff = *(BuffEntry**)pBuffPtr;
 		i++;
@@ -20,7 +30,7 @@ BuffEntry* BuffManager::GetBuffEntryByName(char* BuffName) {
 
 bool BuffManager::IsImmobile(int Type) {
 	int i = -1;
-	for (DWORD pBuffPtr = this->pStart; pBuffPtr != this->pEnd; pBuffPtr += 0x8)
+	for (DWORD pBuffPtr = this->getStart(); pBuffPtr != this->getEnd(); pBuffPtr += 0x8)
 	{
 		auto pBuff = *(BuffEntry**)pBuffPtr;
 		i++;
@@ -44,7 +54,6 @@ bool BuffManager::isPartOf(char* w1, char* w2)
 	while (w1[i] != '\0') {
 		if (w1[i] == w2[j])
 		{
-			int init = i;
 			while (w1[i] == w2[j] && w2[j] != '\0')
 			{
 				j++;
@@ -62,7 +71,7 @@ bool BuffManager::isPartOf(char* w1, char* w2)
 
 bool BuffManager::IsPoisoned() {
 	int i = -1;
-	for (DWORD pBuffPtr = this->pStart; pBuffPtr != this->pEnd; pBuffPtr += 0x8)
+	for (DWORD pBuffPtr = this->getStart(); pBuffPtr != this->getEnd(); pBuffPtr += 0x8)
 	{
 		auto pBuff = *(BuffEntry**)pBuffPtr;
 		i++;

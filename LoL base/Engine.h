@@ -86,7 +86,8 @@ public:
 
 
 	static void AttackTarget(CObject* obj) {
-		Functions.IssueOrder(GetLocalObject(), 3, &obj->GetPos(), obj, true, false, false);
+		auto objPos = obj->GetPos();
+		Functions.IssueOrder(GetLocalObject(), 3, &objPos, obj, true, false, false);
 	}
 
 
@@ -94,7 +95,8 @@ public:
 		if (Engine::GetLocalObject()->IsAlive()) {
 			auto spellbook = (DWORD)Engine::GetLocalObject() + offsets::cobject::oObjSpellBook;
 			auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(SlotID);
-			Functions.CastSpell(spellbook, spell, SlotID, &Engine::GetLocalObject()->GetPos(), &Engine::GetLocalObject()->GetPos(), 0);
+			auto localPos = Engine::GetLocalObject()->GetPos();
+			Functions.CastSpell(spellbook, spell, SlotID, &localPos, &localPos, 0);
 		}
 	}
 
@@ -110,7 +112,9 @@ public:
 		auto spellbook = (DWORD)Engine::GetLocalObject() + offsets::cobject::oObjSpellBook;
 		auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(SlotID);
 		Vector* pos = new Vector(x, y, z);
-		Functions.CastSpell(spellbook, spell, SlotID, &obj->GetPos(), &Engine::GetLocalObject()->GetPos(), obj->GetNetworkID());
+		auto objPos = obj->GetPos();
+		auto localPos = Engine::GetLocalObject()->GetPos();
+		Functions.CastSpell(spellbook, spell, SlotID, &objPos, &localPos, obj->GetNetworkID());
 		delete pos;
 	}
 
@@ -118,7 +122,9 @@ public:
 		auto spellbook = (DWORD)Engine::GetLocalObject() + offsets::cobject::oObjSpellBook;
 		auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(SlotID);
 
-		Functions.CastSpell(spellbook, spell, SlotID, &obj->GetPos(), &Engine::GetLocalObject()->GetPos(), obj->GetNetworkID());
+		auto objPos = obj->GetPos();
+		auto localPos = Engine::GetLocalObject()->GetPos();
+		Functions.CastSpell(spellbook, spell, SlotID, &objPos, &localPos, obj->GetNetworkID());
 	}
 
 	//static float Engine::getCD(int slot, CObject* obj) {

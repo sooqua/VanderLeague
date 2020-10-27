@@ -4,7 +4,7 @@
 
 #include <string>
 
-IScript* GetScriptByChampionName(char* championName) {
+IScript* GetScriptByChampionName(char*) {
 }
 
 IScript* ScriptUtils::GetScriptByChampionName(char* championName)

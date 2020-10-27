@@ -6,7 +6,7 @@
 #include <map>
 #include <Windows.h>
 
-static class CycleManager {
+class CycleManager {
 	static std::vector<CObject*> m_pObjects;
 	static POINT m_PreviousMousePos;
 	static bool m_bResetMouseAtNextCycle;

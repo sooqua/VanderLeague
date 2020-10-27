@@ -12,11 +12,11 @@
 #include <Windows.h>
 #include <vector>
 
-void Morgana::OnKeyDown(int vKey) {
+void Morgana::OnKeyDown(int) {
 
 }
 
-void Morgana::OnKeyUp(int vKey) {
+void Morgana::OnKeyUp(int) {
 
 }
 

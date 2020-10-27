@@ -5,11 +5,8 @@
 
 class BuffManager {
 private:
-	union {
-		DEFINE_MEMBER_0(void* base, 0x0);
-		DEFINE_MEMBER_N(DWORD pStart, 0x10);
-		DEFINE_MEMBER_N(DWORD pEnd, 0x14);
-	};
+	DWORD getStart();
+	DWORD getEnd();
 
 public:
 	BuffEntry* GetBuffEntryByName(char* BuffName);

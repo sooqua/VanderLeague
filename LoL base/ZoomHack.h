@@ -2,7 +2,7 @@
 
 #include "Offsets.h"
 
-static class ZoomHack {
+class ZoomHack {
 public:
 	static void ChangeMaximumZoom(float amount);
 };

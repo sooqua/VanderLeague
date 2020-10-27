@@ -2,7 +2,7 @@
 
 #include "Script.h"
 
-static class ScriptUtils {
+class ScriptUtils {
 public:
 	static IScript* GetScriptByChampionName(char* championName);
 };

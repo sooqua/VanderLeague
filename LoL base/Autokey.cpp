@@ -18,8 +18,8 @@ void Autokey::ResetMouse(int x, int y)
 	INPUT  Input = { 0 };
 	Input.type = INPUT_MOUSE;
 	Input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK | MOUSEEVENTF_ABSOLUTE;
-	Input.mi.dx = fx;
-	Input.mi.dy = fy;
+	Input.mi.dx = static_cast<LONG>(fx);
+	Input.mi.dy = static_cast<LONG>(fy);
 	SendInput(1, &Input, sizeof(INPUT));
 	ZeroMemory(&Input, sizeof(INPUT));
 }
@@ -87,8 +87,8 @@ void Autokey::MoveMouse(Vector pos)
 	INPUT Input = { 0 };
 	Input.type = INPUT_MOUSE;
 	Input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_VIRTUALDESK | MOUSEEVENTF_ABSOLUTE;
-	Input.mi.dx = fx;
-	Input.mi.dy = fy;
+	Input.mi.dx = static_cast<LONG>(fx);
+	Input.mi.dy = static_cast<LONG>(fy);
 	SendInput(1, &Input, sizeof(INPUT));
 	ZeroMemory(&Input, sizeof(INPUT));
 }

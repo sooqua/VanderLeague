@@ -2,7 +2,7 @@
 
 #include "Vector.h"
 
-static class Autokey {
+class Autokey {
 public:
 	static void ResetMouse(int x, int y);
 	static UINT PressKey(WORD scanCode);
