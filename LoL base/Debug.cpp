@@ -8,7 +8,7 @@ namespace debug {
 	FILE* logFile;
 
 	void debug::init() {
-		debug::logFile = fopen("C:\\dev\\Projects\\LoL base\\Release\\log.log", "a+");
+		debug::logFile = fopen("C:\\dev\\Projects\\Ghvoaevikr\\Release\\log.log", "a+");
 	}
 
 	void debug::cleanUp() {

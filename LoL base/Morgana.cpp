@@ -21,7 +21,8 @@ void Morgana::OnKeyUp(int) {
 }
 
 void Morgana::Harass() {
-	static std::vector<CObject*> possibleTargets;
+	std::vector<CObject*> possibleTargets;
+
 	for (auto pObject : CycleManager::GetObjects()) {
 		if (pObject->IsHero() && pObject->IsAlive() && pObject->IsEnemyTo(Engine::GetLocalObject())) {
 			possibleTargets.push_back(pObject);

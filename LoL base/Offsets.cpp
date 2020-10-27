@@ -119,7 +119,7 @@ namespace offsets {
 
 	namespace stat {
 		uint32_t AIBASE_STATOWNER = 0x22C;
-		uint32_t STATOWNER__GETSTATTOTAL = 0x1CC9D0;
+		uint32_t STATOWNER__GETSTATTOTAL = 0x1BE170;
 	};
 
 	/*namespace ai_base {

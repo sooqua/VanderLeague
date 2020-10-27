@@ -150,7 +150,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	{
 		//draw range all hero
 		if (g_2range_objmanager == true) {
-			if (pObject->IsHero())
+			if (pObject->IsHero() && pObject->IsAlive() && pObject->IsTargetable() && pObject->IsVisible())
 			{
 				auto color = createRGB(255, 0, 0);
 				auto objPos = pObject->GetPos();
@@ -160,7 +160,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 		//champion info demonstration
 		if (g_champ_info == true) {
-			if (pObject->IsHero())
+			if (pObject->IsHero() && pObject->IsAlive() && pObject->IsTargetable() && pObject->IsVisible())
 			{
 				Vector obj_pos = pObject->GetPos();
 				Vector objpos_w2s;
@@ -184,6 +184,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 		//turret range
 		if (g_turret_range == true) {
 			if (pObject->IsTurret() && pObject->IsEnemyTo(localObj)) {
+				//auto turretRange = pObject->GetStatOwner()->GetStatTotal(EStatType::AttackRange, EStatOutputType::BASE);
 				static const auto turretRange = 850.f;
 				if (pObject->GetDistanceToMe() < (turretRange + 300.f)) {
 					auto color = createRGB(255, 255, 255);

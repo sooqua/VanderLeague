@@ -21,7 +21,6 @@ public:
 		auto spellData = spell->GetSpellInfo()->GetSpellData();
 		if (spellData->GetManaCostByLevel(spell->GetLevel()) > localObj->GetMana())
 			return Vector(0.f, 0.f, 0.f);
-		debug::flog("%p\n", spellData);
 
 		static LinePrediction linePrediction;
 		auto vec = linePrediction.Calculate(target, spellData->GetSpellRange(), spellData->GetMissileSpeed(), 0.f);

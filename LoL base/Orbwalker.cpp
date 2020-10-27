@@ -34,10 +34,9 @@ void COrbWalker::tryFindTarget()
 		m_pTarget = nullptr;
 	}
 
-	std::vector<CObject*> possibleTargets;
-
 	bool heroesInRange = false;
 
+	std::vector<CObject*> possibleTargets;
 	for (auto pObject : CycleManager::GetObjects())
 	{
 		if (pObject != nullptr && pObject->IsEnemyTo(pLocal))
@@ -86,16 +85,14 @@ void COrbWalker::tryFindTarget()
 	possibleTargets.clear();
 }
 
-CObject* COrbWalker::GetNearestToMouseMinion(float maxRadius) {
+CObject* COrbWalker::GetNearestToMouseMinion() {
 	auto pLocal = Engine::GetLocalObject();
-	auto objects = CycleManager::GetObjects();
-	static auto newObjects = *new std::vector<CObject*>();
-	newObjects.clear();
 
 	POINT mousePos;
 	GetCursorPos(&mousePos);
 
-	for (auto pObject : objects) {
+	std::vector<CObject*> newObjects;
+	for (auto pObject : CycleManager::GetObjects()) {
 		if (pObject != nullptr)
 		{
 			if (pObject->IsEnemyTo(pLocal) && pObject->IsMinion() && pObject->IsAlive()
@@ -104,7 +101,12 @@ CObject* COrbWalker::GetNearestToMouseMinion(float maxRadius) {
 				Vector objPos_w2s;
 				auto objPos = pObject->GetPos();
 				Functions.WorldToScreen(&objPos, &objPos_w2s);
-				if (calculate2dDistance(objPos_w2s.X, objPos_w2s.Y, static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)) < maxRadius) {
+				if (calculate2dDistance(
+					objPos_w2s.X,
+					objPos_w2s.Y,
+					static_cast<float>(mousePos.x),
+					static_cast<float>(mousePos.y))
+					< pObject->GetBoundingRadius()) {
 					newObjects.push_back(pObject);
 				}
 			}
@@ -120,7 +122,8 @@ CObject* COrbWalker::GetNearestToMouseMinion(float maxRadius) {
 				return (pFirst->GetDistanceToMe() < pSecond->GetDistanceToMe());
 			});
 	}
-	return newObjects.front();
+	auto target = newObjects.front();
+	return target;
 }
 
 void COrbWalker::drawEvent()
@@ -163,8 +166,8 @@ void COrbWalker::drawEvent()
 						std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
 							std::chrono::system_clock::now().time_since_epoch());
 						if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
-							auto nearestToMouseMinion = GetNearestToMouseMinion(Engine::GetLocalObject()->GetBoundingRadius());
-							if (!nearestToMouseMinion) {
+							auto nearestToMouseMinion = GetNearestToMouseMinion();
+							if (nearestToMouseMinion == nullptr) {
 								Autokey::Click();
 							}
 							m_lastMoveClickTime = now;
@@ -192,8 +195,8 @@ void COrbWalker::drawEvent()
 					std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
 						std::chrono::system_clock::now().time_since_epoch());
 					if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
-						auto nearestToMouseMinion = GetNearestToMouseMinion(Engine::GetLocalObject()->GetBoundingRadius());
-						if (!nearestToMouseMinion) {
+						auto nearestToMouseMinion = GetNearestToMouseMinion();
+						if (nearestToMouseMinion == nullptr) {
 							Autokey::Click();
 						}
 						m_lastMoveClickTime = now;

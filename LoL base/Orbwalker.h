@@ -16,7 +16,7 @@ private:
 	bool useAutokey;
 
 private:
-	CObject* GetNearestToMouseMinion(float maxRadius);
+	CObject* GetNearestToMouseMinion();
 
 public:
 	COrbWalker::COrbWalker() : m_pTarget(nullptr), m_nLastAttackCmdTick(0), m_nLastMoveCmdTick(0), m_lastMoveClickTime(0),
