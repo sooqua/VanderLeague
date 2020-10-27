@@ -251,6 +251,9 @@
     <ClInclude Include="ScriptUtils.h">
       <Filter>Header\Scripts</Filter>
     </ClInclude>
+    <ClInclude Include="Detour.h">
+      <Filter>Header\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="LoL base.cpp">

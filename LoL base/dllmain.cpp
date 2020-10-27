@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Engine.h"
 #include "Hooks.h"
-#include "detours.h"
 #include "ImRender.hpp"
 
 #include "Autoupdater.h"
@@ -15,6 +14,8 @@
 #include "SpellPrediction.h"
 #include "Script.h"
 #include "ScriptUtils.h"
+
+#include "Detour.h"
 
 #include "Debug.h"
 
@@ -31,7 +32,6 @@
 #include "imgui\dx9\imgui_impl_dx9.h"
 #include "imgui\win32\imgui_impl_win32.h"
 
-#pragma comment(lib, "detours.lib")
 using namespace std;
 #define DO_ONCE(todo) do { \
    static std::once_flag _flag ;\
@@ -298,8 +298,8 @@ void __stdcall Start() {
 
 	Functions.GetPing = (Typedefs::fnGetPing)(g_BaseAddr + offsets::functions::oGetPing);
 
-	Original_Present = (Prototype_Present)DetourFunction((PBYTE)GetDeviceAddress(17), (PBYTE)Hooked_Present);
-	Original_Reset = (Prototype_Reset)DetourFunction((PBYTE)GetDeviceAddress(16), (PBYTE)Hooked_Reset);
+	Original_Present = (Prototype_Present)DetourFunc((PBYTE)GetDeviceAddress(17), (PBYTE)Hooked_Present, 5);
+	Original_Reset = (Prototype_Reset)DetourFunc((PBYTE)GetDeviceAddress(16), (PBYTE)Hooked_Reset, 5);
 
 	while (!g_unload)
 		Sleep(1000);
@@ -420,11 +420,19 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
 		g_module = hModule;
+		memset(detourBuffer, 0, sizeof(detourBuffer) / sizeof(void*));
 		CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Start, 0, 0, 0);
 		return TRUE;
 	}
 
 	else if (ul_reason_for_call == DLL_PROCESS_DETACH) {
+		for (int i = 0; i < sizeof(detourBuffer) / sizeof(void*); ++i)
+		{
+			if (detourBuffer[i])
+			{
+				delete[] detourBuffer[i];
+			}
+		}
 		g_unload = true;
 		return TRUE;
 	}
