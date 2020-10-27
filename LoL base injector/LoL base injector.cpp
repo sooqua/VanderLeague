@@ -76,7 +76,7 @@ bool is_injected( uint32_t pid ) {
 			if ( GetModuleBaseName( hProcess, hMods[ i ], szModName,
 				sizeof( szModName ) / sizeof( TCHAR ) ) ) {
 
-				if ( wcscmp( szModName, L"LoL base.dll" ) == 0 ) {
+				if ( wcscmp( szModName, L"Ghvoaevikr.dll" ) == 0 ) {
 					CloseHandle( hProcess );
 					return true;
 				}
@@ -93,7 +93,7 @@ bool inject( uint32_t pid ) {
 	TCHAR current_dir[ MAX_PATH ];
 	GetCurrentDirectory( MAX_PATH, current_dir );
 
-	auto dll_path = std::wstring( current_dir ) + L"\\LoL base.dll";
+	auto dll_path = std::wstring( current_dir ) + L"\\Ghvoaevikr.dll";
 
 	auto handle = OpenProcess( PROCESS_ALL_ACCESS, false, pid );
 

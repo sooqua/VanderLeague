@@ -1,19 +1,10 @@
+#include "ImRender.h"
+
 #include "CObject.h"
-
-#include "ImRender.hpp"
-
 
 extern ImFont* g_font;
 
-
-
-
-
-
-
-
 c_renderer render;
-
 
 void c_renderer::init(LPDIRECT3DDEVICE9 device)
 {
@@ -31,9 +22,6 @@ void c_renderer::init(LPDIRECT3DDEVICE9 device)
 	if (!m_default)
 		m_default = ImGui::GetIO().Fonts->AddFontDefault();
 	/* ImGui::GetIO().Fonts->AddFontFromFileTTF("path_to_font", 14.0f, nullptr, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic()); */
-
-	
-
 }
 
 void c_renderer::free(void)

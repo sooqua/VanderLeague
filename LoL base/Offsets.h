@@ -120,6 +120,11 @@ namespace offsets {
 		extern uint32_t oAIMGR_Velocity;
 	};
 
+	namespace stat {
+		extern uint32_t AIBASE_STATOWNER;
+		extern uint32_t STATOWNER__GETSTATTOTAL;
+	};
+
 	/*namespace ai_base {
 		extern uint32_t CharacterDataStack;
 		extern uint32_t SkinId;

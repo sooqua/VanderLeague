@@ -117,6 +117,11 @@ namespace offsets {
 		uint32_t oAIMGR_Velocity = 0x2C8;
 	};
 
+	namespace stat {
+		uint32_t AIBASE_STATOWNER = 0x22C;
+		uint32_t STATOWNER__GETSTATTOTAL = 0x1CC9D0;
+	};
+
 	/*namespace ai_base {
 		uint32_t CharacterDataStack = 0x2F58;
 		uint32_t SkinId = 0xED4;

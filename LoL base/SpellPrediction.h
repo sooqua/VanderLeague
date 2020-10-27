@@ -5,8 +5,9 @@
 #include "CSpell.h"
 #include "ESpellSlot.h"
 #include "Autokey.h"
-#include "ImRender.hpp"
 #include "Prediction.h"
+
+#include "ImRender.h"
 
 #include "Debug.h"
 

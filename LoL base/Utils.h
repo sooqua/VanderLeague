@@ -1,6 +1,11 @@
 #pragma once
 #include <Windows.h>
 
+#define DO_ONCE(todo) do { \
+   static std::once_flag _flag ;\
+   std::call_once(_flag, todo); \
+} while (false)
+
 #define STR_MERGE_IMPL(x, y)				x##y
 #define STR_MERGE(x,y)						STR_MERGE_IMPL(x,y)
 #define MAKE_PAD(size)						BYTE STR_MERGE(pad_, __COUNTER__) [ size ]

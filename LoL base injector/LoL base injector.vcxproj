@@ -24,6 +24,7 @@
     <ProjectGuid>{d960c6d8-f131-45f2-a4b0-a404c56756c8}</ProjectGuid>
     <RootNamespace>LoLbaseinjector</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Ghvoaevikr In</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

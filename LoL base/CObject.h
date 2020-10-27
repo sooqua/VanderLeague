@@ -7,6 +7,7 @@
 #include "CSpellCastInfo.h"
 #include "AIManager.h"
 #include "BuffManager.h"
+#include "CStatOwner.h"
 
 enum class ObjectTypeFlags {
 	GameObject = (1 << 0),  //0x1
@@ -124,6 +125,8 @@ public:
 	AIManager* GetAIManager();
 
 	CSpellBook* GetSpellBook();
+
+	CStatOwner* GetStatOwner();
 
 	// Spell related
 	CSpellCastInfo* GetSpellCastInfo();

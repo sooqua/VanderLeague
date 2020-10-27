@@ -197,6 +197,11 @@ CSpellBook* CObject::GetSpellBook() {
 	return (CSpellBook*)((DWORD)this + offsets::cobject::oObjSpellBook);
 }
 
+CStatOwner* CObject::GetStatOwner()
+{
+	return (class CStatOwner*)((uint32_t)this + offsets::stat::AIBASE_STATOWNER);
+}
+
 // Spell related
 
 CSpellCastInfo* CObject::GetSpellCastInfo() {

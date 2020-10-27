@@ -4,6 +4,7 @@
 *.idb
 *.pdb
 *.lastbuildstate
+*.recipe
 .vs
 
 # Prerequisites

@@ -1,6 +1,6 @@
 #include "Engine.h"
 #include "Hooks.h"
-#include "ImRender.hpp"
+#include "ImRender.h"
 
 #include "Autoupdater.h"
 #include "Orbwalker.h"
@@ -8,11 +8,12 @@
 #include "ZoomHack.h"
 #include "Prediction.h"
 #include "CycleManager.h"
-#include "ESpellSlot.h"
 #include "Keyboard.h"
 #include "SpellPrediction.h"
+#include "ESpellSlot.h"
 #include "Script.h"
 #include "ScriptUtils.h"
+#include "Utils.h"
 
 #include "Detour.h"
 
@@ -22,8 +23,6 @@
 #include <Windows.h>
 #include <mutex>
 #include <algorithm>
-#include <d3d9.h>
-#include <d3dx9.h>
 
 #ifdef _DEBUG
 #include "CConsole.h"
@@ -34,14 +33,7 @@
 #include "imgui\dx9\imgui_impl_dx9.h"
 #include "imgui\win32\imgui_impl_win32.h"
 
-#pragma comment(lib, "d3d9.lib")
-#pragma comment(lib, "d3dx9.lib")
-
 using namespace std;
-#define DO_ONCE(todo) do { \
-   static std::once_flag _flag ;\
-   std::call_once(_flag, todo); \
-} while (false)
 
 CObjectManager* ObjManager;
 CFunctions Functions;
