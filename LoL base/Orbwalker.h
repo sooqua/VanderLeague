@@ -12,6 +12,7 @@ private:
 	std::chrono::milliseconds m_lastMoveClickTime;
 	bool lastHitOnly;
 	bool autoMove;
+	bool preferHarassOverFarm;
 	bool useAutokey;
 
 private:
@@ -19,7 +20,7 @@ private:
 
 public:
 	COrbWalker::COrbWalker() : m_pTarget(nullptr), m_nLastAttackCmdTick(0), m_nLastMoveCmdTick(0), m_lastMoveClickTime(0),
-		lastHitOnly(true), autoMove(true), useAutokey(true)
+		lastHitOnly(true), autoMove(true), preferHarassOverFarm(true), useAutokey(true)
 	{
 	}
 

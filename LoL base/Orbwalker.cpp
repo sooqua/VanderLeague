@@ -36,6 +36,8 @@ void COrbWalker::tryFindTarget()
 
 	std::vector<CObject*> possibleTargets;
 
+	bool heroesInRange = false;
+
 	for (auto pObject : CycleManager::GetObjects())
 	{
 		if (pObject != nullptr && pObject->IsEnemyTo(pLocal))
@@ -45,6 +47,8 @@ void COrbWalker::tryFindTarget()
 				if (pObject->IsAlive() && pObject->IsTargetable() && pObject->IsVisible() && !pObject->IsInvalidObject() &&
 					pLocal->GetPos().DistTo(pObject->GetPos()) <= pLocal->GetAttackRange() + 2 * pLocal->GetBoundingRadius())
 				{
+					if (pObject->IsHero())
+						heroesInRange = true;
 					possibleTargets.push_back(pObject);
 				}
 			}
@@ -61,11 +65,21 @@ void COrbWalker::tryFindTarget()
 			{
 				return (pFirst->GetHealth() < pSecond->GetHealth());
 			});
+
+		if (preferHarassOverFarm && heroesInRange)
+		{
+			std::remove_if(possibleTargets.begin(), possibleTargets.end(),
+				[](CObject* pObject)
+				{
+					return !(pObject->IsHero());
+				});
+		}
 	}
 
 	m_pTarget = possibleTargets.front();
 
-	if (lastHitOnly && (pLocal->GetEffectiveDamageOnTarget(m_pTarget) < m_pTarget->GetHealth())) {
+	auto notEnoughDmgToKill = (pLocal->GetEffectiveDamageOnTarget(m_pTarget) < m_pTarget->GetHealth());
+	if ((lastHitOnly && notEnoughDmgToKill) && !(preferHarassOverFarm && heroesInRange)) {
 		m_pTarget = nullptr;
 	}
 
