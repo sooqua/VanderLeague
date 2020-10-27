@@ -346,6 +346,8 @@ LRESULT ImGui_ImplDX9_WndProcHandler(HWND, UINT msg, WPARAM wParam, LPARAM lPara
 
 LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 {
+	bool preventDefault = false;
+
 	switch (u_msg)
 	{
 	case WM_KEYDOWN: {
@@ -391,13 +393,24 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 							{
 								return (pFirst->GetDistanceToMe() < pSecond->GetDistanceToMe());
 							});
-						auto vec = spellPrediction.PredictSkillshot(possibleTargets.front(), slot);
-						if (!(vec == Vector(0.f, 0.f, 0.f))) {
-							POINT previousMousePos;
-							GetCursorPos(&previousMousePos);
-							CycleManager::SetPreviousMousePos(previousMousePos);
-							Autokey::MoveMouse(vec);
-							CycleManager::ResetMouseAtNextCycle();
+						auto target = possibleTargets.front();
+
+						auto spell = Engine::GetLocalObject()->GetSpellBook()->GetSpellByID(static_cast<int>(slot));
+						auto spellData = spell->GetSpellInfo()->GetSpellData();
+
+						if (prediction.IsCollisioned(Prediction::CollisionType::Minion, target->GetPos())) {
+							preventDefault = true;
+							CycleManager::SetKeyDownWasPrevented(w_param, true);
+						}
+						else {
+							auto vec = spellPrediction.PredictSkillshot(possibleTargets.front(), slot);
+							if (!(vec == Vector(0.f, 0.f, 0.f))) {
+								POINT previousMousePos;
+								GetCursorPos(&previousMousePos);
+								CycleManager::SetPreviousMousePos(previousMousePos);
+								Autokey::MoveMouse(vec);
+								CycleManager::ResetMouseAtNextCycle();
+							}
 						}
 					}
 				}
@@ -407,6 +420,14 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 		default:
 			break;
 		};
+		break;
+	}
+	case WM_KEYUP: {
+		auto keyDownWasPrevented = CycleManager::GetKeyDownWasPrevented(w_param);
+		if (keyDownWasPrevented) {
+			preventDefault = true;
+			CycleManager::SetKeyDownWasPrevented(w_param, false);
+		}
 		break;
 	}
 	case WM_MOUSEWHEEL: {
@@ -421,8 +442,13 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 		break;
 	}
 
-	if (g_menu_opened && ImGui_ImplDX9_WndProcHandler(hwnd, u_msg, w_param, l_param))
+	if (g_menu_opened && ImGui_ImplDX9_WndProcHandler(hwnd, u_msg, w_param, l_param)) {
 		return true;
+	}
+
+	if (preventDefault) {
+		return true;
+	}
 
 	return CallWindowProcA(g_wndproc, hwnd, u_msg, w_param, l_param);
 }

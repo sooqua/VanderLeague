@@ -4,11 +4,13 @@
 #include "Autokey.h"
 
 #include <vector>
+#include <map>
 
 std::vector<CObject*> CycleManager::m_pObjects = *new std::vector<CObject*>();
 POINT CycleManager::m_PreviousMousePos = *new POINT();
 bool CycleManager::m_bResetMouseAtNextCycle;
 bool CycleManager::m_bBlockAllActions;
+std::map<int, bool> CycleManager::m_keyDownWasPrevented;
 
 void CycleManager::NewCycle() {
 	m_pObjects.clear();
@@ -57,4 +59,14 @@ POINT CycleManager::GetPreviousMousePos()
 void CycleManager::ResetMouseAtNextCycle()
 {
 	m_bResetMouseAtNextCycle = true;
+}
+
+void CycleManager::SetKeyDownWasPrevented(int key, bool value)
+{
+	m_keyDownWasPrevented[value] = value;
+}
+
+bool CycleManager::GetKeyDownWasPrevented(int key)
+{
+	return m_keyDownWasPrevented[key];
 }

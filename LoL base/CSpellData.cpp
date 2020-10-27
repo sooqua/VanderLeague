@@ -56,7 +56,7 @@ float CSpellData::GetCooldownTime() {
 
 float CSpellData::GetMissileLineWidth()
 {
-	return  *(float*)((DWORD)this + 0x44C); // 0x458? 0x484?
+	return  *(float*)((DWORD)this + 0x44C);
 }
 
 float CSpellData::GetDelayCastOffsetPercent() {

@@ -5389,7 +5389,7 @@ public:
 		Walls walls = Walls();
 	}
 
-	enum CollisionType
+	enum class CollisionType
 	{
 		Minion
 	};
@@ -5442,74 +5442,46 @@ public:
 
 	std::vector<CObject*> getEnemyMinions() {
 		std::vector<CObject*> objets;
-		if (ObjManager) {
-			for (int i = 0; i < 10000; i++) {
-
-				CObject* obj = Engine::GetObjectByID(i);
-				if (obj) {
-					if (obj->IsMinion()) {
-						if (obj->IsAlive() && obj->IsVisible() && obj->GetTeam() != Engine::GetLocalObject()->GetTeam() && obj->IsTargetable() && obj->GetMaxHealth() < 15000.0f) {
-							objets.push_back(obj);
-						}
-					}
-
+		for (auto obj : CycleManager::GetObjects()) {
+			if (obj && obj->IsMinion()) {
+				if (obj->IsAlive() && obj->IsVisible() && obj->GetTeam() != Engine::GetLocalObject()->GetTeam() && obj->IsTargetable() && obj->GetMaxHealth() < 15000.0f) {
+					objets.push_back(obj);
 				}
 			}
+
 		}
 		return objets;
-	};
+	}
 
-	bool IsCollisioned(CollisionType type, Vector vec, float radius)
+	bool IsCollisioned(CollisionType type, Vector vec)
 	{
-		Vector vecto;
-
-		vecto.X = vec.X;
-		vecto.Y = vec.Y;
-		vecto.Z = vec.Z;
-
 		auto local = Engine::GetLocalObject();
 		switch (type)
 		{
-		case Minion:
-		{
+		case CollisionType::Minion: {
 			for (CObject* minion : getEnemyMinions())
 			{
-
-
 				auto base = (CObject*)minion;
 				auto basecord = base->GetPos();//LinePred->Calculate(base);
 
-
-
-				Vector pt1, pt2;
-				Vector basePos;
-
-				basePos.X = basecord.X;
-				basePos.Y = basecord.Y;
-				basePos.Z = basecord.Z;
-
-				Vector pt;
-				Functions.WorldToScreen(&basePos, &pt);
-
-				Vector pos;
-
-				pos.X = local->GetPos().X;
-				pos.Y = local->GetPos().Y;
-				pos.Z = local->GetPos().Z;
-				Functions.WorldToScreen(&pos, &pt1);
-				Functions.WorldToScreen(&vecto, &pt2);
+				Vector localPos, vecPos, minionPos;
+				if (!Functions.WorldToScreen(&basecord, &minionPos))
+					continue;
+				Functions.WorldToScreen(&local->GetPos(), &localPos);
+				Functions.WorldToScreen(&vec, &vecPos);
 #ifdef linepred
 				render.DrawLine(pt.x, pt.y, pt2.x, pt2.y, 10, D3DCOLOR_ARGB(255, 255, 20, 147));
 				render.DrawLine(pt2.x, pt2.y, pt1.x, pt1.y, 10, D3DCOLOR_ARGB(255, 255, 165, 0));
 #endif
 
-				if (PointOnLineSegment(D3DXVECTOR2(pt1.X, pt1.Y), D3DXVECTOR2(pt2.X, pt2.Y), D3DXVECTOR2(pt.X, pt.Y), radius))
+				if (PointOnLineSegment(
+					D3DXVECTOR2(localPos.X, localPos.Y),
+					D3DXVECTOR2(vecPos.X, vecPos.Y),
+					D3DXVECTOR2(minionPos.X, minionPos.Y),
+					base->GetBoundingRadius()))
 				{
 					return true;
 				}
-
-
-
 			}
 			break;
 		}
