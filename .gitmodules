@@ -1,3 +1,9 @@
-[submodule "LoL base/zydis"]
-	path = LoL base/zydis
+[submodule "Ghvoaevikr/zydis"]
+	path = Ghvoaevikr/zydis
 	url = https://github.com/zyantific/zydis.git
+[submodule "GhvoaevikrIn/Kernelmode-manual-mapping-through-IAT"]
+	path = GhvoaevikrIn/Kernelmode-manual-mapping-through-IAT
+	url = https://github.com/mactec0/Kernelmode-manual-mapping-through-IAT.git
+[submodule "HyperLoL/HyperLoL/HyperPlatform"]
+	path = HyperLoL/HyperLoL/HyperPlatform
+	url = https://github.com/tandasat/HyperPlatform.git

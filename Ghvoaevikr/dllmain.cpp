@@ -1,6 +1,5 @@
 #include "Engine.h"
 #include "Hooks.h"
-#include "ImRender.h"
 
 #include "Autoupdater.h"
 #include "Orbwalker.h"
@@ -17,7 +16,7 @@
 
 #include "Detour.h"
 
-#include "Debug.h"
+//#include "Debug.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -28,10 +27,13 @@
 #include "CConsole.h"
 #endif
 
+#include "ImRender.h"
+#ifndef NO_IMGUI
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
 #include "imgui\dx9\imgui_impl_dx9.h"
 #include "imgui\win32\imgui_impl_win32.h"
+#endif
 
 using namespace std;
 
@@ -50,8 +52,7 @@ HWND g_hwnd = nullptr;
 WNDPROC g_wndproc = nullptr;
 bool g_menu_opened = false;
 bool g_orbwalker = true;
-bool g_range = false;
-bool g_unload = false;
+bool g_range = true;
 bool g_2range_objmanager = false;
 bool g_champ_info = true;
 bool g_turret_range = true;
@@ -61,15 +62,80 @@ bool g_spell_prediction = true;
 
 bool g_bInit = false;
 
-DWORD g_BaseAddr;
-bool g_interface = false;
-IDirect3DDevice9* myDevice;
-using namespace std;
 typedef HRESULT(WINAPI* Prototype_Present)(LPDIRECT3DDEVICE9, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*);
+//typedef long(__stdcall* tEndScene)(LPDIRECT3DDEVICE9);
+LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param);
+void __cdecl spoofedDrawCircle(Vector* position, float range, int* color, int a4, float a5, int a6, float alpha);
+
+DWORD g_BaseAddr;
+#ifndef NO_IMGUI
+IDirect3DDevice9* myDevice;
+#endif
 Prototype_Present Original_Present;
 
 HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CONST RECT* pDestRect, HWND hDestWindow, CONST RGNDATA* pDirtyRegion)
 {
+	if (g_bInit == false) {
+		g_BaseAddr = (DWORD)GetModuleHandle(NULL);
+
+		//debug::init();
+		autoUpdater.Start();
+
+		while (Engine::GetGameTime() < 1.0f || !Engine::GetLocalObject())
+			Sleep(1);
+
+#ifdef _DEBUG
+		//CConsole console;
+#endif
+
+		g_hwnd = FindWindowA(nullptr, "League of Legends (TM) Client");
+		g_wndproc = WNDPROC(SetWindowLongA(g_hwnd, GWL_WNDPROC, LONG_PTR(WndProc)));
+
+		ObjManager = (CObjectManager*)(*(DWORD*)(g_BaseAddr + offsets::global::oObjManager));
+
+		Functions.PrintChat = (Typedefs::fnPrintChat)(g_BaseAddr + offsets::functions::oPrintChat);
+		Functions.IsTargetable = (Typedefs::fnIsTargetable)(g_BaseAddr + offsets::functions::oIsTargetable);
+		Functions.IsAlive = (Typedefs::fnIsAlive)(g_BaseAddr + offsets::functions::oIsAlive);
+
+		Functions.IsMinion = (Typedefs::fnIsMinion)(g_BaseAddr + offsets::functions::oIsMinion);
+		Functions.IsTurret = (Typedefs::fnIsTurret)(g_BaseAddr + offsets::functions::oIsTurret);
+		Functions.IsHero = (Typedefs::fnIsHero)(g_BaseAddr + offsets::functions::oIsHero);
+		Functions.IsMissile = (Typedefs::fnIsMissile)(g_BaseAddr + offsets::functions::oIsMissile);
+		Functions.IsNexus = (Typedefs::fnIsNexus)(g_BaseAddr + offsets::functions::oIsNexus);
+		Functions.IsInhibitor = (Typedefs::fnIsInhibitor)(g_BaseAddr + offsets::functions::oIsInhib);
+		Functions.IsTroyEnt = (Typedefs::fnIsTroyEnt)(g_BaseAddr + offsets::functions::oIsTroy);
+
+		Functions.CastSpell = (Typedefs::fnCastSpell)(g_BaseAddr + offsets::functions::oCastSpell);
+		Functions.IssueOrder = (Typedefs::fnIssueOrder)(g_BaseAddr + offsets::functions::oIssueOrder);
+		Functions.DrawCircle = (Typedefs::fnDrawCircle)spoofedDrawCircle;
+		Functions.WorldToScreen = (Typedefs::fnWorldToScreen)(g_BaseAddr + (DWORD)offsets::global::oWorldToScreen);
+
+		Functions.GetAttackCastDelay = (Typedefs::fnGetAttackCastDelay)(g_BaseAddr + offsets::functions::oGetAttackCastDelay);
+		Functions.GetAttackDelay = (Typedefs::fnGetAttackDelay)(g_BaseAddr + offsets::functions::oGetAttackDelay);
+
+		Functions.GetPing = (Typedefs::fnGetPing)(g_BaseAddr + offsets::functions::oGetPing);
+
+#ifndef NO_IMGUI
+		Original_Reset = (Prototype_Reset)DetourFunc((PBYTE)GetDeviceAddress(16), (PBYTE)Hooked_Reset, 5);
+
+		ImGui_ImplWin32_Shutdown();
+		ImGui_ImplDX9_Shutdown();
+
+		ImGui::DestroyContext(ImGui::GetCurrentContext());
+#endif
+
+		//debug::cleanUp();
+
+		championScript = ScriptUtils::GetScriptByChampionName(Engine::GetLocalObject()->GetChampionName());
+
+		//Engine::PrintChat("[ SpaghettiHack ]");
+		//Engine::PrintChat("[ Credits: Kmsmym ]");
+		//Engine::PrintChat("[ Unknowncheats.me ]");
+
+		g_bInit = true;
+	}
+
+#ifndef NO_IMGUI
 	myDevice = Device;
 	DO_ONCE([&]()
 		{
@@ -78,16 +144,6 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 	ImGui::CreateContext();
 	render.begin_draw();
-
-	if (g_bInit == false) {
-		championScript = ScriptUtils::GetScriptByChampionName(Engine::GetLocalObject()->GetChampionName());
-
-		Engine::PrintChat("[ SpaghettiHack ]");
-		Engine::PrintChat("[ Credits: Kmsmym ]");
-		Engine::PrintChat("[ Unknowncheats.me ]");
-
-		g_bInit = true;
-	}
 
 	if (ImGui_ImplWin32_Init(g_hwnd))
 	{
@@ -114,16 +170,15 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 			}
 		}
 	}
+#endif
 
 	CycleManager::NewCycle();
-
-	auto leagueInForeground = Engine::IsLeagueInForeground();
 
 	auto localObj = Engine::GetLocalObject();
 
 	//evader
 	if (g_auto_evade == true) {
-		if (localObj && localObj->IsAlive() && leagueInForeground) {
+		if (localObj && localObj->IsAlive() && Engine::IsLeagueInForeground()) {
 			evader.drawEvent();
 		}
 	}
@@ -131,7 +186,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	//orbwalker
 	if (g_orbwalker == true) {
 		if (localObj && localObj->IsAlive()) {
-			if (IsKeyDown(VK_SPACE) && leagueInForeground) {
+			if (IsKeyDown(VK_SPACE) && Engine::IsLeagueInForeground()) {
 				orbWalker.drawEvent();
 			}
 		}
@@ -158,6 +213,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 			}
 		}
 
+#ifndef NO_IMGUI
 		//champion info demonstration
 		if (g_champ_info == true) {
 			if (pObject->IsHero() && pObject->IsAlive() && pObject->IsTargetable() && pObject->IsVisible())
@@ -180,12 +236,14 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 				render.draw_text(objpos_w2s.X + 60, objpos_w2s.Y + 30, "[R]", true, spellR->IsSpellReady() ? ImColor(0, 255, 0, 255) : ImColor(255, 255, 255, 255));
 			}
 		}
+#endif
 
 		//turret range
 		if (g_turret_range == true) {
 			if (pObject->IsTurret() && pObject->IsEnemyTo(localObj)) {
-				//auto turretRange = pObject->GetStatOwner()->GetStatTotal(EStatType::AttackRange, EStatOutputType::BASE);
-				static const auto turretRange = 850.f;
+				auto turretRange = pObject->GetStatOwner()->GetStatTotal(EStatType::AttackRange, EStatOutputType::BASE)
+					+ pObject->GetStatOwner()->GetStatTotal(EStatType::AttackRange, EStatOutputType::BONUS)
+					+ pObject->GetBoundingRadius();
 				if (pObject->GetDistanceToMe() < (turretRange + 300.f)) {
 					auto color = createRGB(255, 255, 255);
 					auto turretPos = pObject->GetPos();
@@ -195,10 +253,13 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 		}
 	}
 
+#ifndef NO_IMGUI
 	render.end_draw();
+#endif
 	return Original_Present(Device, pSrcRect, pDestRect, hDestWindow, pDirtyRegion);
 }
 
+#ifndef NO_IMGUI
 typedef HRESULT(WINAPI* Prototype_Reset)(LPDIRECT3DDEVICE9, D3DPRESENT_PARAMETERS*);
 Prototype_Reset Original_Reset;
 
@@ -213,6 +274,7 @@ HRESULT WINAPI Hooked_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pP
 
 	return result;
 }
+#endif
 
 DWORD FindDevice(DWORD Len)
 {
@@ -257,67 +319,9 @@ void __cdecl spoofedDrawCircle(Vector* position, float range, int* color, int a4
 	retnHere:
 	}
 }
-#pragma warning(pop) 
+#pragma warning(pop)
 
-LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param);
-typedef long(__stdcall* tEndScene)(LPDIRECT3DDEVICE9);
-void __stdcall Start() {
-	g_BaseAddr = (DWORD)GetModuleHandle(NULL);
-
-	debug::init();
-	autoUpdater.Start();
-
-	while (Engine::GetGameTime() < 1.0f || !Engine::GetLocalObject())
-		Sleep(1);
-
-#ifdef _DEBUG
-	//CConsole console;
-#endif
-
-	g_hwnd = FindWindowA(nullptr, "League of Legends (TM) Client");
-	g_wndproc = WNDPROC(SetWindowLongA(g_hwnd, GWL_WNDPROC, LONG_PTR(WndProc)));
-
-	ObjManager = (CObjectManager*)(*(DWORD*)(g_BaseAddr + offsets::global::oObjManager));
-
-	Functions.PrintChat = (Typedefs::fnPrintChat)(g_BaseAddr + offsets::functions::oPrintChat);
-	Functions.IsTargetable = (Typedefs::fnIsTargetable)(g_BaseAddr + offsets::functions::oIsTargetable);
-	Functions.IsAlive = (Typedefs::fnIsAlive)(g_BaseAddr + offsets::functions::oIsAlive);
-
-	Functions.IsMinion = (Typedefs::fnIsMinion)(g_BaseAddr + offsets::functions::oIsMinion);
-	Functions.IsTurret = (Typedefs::fnIsTurret)(g_BaseAddr + offsets::functions::oIsTurret);
-	Functions.IsHero = (Typedefs::fnIsHero)(g_BaseAddr + offsets::functions::oIsHero);
-	Functions.IsMissile = (Typedefs::fnIsMissile)(g_BaseAddr + offsets::functions::oIsMissile);
-	Functions.IsNexus = (Typedefs::fnIsNexus)(g_BaseAddr + offsets::functions::oIsNexus);
-	Functions.IsInhibitor = (Typedefs::fnIsInhibitor)(g_BaseAddr + offsets::functions::oIsInhib);
-	Functions.IsTroyEnt = (Typedefs::fnIsTroyEnt)(g_BaseAddr + offsets::functions::oIsTroy);
-
-	Functions.CastSpell = (Typedefs::fnCastSpell)(g_BaseAddr + offsets::functions::oCastSpell);
-	Functions.IssueOrder = (Typedefs::fnIssueOrder)(g_BaseAddr + offsets::functions::oIssueOrder);
-	Functions.DrawCircle = (Typedefs::fnDrawCircle)spoofedDrawCircle;
-	Functions.WorldToScreen = (Typedefs::fnWorldToScreen)(g_BaseAddr + (DWORD)offsets::global::oWorldToScreen);
-
-	Functions.GetAttackCastDelay = (Typedefs::fnGetAttackCastDelay)(g_BaseAddr + offsets::functions::oGetAttackCastDelay);
-	Functions.GetAttackDelay = (Typedefs::fnGetAttackDelay)(g_BaseAddr + offsets::functions::oGetAttackDelay);
-
-	Functions.GetPing = (Typedefs::fnGetPing)(g_BaseAddr + offsets::functions::oGetPing);
-
-	Original_Present = (Prototype_Present)DetourFunc((PBYTE)GetDeviceAddress(17), (PBYTE)Hooked_Present, 5);
-	Original_Reset = (Prototype_Reset)DetourFunc((PBYTE)GetDeviceAddress(16), (PBYTE)Hooked_Reset, 5);
-
-	while (!g_unload)
-		Sleep(1000);
-	//std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-	ImGui_ImplWin32_Shutdown();
-	ImGui_ImplDX9_Shutdown();
-
-	ImGui::DestroyContext(ImGui::GetCurrentContext());
-
-	debug::cleanUp();
-
-	FreeLibraryAndExitThread(g_module, 0);
-}
-
+#ifndef NO_IMGUI
 LRESULT ImGui_ImplDX9_WndProcHandler(HWND, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	auto& io = ImGui::GetIO();
@@ -381,6 +385,7 @@ LRESULT ImGui_ImplDX9_WndProcHandler(HWND, UINT msg, WPARAM wParam, LPARAM lPara
 
 	return 0;
 }
+#endif
 
 LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 {
@@ -409,34 +414,42 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 		break;
 	}
 
+#ifndef NO_IMGUI
 	if (g_menu_opened && ImGui_ImplDX9_WndProcHandler(hwnd, u_msg, w_param, l_param)) {
 		return true;
 	}
+#endif
 
 	return CallWindowProcA(g_wndproc, hwnd, u_msg, w_param, l_param);
 }
 
+void DllMainAttach(HMODULE hModule) {
+	g_module = hModule;
+	memset(detourBuffer, 0, sizeof(detourBuffer) / sizeof(void*));
+	Original_Present = (Prototype_Present)DetourFunc((PBYTE)GetDeviceAddress(17), (PBYTE)Hooked_Present, 5);
+}
+
+void DllMainDetach() {
+	for (int i = 0; i < sizeof(detourBuffer) / sizeof(void*); ++i)
+	{
+		if (detourBuffer[i])
+		{
+			delete[] detourBuffer[i];
+		}
+	}
+}
+
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID)
 {
-	if (hModule != nullptr)
-		DisableThreadLibraryCalls(hModule);
+	/*if (hModule != nullptr)
+		DisableThreadLibraryCalls(hModule);*/
 
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
-		g_module = hModule;
-		memset(detourBuffer, 0, sizeof(detourBuffer) / sizeof(void*));
-		CreateThread(0, 0, (LPTHREAD_START_ROUTINE)Start, 0, 0, 0);
+		DllMainAttach(hModule);
 		return TRUE;
 	}
-
 	else if (ul_reason_for_call == DLL_PROCESS_DETACH) {
-		for (int i = 0; i < sizeof(detourBuffer) / sizeof(void*); ++i)
-		{
-			if (detourBuffer[i])
-			{
-				delete[] detourBuffer[i];
-			}
-		}
-		g_unload = true;
+		DllMainDetach();
 		return TRUE;
 	}
 

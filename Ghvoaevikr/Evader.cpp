@@ -55,7 +55,9 @@ void CEvader::drawEvent() {
 				{
 					CycleManager::SetBlockAllActions(true);
 
+#ifndef NO_IMGUI
 					render.draw_line(start_pos_w2s.X, start_pos_w2s.Y, end_pos_w2s.X, end_pos_w2s.Y, ImColor(255, 255, 255), 5.0f);
+#endif
 
 					Vector direction = end_pos - start_pos;
 

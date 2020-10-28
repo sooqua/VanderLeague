@@ -1,7 +1,8 @@
 #pragma once
 
-#ifndef RENDER_H
-#define RENDER_H
+#define NO_IMGUI
+
+#ifndef NO_IMGUI
 
 #include "ImGui/imgui.h"
 #include "d3d9.h"
@@ -81,4 +82,4 @@ private:
 
 extern c_renderer render;
 
-#endif // RENDER_H
+#endif

@@ -1,5 +1,7 @@
 #include "ImRender.h"
 
+#ifndef NO_IMGUI
+
 #include "CObject.h"
 
 extern ImFont* g_font;
@@ -146,3 +148,5 @@ void c_renderer::draw_circle(float_t x, float_t y, float_t radius, ImColor color
 		break;
 	}
 }
+
+#endif

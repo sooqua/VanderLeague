@@ -11,12 +11,12 @@ enum class EStatType
 	Crit,
 	CritDamageMultiplier,
 	PercentCooldownMod,
+	PARRegen,
 	Health,
-	Unknown3,
 	Unknown4,
 	SpellVamp,
-	LifeSteal,
 	MagicPercentPenetration,
+	LifeSteal,
 	MagicFlatPenetration,
 	MagicBonusPercentPenetration,
 	MagicLethality,
@@ -24,12 +24,12 @@ enum class EStatType
 	ArmorPercentPenetration,
 	ArmorBonusPercentPenetration,
 	Unknown1,
-	PhysicalLethality,
 	Tenacity,
+	PhysicalLethality,
+	Unknown3,
 	AttackRange,
 	HealthRegen,
-	PARRegen,
-	Unknown2,
+	Unknown2
 };
 
 enum class EStatOutputType

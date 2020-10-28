@@ -466,7 +466,7 @@ void Autoupdater::Start() {
 				auto address = find_signature(nullptr, pattern.c_str());
 
 				if (!address) {
-					debug::flog("Signature failed: %s\n", pattern.c_str());
+					//debug::flog("Signature failed: %s\n", pattern.c_str());
 					continue;
 				}
 
