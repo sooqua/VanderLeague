@@ -1,5 +1,6 @@
 #include "Autoupdater.h"
 #include "Offsets.h"
+#include "Utils.h"
 
 #include "Debug.h"
 
@@ -448,15 +449,16 @@ std::vector<offset_signature> sigs = {
 	}*/
 };
 
-void Autoupdater::Start() {
-	auto base = std::uintptr_t(GetModuleHandle(nullptr));
+bool Autoupdater::TryStart() {
+	auto missing_offset = false;
 
-	//Invalid all
-	for (auto& sig : sigs)
-		*sig.offset = 0;
+	std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::system_clock::now().time_since_epoch());
+	if (now >= m_lastScanTime + std::chrono::milliseconds(1000)) {
+		//Invalid all
+		for (auto& sig : sigs)
+			*sig.offset = 0;
 
-	while (true) {
-		auto missing_offset = false;
 		for (auto& sig : sigs) {
 
 			if (*sig.offset != 0)
@@ -484,8 +486,7 @@ void Autoupdater::Start() {
 				}
 
 				if (sig.sub_base)
-					address -= base;
-
+					address -= g_BaseAddr;
 
 				*sig.offset = reinterpret_cast<uint32_t>(address);
 				break;
@@ -497,10 +498,11 @@ void Autoupdater::Start() {
 			}
 		}
 
-		if (!missing_offset)
-			break;
-
-		using namespace std::chrono_literals;
-		std::this_thread::sleep_for(2s);
+		m_lastScanTime = now;
 	}
+	else {
+		return false;
+	}
+
+	return !missing_offset;
 }

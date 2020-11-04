@@ -182,9 +182,9 @@ void COrbWalker::drawEvent()
 			}
 		}
 
-		auto color = createRGB(255, 255, 255);
-		auto targetPos = m_pTarget->GetPos();
-		Functions.DrawCircle(&targetPos, m_pTarget->GetBoundingRadius(), &color, 0, 10.0f, 0, .8f);
+		//auto color = createRGB(255, 255, 255);
+		//auto targetPos = m_pTarget->GetPos();
+		//Functions.DrawCircle(&targetPos, m_pTarget->GetBoundingRadius(), &color, 0, 10.0f, 0, .8f);
 	}
 	else
 	{
