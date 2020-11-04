@@ -120,6 +120,24 @@
     <Filter Include="Header\Stat">
       <UniqueIdentifier>{c25612c1-b5f8-4c94-a766-1cfffa81f802}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Engine">
+      <UniqueIdentifier>{a2ec2cab-6aee-4f3e-b4d6-eb1677f565a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Hvpp">
+      <UniqueIdentifier>{2a1639a1-ec87-4fce-96f3-568824dc5339}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Hvpp">
+      <UniqueIdentifier>{f40f413a-08b9-48b5-8d61-abfb4997b78d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Hvpp\win32">
+      <UniqueIdentifier>{168cf3d8-902f-4304-ae0f-37ad4134d39b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\ColdHook">
+      <UniqueIdentifier>{df14e263-b2f2-4358-bc1a-6e826ea3c176}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ColdHook">
+      <UniqueIdentifier>{7cb2e7f8-ee78-4c7f-bfaf-7a9b2b544395}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h">
@@ -248,6 +266,21 @@
     <ClInclude Include="ImRender.h">
       <Filter>Header\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="Hvpp.h">
+      <Filter>Header\Hvpp</Filter>
+    </ClInclude>
+    <ClInclude Include="hvpp\ia32\asm.h">
+      <Filter>Header\Hvpp</Filter>
+    </ClInclude>
+    <ClInclude Include="hvpp\lib\mp.h">
+      <Filter>Header\Hvpp</Filter>
+    </ClInclude>
+    <ClInclude Include="hvpp\ia32\win32\asm.h">
+      <Filter>Header\Hvpp\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="ColdHook.h">
+      <Filter>Header\ColdHook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -343,5 +376,22 @@
     <ClCompile Include="ImRender.cpp">
       <Filter>Source\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="Detour.cpp">
+      <Filter>Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Hvpp.cpp">
+      <Filter>Source\Hvpp</Filter>
+    </ClCompile>
+    <ClCompile Include="hvpp\lib\mp.cpp">
+      <Filter>Source\Hvpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ColdHook.cpp">
+      <Filter>Source\ColdHook</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="hvpp\ia32\asm.asm">
+      <Filter>Source\Hvpp</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

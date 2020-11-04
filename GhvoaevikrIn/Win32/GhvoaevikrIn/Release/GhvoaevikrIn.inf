@@ -8,7 +8,7 @@ Class=Sample ; TODO: edit Class
 ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
 Provider=%ManufacturerName%
 CatalogFile=GhvoaevikrIn.cat
-DriverVer = 10/28/2020,21.28.9.600
+DriverVer = 10/30/2020,10.1.5.66
 
 [DestinationDirs]
 DefaultDestDir = 12
@@ -36,9 +36,9 @@ GhvoaevikrIn.sys  = 1,,
 ;*****************************************
 
 [Manufacturer]
-%ManufacturerName%=Standard,NTamd64
+%ManufacturerName%=Standard,NTx86
 
-[Standard.NTamd64]
+[Standard.NTx86]
 %GhvoaevikrIn.DeviceDesc%=GhvoaevikrIn_Device, Root\GhvoaevikrIn ; TODO: edit hw-id
 
 [GhvoaevikrIn_Device.NT]

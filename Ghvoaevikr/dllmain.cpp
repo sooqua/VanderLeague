@@ -13,10 +13,11 @@
 #include "Script.h"
 #include "ScriptUtils.h"
 #include "Utils.h"
+#include "Hvpp.h"
 
-#include "Detour.h"
+//#include "Detour.h"
 
-//#include "Debug.h"
+#include "Debug.h"
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -62,27 +63,54 @@ bool g_spell_prediction = true;
 
 bool g_bInit = false;
 
+DWORD FindDevice(DWORD Len)
+{
+	DWORD dwObjBase = 0;
+	dwObjBase = (DWORD)LoadLibrary(TEXT("d3d9.dll"));
+	while (dwObjBase++ < dwObjBase + Len)
+	{
+		if ((*(WORD*)(dwObjBase + 0x00)) == 0x06C7
+			&& (*(WORD*)(dwObjBase + 0x06)) == 0x8689
+			&& (*(WORD*)(dwObjBase + 0x0C)) == 0x8689
+			) {
+			dwObjBase += 2; break;
+		}
+	}
+	return(dwObjBase);
+}
+
+DWORD GetDeviceAddress(int VTableIndex)
+{
+	debug::init();
+	PDWORD VTable;
+	*(DWORD*)&VTable = *(DWORD*)FindDevice(0x128000);
+	return VTable[VTableIndex];
+}
+
 typedef HRESULT(WINAPI* Prototype_Present)(LPDIRECT3DDEVICE9, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*);
+HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CONST RECT* pDestRect, HWND hDestWindow, CONST RGNDATA* pDirtyRegion);
+Hvpp presentHvpp((PVOID)GetDeviceAddress(17), (PVOID)Hooked_Present);
+
 //typedef long(__stdcall* tEndScene)(LPDIRECT3DDEVICE9);
 LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param);
 void __cdecl spoofedDrawCircle(Vector* position, float range, int* color, int a4, float a5, int a6, float alpha);
 
 DWORD g_BaseAddr;
+void* detourBuffer[3];
 #ifndef NO_IMGUI
 IDirect3DDevice9* myDevice;
 #endif
-Prototype_Present Original_Present;
+//Prototype_Present Original_Present;
 
 HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CONST RECT* pDestRect, HWND hDestWindow, CONST RGNDATA* pDirtyRegion)
 {
 	if (g_bInit == false) {
 		g_BaseAddr = (DWORD)GetModuleHandle(NULL);
 
-		//debug::init();
-		autoUpdater.Start();
+		//autoUpdater.Start();
 
-		while (Engine::GetGameTime() < 1.0f || !Engine::GetLocalObject())
-			Sleep(1);
+		//while (Engine::GetGameTime() < 1.0f || !Engine::GetLocalObject())
+		//	Sleep(1);
 
 #ifdef _DEBUG
 		//CConsole console;
@@ -107,7 +135,7 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 		Functions.CastSpell = (Typedefs::fnCastSpell)(g_BaseAddr + offsets::functions::oCastSpell);
 		Functions.IssueOrder = (Typedefs::fnIssueOrder)(g_BaseAddr + offsets::functions::oIssueOrder);
-		Functions.DrawCircle = (Typedefs::fnDrawCircle)spoofedDrawCircle;
+		Functions.DrawCircle = (Typedefs::fnDrawCircle)(g_BaseAddr + offsets::functions::oDrawCircle);//spoofedDrawCircle;
 		Functions.WorldToScreen = (Typedefs::fnWorldToScreen)(g_BaseAddr + (DWORD)offsets::global::oWorldToScreen);
 
 		Functions.GetAttackCastDelay = (Typedefs::fnGetAttackCastDelay)(g_BaseAddr + offsets::functions::oGetAttackCastDelay);
@@ -123,8 +151,6 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 
 		ImGui::DestroyContext(ImGui::GetCurrentContext());
 #endif
-
-		//debug::cleanUp();
 
 		championScript = ScriptUtils::GetScriptByChampionName(Engine::GetLocalObject()->GetChampionName());
 
@@ -177,20 +203,20 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 	auto localObj = Engine::GetLocalObject();
 
 	//evader
-	if (g_auto_evade == true) {
-		if (localObj && localObj->IsAlive() && Engine::IsLeagueInForeground()) {
-			evader.drawEvent();
-		}
-	}
+	//if (g_auto_evade == true) {
+	//	if (localObj && localObj->IsAlive() && Engine::IsLeagueInForeground()) {
+	//		evader.drawEvent();
+	//	}
+	//}
 
 	//orbwalker
-	if (g_orbwalker == true) {
-		if (localObj && localObj->IsAlive()) {
-			if (IsKeyDown(VK_SPACE) && Engine::IsLeagueInForeground()) {
-				orbWalker.drawEvent();
-			}
-		}
-	}
+	//if (g_orbwalker == true) {
+	//	if (localObj && localObj->IsAlive()) {
+	//		if (IsKeyDown(VK_SPACE) && Engine::IsLeagueInForeground()) {
+	//			orbWalker.drawEvent();
+	//		}
+	//	}
+	//}
 
 	//me Range
 	if (g_range == true) {
@@ -239,24 +265,25 @@ HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CO
 #endif
 
 		//turret range
-		if (g_turret_range == true) {
-			if (pObject->IsTurret() && pObject->IsEnemyTo(localObj)) {
-				auto turretRange = pObject->GetStatOwner()->GetStatTotal(EStatType::AttackRange, EStatOutputType::BASE)
-					+ pObject->GetStatOwner()->GetStatTotal(EStatType::AttackRange, EStatOutputType::BONUS)
-					+ pObject->GetBoundingRadius();
-				if (pObject->GetDistanceToMe() < (turretRange + 300.f)) {
-					auto color = createRGB(255, 255, 255);
-					auto turretPos = pObject->GetPos();
-					Functions.DrawCircle(&turretPos, turretRange, &color, 0, 0.0f, 0, 0.5f);
-				}
-			}
-		}
+		//if (g_turret_range == true) {
+		//	if (pObject->IsTurret() && pObject->IsEnemyTo(localObj)) {
+		//		auto turretRange = pObject->GetStatOwner()->GetStatTotal(EStatType::AttackRange, EStatOutputType::BASE)
+		//			+ pObject->GetStatOwner()->GetStatTotal(EStatType::AttackRange, EStatOutputType::BONUS)
+		//			+ pObject->GetBoundingRadius();
+		//		if (pObject->GetDistanceToMe() < (turretRange + 300.f)) {
+		//			auto color = createRGB(255, 255, 255);
+		//			auto turretPos = pObject->GetPos();
+		//			Functions.DrawCircle(&turretPos, turretRange, &color, 0, 0.0f, 0, 0.5f);
+		//		}
+		//	}
+		//}
 	}
 
 #ifndef NO_IMGUI
 	render.end_draw();
 #endif
-	return Original_Present(Device, pSrcRect, pDestRect, hDestWindow, pDirtyRegion);
+
+	return ((Prototype_Present)(presentHvpp.GetOriginalAddress()))(Device, pSrcRect, pDestRect, hDestWindow, pDirtyRegion);
 }
 
 #ifndef NO_IMGUI
@@ -275,30 +302,6 @@ HRESULT WINAPI Hooked_Reset(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* pP
 	return result;
 }
 #endif
-
-DWORD FindDevice(DWORD Len)
-{
-	DWORD dwObjBase = 0;
-
-	dwObjBase = (DWORD)LoadLibrary(TEXT("d3d9.dll"));
-	while (dwObjBase++ < dwObjBase + Len)
-	{
-		if ((*(WORD*)(dwObjBase + 0x00)) == 0x06C7
-			&& (*(WORD*)(dwObjBase + 0x06)) == 0x8689
-			&& (*(WORD*)(dwObjBase + 0x0C)) == 0x8689
-			) {
-			dwObjBase += 2; break;
-		}
-	}
-	return(dwObjBase);
-}
-
-DWORD GetDeviceAddress(int VTableIndex)
-{
-	PDWORD VTable;
-	*(DWORD*)&VTable = *(DWORD*)FindDevice(0x128000);
-	return VTable[VTableIndex];
-}
 
 #pragma warning(push)
 #pragma warning(disable : 4740)
@@ -425,24 +428,28 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 
 void DllMainAttach(HMODULE hModule) {
 	g_module = hModule;
-	memset(detourBuffer, 0, sizeof(detourBuffer) / sizeof(void*));
-	Original_Present = (Prototype_Present)DetourFunc((PBYTE)GetDeviceAddress(17), (PBYTE)Hooked_Present, 5);
+	debug::init();
+
+	presentHvpp.Hook();
+	presentHvpp.Hide();
 }
 
 void DllMainDetach() {
+	presentHvpp.Unhide();
 	for (int i = 0; i < sizeof(detourBuffer) / sizeof(void*); ++i)
 	{
 		if (detourBuffer[i])
 		{
 			delete[] detourBuffer[i];
 		}
+		debug::cleanUp();
 	}
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID)
 {
-	/*if (hModule != nullptr)
-		DisableThreadLibraryCalls(hModule);*/
+	if (hModule != nullptr)
+		DisableThreadLibraryCalls(hModule);
 
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
 		DllMainAttach(hModule);

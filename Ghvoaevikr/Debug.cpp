@@ -7,9 +7,13 @@
 namespace debug {
 	FILE* logFile;
 
+
+#pragma warning(push)
+#pragma warning(disable: 4996)
 	void debug::init() {
-		debug::logFile = fopen("C:\\dev\\Projects\\Ghvoaevikr\\Release\\log.log", "a+");
+		debug::logFile = fopen("C:\\dev\\Projects\\Ghvoaevikr\\x64\\Release\\log.log", "a+");
 	}
+#pragma warning(pop)
 
 	void debug::cleanUp() {
 		fclose(debug::logFile);

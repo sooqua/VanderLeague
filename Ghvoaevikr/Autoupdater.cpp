@@ -230,15 +230,15 @@ std::vector<offset_signature> sigs = {
 		0,
 		&offsets::global::oMenuGUI
 	},
-	{   // FUNCTIONS
-		{
-			"83 EC 38 56 8B 74 24 40"
-		},
-		true,
-		false,
-		0,
-		&offsets::functions::oCastSpell
-	},
+	//{   // FUNCTIONS
+	//	{
+	//		"83 EC 38 56 8B 74 24 40"
+	//	},
+	//	true,
+	//	false,
+	//	0,
+	//	&offsets::functions::oCastSpell
+	//},
 	{
 		{
 			"E8 ? ? ? ? 83 C4 1C 80 7F"
@@ -466,7 +466,7 @@ void Autoupdater::Start() {
 				auto address = find_signature(nullptr, pattern.c_str());
 
 				if (!address) {
-					//debug::flog("Signature failed: %s\n", pattern.c_str());
+					debug::flog("Signature failed: %s\n", pattern.c_str());
 					continue;
 				}
 

@@ -24,9 +24,6 @@
     <ClCompile Include="Kernelmode-manual-mapping-through-IAT\mmap\mmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Kernelmode-manual-mapping-through-IAT\mmap\usermode_proc_handler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Kernelmode-manual-mapping-through-IAT\mmap\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -41,20 +38,8 @@
     <ClInclude Include="Kernelmode-manual-mapping-through-IAT\mmap\mmap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Kernelmode-manual-mapping-through-IAT\mmap\process_handler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Kernelmode-manual-mapping-through-IAT\mmap\usermode_proc_handler.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Kernelmode-manual-mapping-through-IAT\mmap\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Kernelmode-manual-mapping-through-IAT\mmap\stub" />
-    <None Include="Kernelmode-manual-mapping-through-IAT\mmap\stub.asm">
-      <Filter>Source Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

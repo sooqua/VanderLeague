@@ -27,6 +27,8 @@ namespace offsets {
 		extern uint32_t oGetNextObject;
 		extern uint32_t oGameVersion;
 		extern uint32_t oMenuGUI;
+		extern uint32_t oHeroList;
+		extern uint32_t oViewMatrix;
 		/*extern uint32_t Player;
 		extern uint32_t ChampionManager;
 		extern uint32_t Riot__g_window;
