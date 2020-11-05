@@ -24,16 +24,16 @@
 #include <mutex>
 #include <algorithm>
 
-#ifdef _DEBUG
-#include "CConsole.h"
-#endif
-
 #include "ImRender.h"
 #ifndef NO_IMGUI
 #include "imgui\imgui.h"
 #include "imgui\imgui_internal.h"
 #include "imgui\dx9\imgui_impl_dx9.h"
 #include "imgui\win32\imgui_impl_win32.h"
+#endif
+
+#ifdef _DEBUG
+#include "CConsole.h"
 #endif
 
 using namespace std;
@@ -63,18 +63,18 @@ bool g_spell_prediction = true;
 
 bool g_bInit = false;
 
-typedef HRESULT(WINAPI* Prototype_Present)(LPDIRECT3DDEVICE9, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*);
-HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CONST RECT* pDestRect, HWND hDestWindow, CONST RGNDATA* pDirtyRegion);
-Hvpp presentHvpp((PVOID)GetD3D9VTableFunction(17), (PVOID)Hooked_Present);
-
-//typedef long(__stdcall* tEndScene)(LPDIRECT3DDEVICE9);
-LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param);
-void __cdecl spoofedDrawCircle(Vector* position, float range, int* color, int a4, float a5, int a6, float alpha);
-
 DWORD g_BaseAddr;
 #ifndef NO_IMGUI
 IDirect3DDevice9* myDevice;
 #endif
+
+typedef HRESULT(WINAPI* Prototype_Present)(LPDIRECT3DDEVICE9, CONST RECT*, CONST RECT*, HWND, CONST RGNDATA*);
+HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CONST RECT* pDestRect, HWND hDestWindow, CONST RGNDATA* pDirtyRegion);
+Hvpp presentHvpp;
+
+LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param);
+
+void __cdecl spoofedDrawCircle(Vector* position, float range, int* color, int a4, float a5, int a6, float alpha);
 
 HRESULT WINAPI Hooked_Present(LPDIRECT3DDEVICE9 Device, CONST RECT* pSrcRect, CONST RECT* pDestRect, HWND hDestWindow, CONST RGNDATA* pDirtyRegion)
 {
@@ -406,12 +406,25 @@ void DllMainAttach(HMODULE hModule) {
 	g_module = hModule;
 	debug::init();
 
+	if (!ColdHook_Service::ServiceGlobalInit(nullptr)) {
+		debug::flog("Could not initialize ColdHook global service\n");
+	}
+	presentHvpp.Init((PVOID)GetD3D9VTableFunction(17), (PVOID)Hooked_Present);
+	debug::flog("Original:\n");
+	presentHvpp.Disassemble();
+	debug::flog("Hook:\n");
 	presentHvpp.Hook();
+	presentHvpp.Disassemble();
+	debug::flog("Hide:\n");
 	presentHvpp.Hide();
+	presentHvpp.Disassemble();
 }
 
 void DllMainDetach() {
-	presentHvpp.Unhide();
+	presentHvpp.GlobalUnhide();
+	debug::flog("Unhook:\n");
+	ColdHook_Service::ServiceGlobalShutDown(true, nullptr);
+	presentHvpp.Disassemble();
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID)

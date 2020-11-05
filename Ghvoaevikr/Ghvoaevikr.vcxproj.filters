@@ -129,9 +129,6 @@
     <Filter Include="Header\Hvpp">
       <UniqueIdentifier>{f40f413a-08b9-48b5-8d61-abfb4997b78d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header\Hvpp\win32">
-      <UniqueIdentifier>{168cf3d8-902f-4304-ae0f-37ad4134d39b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header\ColdHook">
       <UniqueIdentifier>{df14e263-b2f2-4358-bc1a-6e826ea3c176}</UniqueIdentifier>
     </Filter>
@@ -275,11 +272,11 @@
     <ClInclude Include="hvpp\lib\mp.h">
       <Filter>Header\Hvpp</Filter>
     </ClInclude>
-    <ClInclude Include="hvpp\ia32\win32\asm.h">
-      <Filter>Header\Hvpp\win32</Filter>
-    </ClInclude>
     <ClInclude Include="ColdHook.h">
       <Filter>Header\ColdHook</Filter>
+    </ClInclude>
+    <ClInclude Include="Brand.h">
+      <Filter>Header\Scripts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -387,6 +384,9 @@
     </ClCompile>
     <ClCompile Include="ColdHook.cpp">
       <Filter>Source\ColdHook</Filter>
+    </ClCompile>
+    <ClCompile Include="Brand.cpp">
+      <Filter>Source\Scripts</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

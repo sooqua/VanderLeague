@@ -12,14 +12,21 @@ class Hvpp {
 	PVOID FunctionToHook;
 	Hook_Info* hookInfo;
 
+	bool initialized;
+
 public:
+	void Disassemble();
+
 	void Hook();
 
 	void Hide();
 
-	void Unhide();
+	static void GlobalUnhide();
 
 	void* GetOriginalAddress();
 
-	Hvpp(PVOID src, PVOID dst);
+	void Init(PVOID src, PVOID dst);
+
+	Hvpp();
+	~Hvpp();
 };
