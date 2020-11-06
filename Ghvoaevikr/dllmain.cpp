@@ -408,23 +408,16 @@ void DllMainAttach(HMODULE hModule) {
 
 	if (!ColdHook_Service::ServiceGlobalInit(nullptr)) {
 		debug::flog("Could not initialize ColdHook global service\n");
+		return;
 	}
 	presentHvpp.Init((PVOID)GetD3D9VTableFunction(17), (PVOID)Hooked_Present);
-	debug::flog("Original:\n");
-	presentHvpp.Disassemble();
-	debug::flog("Hook:\n");
 	presentHvpp.Hook();
-	presentHvpp.Disassemble();
-	debug::flog("Hide:\n");
 	presentHvpp.Hide();
-	presentHvpp.Disassemble();
 }
 
 void DllMainDetach() {
 	presentHvpp.GlobalUnhide();
-	debug::flog("Unhook:\n");
 	ColdHook_Service::ServiceGlobalShutDown(true, nullptr);
-	presentHvpp.Disassemble();
 }
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID)

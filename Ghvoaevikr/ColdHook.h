@@ -128,9 +128,9 @@ namespace ColdHook_Service
 {
 	// Private functions:
 	static void* WalkThroughJumpIfPossible(void* pMemory);
-	static void* GetAddressFromOffset(void* Base, OffsetTypes Type, size_t DispOffset, size_t InsLength, bool bReturnDefault, bool bGetInternalP);
+	static void* GetAddressFromOffset(void* Base, OffsetTypes Type, size_t DispOffset, bool bReturnDefault, bool bGetInternalP);
 	static void* BeckupOriginalInstructions(void* pTarget, void* pTrampolineStart, size_t JumpHookS, size_t* pOutDLength);
-	static void* FindTrampoline(void* StartBaseAddress, size_t Size, bool UseCodeCave, int* pAllocated, DWORD* pCaveOProtection);
+	static void* FindTrampoline(void* StartBaseAddress, int* pAllocated, DWORD* pCaveOProtection);
 
 	static size_t FixInstruction(void* pTarget, void* pNewPointer, bool bIsRelative, int DispValue, size_t CurrentInsLength);
 	static size_t GetDisplacementOffset(void* pInstruction, int DisplaceMent, size_t InsLength, bool* pbFailed);
@@ -148,8 +148,6 @@ namespace ColdHook_Service
 	static bool IsValidMem(void* pMem, bool bWriteAccessNeeded);
 	static bool EncodeDisplaceMentInstruction(void* pMemory, void* pOldOpCode, int offset, InstructionType InsType, bool bConvertOpcode,
 		bool IsLong, size_t EncodeSize, size_t DispOffset);
-	static bool SearchAddressThroughSecs(void* ModBase, void* CurAddr, void** OutSBaseAddr, size_t* pSize);
-	static bool IsValidHeader(void* CurrentBase);
 	static bool IsHookAlreadyRegistered(int32_t HookID);
 
 	static void LockOrUnlockOtherThreads(bool bLock);
@@ -181,9 +179,6 @@ namespace ColdHook_Service
 
 	bool ServiceRegisterHookInformation(Hook_Info* InputInfo, int32_t HookID, int32_t* OutErrorCode);
 	bool ServiceUnRegisterHookInformation(int32_t HookID, int32_t* OutErrorCode);
-
-	// Arch
-	bool Is64BitProcess();
 
 	// Error handler 
 	const char* CHRetrieveErrorCodeString(int32_t InErrorCode);

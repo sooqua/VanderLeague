@@ -278,6 +278,9 @@
     <ClInclude Include="Brand.h">
       <Filter>Header\Scripts</Filter>
     </ClInclude>
+    <ClInclude Include="HvppIoctl.h">
+      <Filter>Header\Hvpp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -387,6 +390,9 @@
     </ClCompile>
     <ClCompile Include="Brand.cpp">
       <Filter>Source\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="HvppIoctl.cpp">
+      <Filter>Source\Hvpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

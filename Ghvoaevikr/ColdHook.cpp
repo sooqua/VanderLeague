@@ -4,6 +4,9 @@
 */
 
 #include "ColdHook.h"
+#include "HvppIoctl.h"
+
+HvppIoctl hvppIoctl;
 
 #ifdef _WIN64
 #define VALID_MACHINE IMAGE_FILE_MACHINE_AMD64
@@ -49,7 +52,7 @@ namespace ColdHook_Service
 			if (curaddr) {
 				Type = GetInstructionOffType(curaddr);
 				if (Type == TOFFSET_LONG_JUMP || Type == TOFFSET_SHORT_JUMP || Type == TABSOLUTE_JUMP || Type == TABSOLUTE_JUMP_CUSTOM) {
-					curaddr = GetAddressFromOffset(curaddr, Type, 0, 0, true, true);
+					curaddr = GetAddressFromOffset(curaddr, Type, 0, true, true);
 					if (curaddr != pMemory) {
 						return WalkThroughJumpIfPossible(curaddr);
 					}
@@ -62,7 +65,7 @@ namespace ColdHook_Service
 		}
 		return curaddr;
 	}
-	static void* GetAddressFromOffset(void* Base, OffsetTypes Type, size_t DispOffset, size_t InsLength, bool bReturnDefault, bool bGetInternalP)
+	static void* GetAddressFromOffset(void* Base, OffsetTypes Type, size_t DispOffset, bool bReturnDefault, bool bGetInternalP)
 	{
 		void* ReturnAddress					= nullptr;
 		void* Addr							= nullptr;
@@ -105,7 +108,7 @@ namespace ColdHook_Service
 					(void*)((uBase + ABS_CALL_AND_COND_OFFSET_LONG_JUMP + sizeof(BYTE)) + (*(int*)(uBase + sizeof(BYTE) + sizeof(WORD))));
 				break;
 			default:
-				Addr = (Is64BitProcess() == true) ? (void*)((uBase + InsLength) + (*(int*)(uBase + DispOffset))) : *(void**)(uBase + DispOffset);
+				Addr = *(void**)(uBase + DispOffset);
 				break;
 			}
 
@@ -170,166 +173,18 @@ namespace ColdHook_Service
 		}
 		return TargetDest;
 	}
-	static void* FindTrampoline(void* StartBaseAddress, size_t Size, bool UseCodeCave, int* pAllocated, DWORD* pCaveOProtection)
+	static void* FindTrampoline(void* StartBaseAddress, int* pAllocated, DWORD* pCaveOProtection)
 	{
-		bool Found							= false;
 		int Allocated						= 0;
 		DWORD CaveOProtection				= 0;
 
 		void* Trampoline					= nullptr;
-		void* ModuleBase					= nullptr;
-		void* MemBlockBase					= nullptr;
-
-		MEMORY_BASIC_INFORMATION mem;
-		MEMORY_BASIC_INFORMATION memb;
-
-		size_t maxDelta2gb					= MAX_RANGE_DELTA_P;
-
-		IMAGE_SECTION_HEADER* pSec			= nullptr;
-		IMAGE_NT_HEADERS* pNt				= nullptr;
 
 		// get mem infos
 		if (IsValidMem(StartBaseAddress, false)) {
-			if (VirtualQuery(StartBaseAddress, &mem, sizeof(MEMORY_BASIC_INFORMATION))) {
-				ModuleBase = mem.AllocationBase;
-				MemBlockBase = mem.BaseAddress;
-			}
-
-			// first thing try to find code cave inside the module 
-			if (ModuleBase) {
-				if (IsValidHeader(ModuleBase)) {
-					if (UseCodeCave) {
-						void* StartBase = nullptr;
-						size_t SecSize = 0;
-						ULONG_PTR Base = 0;
-
-						// search code cave inside the address section 
-						if (SearchAddressThroughSecs(ModuleBase, StartBaseAddress, &StartBase, &SecSize)) {
-							Base = (ULONG_PTR)StartBase;
-							size_t howmany = 0;
-							for (size_t i = 0; i < SecSize; i++, Base++) {
-								if (howmany == Size) {
-									Trampoline = (void*)((ULONG_PTR)Base - howmany);
-									Found = true;
-									DWORD Oldp;
-									if (!VirtualProtect(Trampoline, Size, PAGE_EXECUTE_READWRITE, &Oldp)) {
-										Trampoline = nullptr;
-										Found = false;
-										howmany = 0;	// continue, we can't use that address 
-									}
-									else {
-										CaveOProtection = Oldp;
-										break;
-									}
-								}
-								if (*(PBYTE)Base == 0xCC || *(PBYTE)Base == 0x90)
-									howmany++;
-								else
-									howmany = 0;
-							}
-						}
-						if (!Found) {
-							Base = 0;
-							pNt = (IMAGE_NT_HEADERS*)((ULONG_PTR)ModuleBase + ((IMAGE_DOS_HEADER*)ModuleBase)->e_lfanew);
-							pSec = IMAGE_FIRST_SECTION(pNt);
-							size_t howmany = 0;
-							bool breakloop = false;
-
-							// search code cave inside the module space if possible...
-							for (int i = 0; i < pNt->FileHeader.NumberOfSections; i++, pSec++) {
-								breakloop = false;
-								Base = 0;
-								if (pSec->Characteristics & (0x00000020 | 0x20000000 | 0x40000000)) {
-									Base = (ULONG_PTR)pSec->VirtualAddress + (ULONG_PTR)ModuleBase;
-									for (size_t j = 0; j < pSec->SizeOfRawData; j++, Base++) {
-										if (howmany == Size) {
-											Trampoline = (void*)((ULONG_PTR)Base - howmany);
-											Found = true;
-											DWORD Oldp;
-											if (!VirtualProtect(Trampoline, Size, PAGE_EXECUTE_READWRITE, &Oldp)) {
-												Trampoline = nullptr;
-												Found = false;
-												howmany = 0;	// continue, we can't use that address 
-											}
-											else {
-												CaveOProtection = Oldp;
-												breakloop = true;
-												break;
-											}
-										}
-										if (*(PBYTE)Base == 0xCC || *(PBYTE)Base == 0x90)
-											howmany++;
-										else
-											howmany = 0;
-									}
-								}
-								if (breakloop)
-									break;
-							}
-						}
-					}
-				}
-			}
-
-			// it wasn't possible to use memory from code cave or it wasn't requested, try to allocate. 
-			if (!Found) {
-				if (Is64BitProcess()) {
-					// search before and ahead...
-					ULONG_PTR StartBaseL = (ULONG_PTR)StartBaseAddress;
-					ULONG_PTR BaseL = 0;
-					size_t DivSize = (maxDelta2gb / 0x1000);
-
-					bool CheckBefore = true;
-					bool AllocateEveryWhere = true;
-
-					BaseL = StartBaseL;
-					for (size_t i = 0; i < DivSize; i++) {
-						memset(&memb, 0, sizeof(MEMORY_BASIC_INFORMATION));
-						if (VirtualQuery((void*)BaseL, &memb, sizeof(MEMORY_BASIC_INFORMATION))) {
-							if (memb.State == MEM_FREE) {
-								Trampoline = VirtualAlloc(memb.BaseAddress, MAX_TRAMPSIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-								if (Trampoline) {
-									CheckBefore = false;
-									AllocateEveryWhere = false;
-									Allocated = ALLOCATED_64_2GB_CLOSE;
-									break;
-								}
-							}
-						}
-						else
-							break;
-						BaseL += 0x1000;
-					}
-					if (CheckBefore) {
-						BaseL = StartBaseL;
-						for (size_t i = 0; i < DivSize; i++) {
-							memset(&memb, 0, sizeof(MEMORY_BASIC_INFORMATION));
-							if (VirtualQuery((void*)BaseL, &memb, sizeof(MEMORY_BASIC_INFORMATION))) {
-								if (memb.State == MEM_FREE) {
-									Trampoline = VirtualAlloc(memb.BaseAddress, MAX_TRAMPSIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-									if (Trampoline) {
-										AllocateEveryWhere = false;
-										Allocated = ALLOCATED_64_2GB_CLOSE;
-										break;
-									}
-								}
-							}
-							else
-								break;
-							BaseL -= 0x1000;
-						}
-					}
-					if (AllocateEveryWhere) {
-						// we'll use a constant jump 
-						Trampoline = VirtualAlloc(nullptr, MAX_TRAMPSIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-						Allocated = RANDOM_ALLOCATED_64;
-					}
-				}
-				else {
-					Trampoline = VirtualAlloc(nullptr, MAX_TRAMPSIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-					Allocated = RANDOM_ALLOCATED_32;
-				}
-			}
+			// code cave wasn't requested, try to allocate. 
+			Trampoline = VirtualAlloc(nullptr, MAX_TRAMPSIZE, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+			Allocated = RANDOM_ALLOCATED_32;
 		}
 		
 		if (pAllocated) {
@@ -366,7 +221,7 @@ namespace ColdHook_Service
 			OffsetInstructionType = GetInstructionOffType(pTarget);
 			if (OffsetInstructionType != TUNKNOWN) {
 				// we can fix with our code
-				DestAddress = GetAddressFromOffset(pTarget, OffsetInstructionType, 0, 0, false, false);
+				DestAddress = GetAddressFromOffset(pTarget, OffsetInstructionType, 0, false, false);
 				if (DestAddress) {
 					IInstructionType = GetInstructionTypeFromOffsetType(OffsetInstructionType);
 					NewDisplaceMent = BuildInstructionTypeDisplaceMent(DestAddress, pNewPointer, IInstructionType,
@@ -381,7 +236,7 @@ namespace ColdHook_Service
 			else {
 				DDisplacementOffset = GetDisplacementOffset(pTarget, DispValue, CurrentInsLength, &Failed);
 				if (!Failed) {
-					DestAddress = GetAddressFromOffset(pTarget, OffsetInstructionType, DDisplacementOffset, CurrentInsLength, false, false);
+					DestAddress = GetAddressFromOffset(pTarget, OffsetInstructionType, DDisplacementOffset, false, false);
 					if (DestAddress) {
 						NewDisplaceMent = BuildInstructionTypeDisplaceMent(DestAddress, pNewPointer, IInstructionType,
 							&EncodedInsSize, nullptr, CurrentInsLength, &IsLong, &Failed);
@@ -455,8 +310,7 @@ namespace ColdHook_Service
 			AbsJmpSize = ABS_HOOK_SIZE;
 
 			// different for 32 bit
-			if (!Is64BitProcess())
-				*(DWORD*)((ULONG_PTR)pMemory + sizeof(WORD)) = (DWORD)(((ULONG_PTR)pMemory + ABS_JUMP_ADDRESS_OFFSET));
+			*(DWORD*)((ULONG_PTR)pMemory + sizeof(WORD)) = (DWORD)(((ULONG_PTR)pMemory + ABS_JUMP_ADDRESS_OFFSET));
 		}
 		return AbsJmpSize;
 	}
@@ -513,7 +367,7 @@ namespace ColdHook_Service
 				Flag = EQUAL;
 			}
 
-			InRange = (Is64BitProcess() == true) ? NotConfirmedInRange : true;
+			InRange = true;
 
 			if (InRange) {
 				// calculate new offset
@@ -679,10 +533,6 @@ namespace ColdHook_Service
 			if (*(WORD*)(pInstruction) == 0x25FF) {
 				return TABSOLUTE_JUMP;
 			}
-			if (Is64BitProcess()) {
-				if (*(WORD*)((ULONG_PTR)pInstruction + sizeof(BYTE)) == 0x25FF)
-					return TABSOLUTE_JUMP_CUSTOM;
-			}
 		}
 		return TUNKNOWN;
 	}
@@ -766,66 +616,6 @@ namespace ColdHook_Service
 			Failed = true;
 		return (Failed != true);
 	}
-	static bool SearchAddressThroughSecs(void* ModBase, void* CurAddr, void** OutSBaseAddr, size_t* pSize)
-	{
-		bool bFound							= false;
-		void* OutSBaseAddrVar				= nullptr;
-		size_t Size							= 0;
-
-		if (CurAddr) {
-			IMAGE_DOS_HEADER* pDos = (IMAGE_DOS_HEADER*)ModBase;
-			IMAGE_NT_HEADERS* pNt = (IMAGE_NT_HEADERS*)((ULONG_PTR)ModBase + pDos->e_lfanew);
-			IMAGE_SECTION_HEADER* pSec = IMAGE_FIRST_SECTION(pNt);
-
-			// Search through the sections
-			for (int i = 0; i < pNt->FileHeader.NumberOfSections; i++, pSec++) {
-				if (pSec->Characteristics & (0x00000020 | 0x20000000 | 0x40000000)) {
-					ULONG_PTR BaseAddr = (ULONG_PTR)ModBase + pSec->VirtualAddress;
-					ULONG_PTR EndAddr = (BaseAddr + pSec->SizeOfRawData);
-					if ((ULONG_PTR)CurAddr >= BaseAddr && (ULONG_PTR)CurAddr <= EndAddr) {
-						OutSBaseAddrVar = (void*)BaseAddr;
-						Size = pSec->SizeOfRawData;
-						bFound = true;
-						break;
-					}
-				}
-			}
-		}
-
-		if (OutSBaseAddr) {
-			*OutSBaseAddr = OutSBaseAddrVar;
-		}
-		if (pSize) {
-			*pSize = Size;
-		}
-		return bFound;
-	}
-	static bool IsValidHeader(void* CurrentBase)
-	{
-		// try to validate the module header ...
-		if (CurrentBase) {
-			if (IsValidMem(CurrentBase, false)) {
-				__try {
-					IMAGE_DOS_HEADER* pDosHeader = (IMAGE_DOS_HEADER*)CurrentBase;
-					if (pDosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
-						return false;
-					}
-					IMAGE_NT_HEADERS* pNtHeader = (IMAGE_NT_HEADERS*)((ULONG_PTR)CurrentBase + pDosHeader->e_lfanew);
-					if (pNtHeader->Signature != IMAGE_NT_SIGNATURE) {
-						return false;
-					}
-					if (pNtHeader->FileHeader.Machine != VALID_MACHINE) {
-						return false;
-					}
-					return true;
-				}
-				__except (EXCEPTION_EXECUTE_HANDLER) {
-					return false;
-				}
-			}
-		}
-		return false;
-	}
 	static bool IsHookAlreadyRegistered(int32_t HookID)
 	{
 		bool bRet = false;
@@ -847,63 +637,50 @@ namespace ColdHook_Service
 	static void InternalUnHookRegData(bool ShutDown, Hook_Info* pData, int32_t* OutErrorCode)
 	{
 		int32_t ErrorC				= 0;
-		DWORD TmpP					= 0;
 
 		if (pData)
 		{
 			if (pData->StatusHooked)
 			{
-				if (VirtualProtect(pData->HFunction, pData->HookSize, PAGE_EXECUTE_READWRITE, &TmpP))
+				if (pData->IsDetourHook)
 				{
-					if (pData->IsDetourHook)
+					hvppIoctl.WriteProtectedMemory(pData->OrgData, pData->HFunction, pData->HookSize);
+					if (pData->TrampolineAllocated)
 					{
-						memcpy(pData->HFunction, pData->OrgData, pData->HookSize);
-						if (pData->TrampolineAllocated)
+						if (ShutDown)
 						{
-							if (ShutDown)
-							{
-								VirtualFree(pData->TrampolinePage, 0, MEM_RELEASE);
+							VirtualFree(pData->TrampolinePage, 0, MEM_RELEASE);
 
-								pData->TrampolinePage = nullptr;
-								pData->TrampolineAllocated = false;
-							}
+							pData->TrampolinePage = nullptr;
+							pData->TrampolineAllocated = false;
 						}
-						else
+					}
+					else
+					{
+						if (pData->TrampolinePage) 
 						{
-							if (pData->TrampolinePage) 
+							// code cave...
+							BYTE* pPos = (BYTE*)pData->TrampolinePage;
+							for (size_t i = 0; i < MAX_CAVE_DATA; i++) 
 							{
-								// code cave...
-								if (VirtualProtect(pData->TrampolinePage, MAX_CAVE_DATA, PAGE_EXECUTE_READWRITE, &TmpP)) 
-								{
-									BYTE* pPos = (BYTE*)pData->TrampolinePage;
-									for (size_t i = 0; i < MAX_CAVE_DATA; i++) 
-									{
-										pPos[i] = pData->CodeCaveOData;
-									}
-									VirtualProtect(pData->TrampolinePage, MAX_CAVE_DATA, pData->CaveOriginalProtection, &TmpP);
-								}
+								hvppIoctl.WriteProtectedMemory(&pData->CodeCaveOData, &pPos[i], sizeof(BYTE));
 							}
 						}
 					}
-					else 
-					{
-						memcpy(pData->HFunction, pData->COrgData, pData->HookSize);
-						if (ShutDown) 
-						{
-							free(pData->COrgData);
-							free(pData->CHookData);
-
-							pData->COrgData = nullptr;
-							pData->CHookData = nullptr;
-						}
-					}
-					VirtualProtect(pData->HFunction, pData->HookSize, TmpP, &TmpP);
-					pData->StatusHooked = false;
 				}
 				else 
 				{
-					ErrorC = FAILED_MEM_PROTECTION;
+					hvppIoctl.WriteProtectedMemory(pData->COrgData, pData->HFunction, pData->HookSize);
+					if (ShutDown) 
+					{
+						free(pData->COrgData);
+						free(pData->CHookData);
+
+						pData->COrgData = nullptr;
+						pData->CHookData = nullptr;
+					}
 				}
+				pData->StatusHooked = false;
 			} 
 			else
 			{
@@ -918,56 +695,38 @@ namespace ColdHook_Service
 	static void InternalHookRegData(Hook_Info* pData, int32_t* OutErrorCode)
 	{
 		int32_t ErrorC				= 0;
-		DWORD TmpP					= 0;
 
 		if (pData)
 		{
 			if (!pData->StatusHooked)
 			{
-				if (VirtualProtect(pData->HFunction, pData->HookSize, PAGE_EXECUTE_READWRITE, &TmpP))
+				if (pData->IsDetourHook)
 				{
-					if (pData->IsDetourHook)
+					if (!pData->TrampolineAllocated)
 					{
-						if (!pData->TrampolineAllocated)
+						if (pData->TrampolinePage)
 						{
-							if (pData->TrampolinePage)
-							{
-								if (VirtualProtect(pData->TrampolinePage, MAX_CAVE_DATA, PAGE_EXECUTE_READWRITE, &TmpP))
-								{
-									memcpy(pData->TrampolinePage, pData->CaveHookData, MAX_CAVE_DATA);
-									memcpy(pData->HFunction, pData->HookData, pData->HookSize);
-									VirtualProtect(pData->TrampolinePage, MAX_CAVE_DATA, pData->CaveOriginalProtection, &TmpP);
+							hvppIoctl.WriteProtectedMemory(pData->CaveHookData, pData->TrampolinePage, MAX_CAVE_DATA);
+							hvppIoctl.WriteProtectedMemory(pData->HookData, pData->HFunction, pData->HookSize);
 
-									pData->StatusHooked = true;
-								}
-								else
-								{
-									ErrorC = FAILED_MEM_PROTECTION;
-									pData->StatusHooked = false;
-								}
-							}
-							else
-							{
-								memcpy(pData->HFunction, pData->HookData, pData->HookSize);
-								pData->StatusHooked = true;
-							}
+							pData->StatusHooked = true;
 						}
 						else
 						{
-							memcpy(pData->HFunction, pData->HookData, pData->HookSize);
+							hvppIoctl.WriteProtectedMemory(pData->HookData, pData->HFunction, pData->HookSize);
 							pData->StatusHooked = true;
 						}
 					}
 					else
 					{
-						memcpy(pData->HFunction, pData->COrgData, pData->HookSize);
+						hvppIoctl.WriteProtectedMemory(pData->HookData, pData->HFunction, pData->HookSize);
 						pData->StatusHooked = true;
 					}
-					VirtualProtect(pData->HFunction, pData->HookSize, TmpP, &TmpP);
 				}
 				else
 				{
-					ErrorC = FAILED_MEM_PROTECTION;
+					hvppIoctl.WriteProtectedMemory(pData->COrgData, pData->HFunction, pData->HookSize);
+					pData->StatusHooked = true;
 				}
 			}
 			else
@@ -1009,11 +768,7 @@ namespace ColdHook_Service
 	{
 		int32_t ErrorCode = 0;
 		if (IsValidMem(pPlace, false) && IsValidMem(pDFunction, false)) {
-			if (Is64BitProcess()) {
-				OutputInfo->HookSize = PlaceAbsJump(pDFunction, OutputInfo->HookData);
-			} else {
-				OutputInfo->HookSize = PlaceOffsetJump(pDFunction, pPlace, OutputInfo->HookData);
-			}
+			OutputInfo->HookSize = PlaceOffsetJump(pDFunction, pPlace, OutputInfo->HookData);
 		}
 		else
 			ErrorCode = FAILED_MEM_PROTECTION;
@@ -1053,7 +808,7 @@ namespace ColdHook_Service
 			if (CurFunction == nullptr)
 				CurFunction = BeckupF;
 
-			Trampoline = FindTrampoline(CurFunction, MAX_CAVE_DATA, true, &TrampolineResponse, &OldCaveP);
+			Trampoline = FindTrampoline(CurFunction, &TrampolineResponse, &OldCaveP);
 			if (Trampoline)
 			{
 				switch (TrampolineResponse)
@@ -1099,22 +854,12 @@ namespace ColdHook_Service
 					break;
 				default:
 					// code cave
-					if (Is64BitProcess()) {
-						pTrampInstructionStart = (void*)((ULONG_PTR)Trampoline + ABS_64_HOOK_SIZE);
-						pRedirStart = Trampoline;
-						HOffsetJump = true;
-						bAbsReturnJump = false;
-						bPatchRedirAddress = true;
-						IsCodeCave = true;
-					}
-					else {
-						pTrampInstructionStart = Trampoline;
-						pRedirStart = HookedF;
-						HOffsetJump = true;
-						bAbsReturnJump = false;
-						bPatchRedirAddress = false;
-						IsCodeCave = true;
-					} 
+					pTrampInstructionStart = Trampoline;
+					pRedirStart = HookedF;
+					HOffsetJump = true;
+					bAbsReturnJump = false;
+					bPatchRedirAddress = false;
+					IsCodeCave = true;
 
 					OutputInfo->TrampolineAllocated = false;
 					OutputInfo->TrampolinePage = Trampoline;
@@ -1237,27 +982,19 @@ namespace ColdHook_Service
 
 					if (!ErrorC) {
 						// Hook
-						DWORD OLDP;
-						if (VirtualProtect(CurFunction, OutputInfoVar->HookSize, PAGE_EXECUTE_READWRITE, &OLDP)) {
-							// Store original data
-							memcpy(OutputInfoVar->OrgData, CurFunction, OutputInfoVar->HookSize);
 
-							// Place hook
-							memcpy(CurFunction, OutputInfoVar->HookData, OutputInfoVar->HookSize);
+						// Store original data
+						memcpy(OutputInfoVar->OrgData, CurFunction, OutputInfoVar->HookSize);
 
-							OutputInfoVar->StatusHooked = true;
-							OutputInfoVar->HFunction = CurFunction;
+						// Place hook
+						hvppIoctl.WriteProtectedMemory(OutputInfoVar->HookData, CurFunction, OutputInfoVar->HookSize);
 
-							// restore protection 
-							VirtualProtect(CurFunction, OutputInfoVar->HookSize, OLDP, &OLDP);
+						OutputInfoVar->StatusHooked = true;
+						OutputInfoVar->HFunction = CurFunction;
 
-							OutputRet = OutputInfoVar;
-							++ColdHook_Vars::CurrentID;
-							Ret = ColdHook_Vars::CurrentID;
-						}
-						else {
-							ErrorC = FAILED_MEM_PROTECTION;
-						}
+						OutputRet = OutputInfoVar;
+						++ColdHook_Vars::CurrentID;
+						Ret = ColdHook_Vars::CurrentID;
 					}
 				}
 				else {
@@ -1312,30 +1049,21 @@ namespace ColdHook_Service
 								memset(OutputInfoVar->CHookData, 0, CSize);
 
 								// Hook
-								DWORD OLDP;
-								if (VirtualProtect(Target, CSize, PAGE_EXECUTE_READWRITE, &OLDP)) {
-									OutputInfoVar->HookSize = CSize;
-									OutputInfoVar->HFunction = Target;
+								OutputInfoVar->HookSize = CSize;
+								OutputInfoVar->HFunction = Target;
 
-									// Store original and hook data
-									memcpy(OutputInfoVar->COrgData, Target, CSize);
-									memcpy(OutputInfoVar->CHookData, CustomData, CSize);
+								// Store original and hook data
+								memcpy(OutputInfoVar->COrgData, Target, CSize);
+								memcpy(OutputInfoVar->CHookData, CustomData, CSize);
 
-									// Place hook
-									memcpy(Target, CustomData, CSize);
+								// Place hook
+								hvppIoctl.WriteProtectedMemory(CustomData, Target, CSize);
 
-									OutputInfoVar->StatusHooked = true;
+								OutputInfoVar->StatusHooked = true;
 
-									// restore protection 
-									VirtualProtect(Target, CSize, OLDP, &OLDP);
-
-									OutputRet = OutputInfoVar;
-									++ColdHook_Vars::CurrentID;
-									Ret = ColdHook_Vars::CurrentID;
-								}
-								else {
-									ErrorC = FAILED_MEM_PROTECTION;
-								}
+								OutputRet = OutputInfoVar;
+								++ColdHook_Vars::CurrentID;
+								Ret = ColdHook_Vars::CurrentID;
 							}
 							else {
 								free(OutputInfoVar->COrgData);
@@ -1452,12 +1180,8 @@ namespace ColdHook_Service
 
 		// init the service 
 		if (!ColdHook_Vars::Inited) {
-			// init disassembler 
-			if (Is64BitProcess()) {
-				ZydisDecoderInit(&ColdHook_Vars::decoder, ZYDIS_MACHINE_MODE_LONG_64, ZYDIS_ADDRESS_WIDTH_64);
-			} else {
-				ZydisDecoderInit(&ColdHook_Vars::decoder, ZYDIS_MACHINE_MODE_LONG_COMPAT_32, ZYDIS_ADDRESS_WIDTH_32);
-			}
+			// init disassembler
+			ZydisDecoderInit(&ColdHook_Vars::decoder, ZYDIS_MACHINE_MODE_LONG_COMPAT_32, ZYDIS_ADDRESS_WIDTH_32);
 
 			ColdHook_Vars::Inited = true;
 			ColdHook_Vars::CurrentID = 0;
@@ -1657,25 +1381,6 @@ namespace ColdHook_Service
 			*OutErrorCode = ErrorC;
 		}
 		return bRet;
-	}
-
-	// Arch
-	bool Is64BitProcess()
-	{
-		HMODULE hMain				= nullptr;
-		IMAGE_NT_HEADERS* pNt		= nullptr;
-
-		hMain = GetModuleHandleA(nullptr);
-		if (!hMain) {
-			for (int i = 0; i < sizeof(ColdHook_Vars::pSystemMods); i++) {
-				hMain = GetModuleHandleA(ColdHook_Vars::pSystemMods[i]);
-				if (hMain)
-					break;
-			}
-		}
-
-		pNt = (IMAGE_NT_HEADERS*)((ULONG_PTR)hMain + (((IMAGE_DOS_HEADER*)hMain)->e_lfanew));
-		return (pNt->FileHeader.Machine == IMAGE_FILE_MACHINE_AMD64);
 	}
 
 	// Error handler 

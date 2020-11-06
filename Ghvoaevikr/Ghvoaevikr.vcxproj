@@ -205,6 +205,7 @@
     <ClInclude Include="Evader.h" />
     <ClInclude Include="Hooks.h" />
     <ClInclude Include="Hvpp.h" />
+    <ClInclude Include="HvppIoctl.h" />
     <ClInclude Include="hvpp\ia32\asm.h" />
     <ClInclude Include="hvpp\lib\mp.h" />
     <ClInclude Include="imgui\dx9\imgui_impl_dx9.h" />
@@ -263,6 +264,7 @@
     </ClCompile>
     <ClCompile Include="Evader.cpp" />
     <ClCompile Include="Hvpp.cpp" />
+    <ClCompile Include="HvppIoctl.cpp" />
     <ClCompile Include="hvpp\lib\mp.cpp" />
     <ClCompile Include="imgui\dx9\imgui_impl_dx9.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
