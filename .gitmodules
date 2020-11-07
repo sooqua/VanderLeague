@@ -1,3 +1,6 @@
 [submodule "Ghvoaevikr/zydis"]
 	path = Ghvoaevikr/zydis
 	url = https://github.com/zyantific/zydis.git
+[submodule "hvpp/src/hvppctrl/ColdHook"]
+	path = hvpp/src/hvppctrl/ColdHook
+	url = https://github.com/Rat431/ColdHook.git
