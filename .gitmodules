@@ -1,10 +1,3 @@
 [submodule "Ghvoaevikr/zydis"]
 	path = Ghvoaevikr/zydis
 	url = https://github.com/zyantific/zydis.git
-[submodule "GhvoaevikrIn/Kernelmode-manual-mapping-through-IAT"]
-	path = GhvoaevikrIn/Kernelmode-manual-mapping-through-IAT
-	url = https://github.com/mactec0/Kernelmode-manual-mapping-through-IAT.git
-[submodule "hvpp"]
-	path = hvpp
-	url = https://github.com/wbenny/hvpp.git
-	ignore = dirty
