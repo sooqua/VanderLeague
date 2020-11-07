@@ -8,7 +8,7 @@ Class=Sample ; TODO: edit Class
 ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
 Provider=%ManufacturerName%
 CatalogFile=hvppdrv.cat
-DriverVer = 11/06/2020,2.29.44.323
+DriverVer = 11/07/2020,18.18.39.520
 
 [DestinationDirs]
 DefaultDestDir = 12
