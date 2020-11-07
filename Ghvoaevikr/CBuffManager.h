@@ -1,15 +1,14 @@
 #pragma once
 
 #include "Utils.h"
-#include "BuffEntry.h"
+#include "CBuffEntry.h"
 
-class BuffManager {
-private:
-	DWORD getStart();
-	DWORD getEnd();
-
+class CBuffManager {
 public:
-	BuffEntry* GetBuffEntryByName(char* BuffName);
+	DWORD GetStart();
+	DWORD GetEnd();
+
+	CBuffEntry* GetBuffEntryByName(char* BuffName);
 
 	bool IsImmobile(int Type);
 

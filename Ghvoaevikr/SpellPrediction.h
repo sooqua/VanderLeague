@@ -28,10 +28,12 @@ public:
 		return vec;
 	}
 
-	Vector PredictCircular(CObject* target, ESpellSlot slot) {
+	Vector PredictCircular(CObject* target, ESpellSlot slot, bool checkCharges = false) {
 		auto localObj = Engine::GetLocalObject();
 		auto spell = localObj->GetSpellBook()->GetSpellByID(static_cast<int>(slot));
-		if (!spell->IsSpellReady())
+		if (checkCharges && (spell->GetCharges() < 1))
+			return Vector(0.f, 0.f, 0.f);
+		else if (!spell->IsSpellReady())
 			return Vector(0.f, 0.f, 0.f);
 		auto spellData = spell->GetSpellInfo()->GetSpellData();
 		if (spellData->GetManaCostByLevel(spell->GetLevel()) > localObj->GetMana())

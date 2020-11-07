@@ -42,13 +42,13 @@ enum BuffType {
 	Disarm = 31
 };
 
-class BuffEntry
+class CBuffEntry
 {
 public:
 	DWORD strptr;
 
-	BYTE getBuffType();
-	bool isBuffEmpty();
+	BYTE GetBuffType();
+	bool IsBuffEmpty();
 	bool IsAlive();
 	bool IsValid();
 

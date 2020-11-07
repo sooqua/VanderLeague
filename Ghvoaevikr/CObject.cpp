@@ -183,8 +183,8 @@ float CObject::GetMaxMana() {
 	return *(float*)((DWORD)this + offsets::cobject::oObjMaxMana);
 }
 
-BuffManager* CObject::GetBuffMgr() {
-	return (BuffManager*)((DWORD)this + offsets::cobject::oObjBuffMgr);
+CBuffManager* CObject::GetBuffMgr() {
+	return (CBuffManager*)((DWORD)this + offsets::cobject::oObjBuffMgr);
 }
 
 AIManager* CObject::GetAIManager() {

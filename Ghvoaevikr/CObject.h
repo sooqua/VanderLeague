@@ -6,7 +6,7 @@
 #include "CSpellBook.h"
 #include "CSpellCastInfo.h"
 #include "AIManager.h"
-#include "BuffManager.h"
+#include "CBuffManager.h"
 #include "CStatOwner.h"
 
 enum class ObjectTypeFlags {
@@ -120,7 +120,7 @@ public:
 	float GetMana();
 	float GetMaxMana();
 
-	BuffManager* GetBuffMgr();
+	CBuffManager* GetBuffMgr();
 
 	AIManager* GetAIManager();
 

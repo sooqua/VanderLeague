@@ -2,7 +2,7 @@
 
 #include "Script.h"
 
-class Brand : public IScript {
+class Caitlyn : public IScript {
 private:
 	Champion champion;
 
@@ -15,7 +15,7 @@ private:
 	virtual bool Evade(Vector evadePos);
 
 public:
-	Brand() : champion(Champion::Brand) {
+	Caitlyn() : champion(Champion::Caitlyn) {
 
 	}
 };

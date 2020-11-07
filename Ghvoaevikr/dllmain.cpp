@@ -51,14 +51,16 @@ IScript* championScript;
 HMODULE g_module = nullptr;
 HWND g_hwnd = nullptr;
 WNDPROC g_wndproc = nullptr;
+#ifndef NO_IMGUI
 bool g_menu_opened = false;
+#endif
 bool g_orbwalker = true;
 bool g_range = true;
 bool g_2range_objmanager = false;
 bool g_champ_info = true;
 bool g_turret_range = true;
 bool g_auto_evade = true;
-bool g_zoom_hack = true;
+bool g_zoom_hack = false;
 bool g_spell_prediction = true;
 
 bool g_bInit = false;
@@ -370,6 +372,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 {
 	switch (u_msg)
 	{
+#ifndef NO_IMGUI
 	case WM_KEYDOWN: {
 		switch (w_param) {
 		case VK_END: {
@@ -381,6 +384,7 @@ LRESULT WINAPI WndProc(HWND hwnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 		};
 		break;
 	}
+#endif
 	case WM_MOUSEWHEEL: {
 		//Zoom hack
 		if (g_zoom_hack) { // TODO: check if game menu opened

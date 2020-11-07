@@ -43,7 +43,11 @@ void Brand::Harass() {
 
 	auto target = possibleTargets.front();
 
-	if (!prediction.IsCollisioned(Prediction::CollisionType::Minion, target->GetPos())) {
+	auto buffmgr = target->GetBuffMgr();
+
+	auto ablaze = buffmgr->GetBuffEntryByName("BrandAblaze");
+
+	if (ablaze && !prediction.IsCollisioned(Prediction::CollisionType::Minion, target->GetPos())) {
 		auto vec = spellPrediction.PredictSkillshot(possibleTargets.front(), ESpellSlot::Q);
 		if (!(vec == Vector(0.f, 0.f, 0.f))) {
 			Autokey::MoveMouse(vec);
@@ -53,7 +57,7 @@ void Brand::Harass() {
 		}
 	}
 
-	if (target->GetAIManager()->GetVelocity() == Vector(0.f, 0.f, 0.f)) {
+	//if (target->GetAIManager()->GetVelocity() == Vector(0.f, 0.f, 0.f)) {
 		auto vec = spellPrediction.PredictCircular(possibleTargets.front(), ESpellSlot::W);
 		if (!(vec == Vector(0.f, 0.f, 0.f))) {
 			Autokey::MoveMouse(vec);
@@ -61,5 +65,18 @@ void Brand::Harass() {
 			Autokey::PressKey(SCANCODE_W);
 			CycleManager::ReleaseKeyAtNextCycle(SCANCODE_W);
 		}
+	//}
+
+	vec = spellPrediction.PredictSkillshot(possibleTargets.front(), ESpellSlot::E);
+	if (!(vec == Vector(0.f, 0.f, 0.f))) {
+		Autokey::MoveMouse(vec);
+		CycleManager::ResetMouseAtNextCycle();
+		Autokey::PressKey(SCANCODE_E);
+		CycleManager::ReleaseKeyAtNextCycle(SCANCODE_E);
 	}
+}
+
+bool Brand::Evade(Vector /*evadePos*/)
+{
+	return false;
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Vector.h"
+
 enum class Champion {
 	Aatrox,
 	Ahri,
@@ -162,6 +164,7 @@ public:
 	virtual void OnKeyDown(int vKey) = 0;
 	virtual void OnKeyUp(int vKey) = 0;
 	virtual void Harass() = 0;
+	virtual bool Evade(Vector evadePos) = 0;
 };
 
 extern IScript* championScript;

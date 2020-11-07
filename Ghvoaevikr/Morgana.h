@@ -12,6 +12,8 @@ private:
 
 	virtual void Harass();
 
+	virtual bool Evade(Vector evadePos);
+
 public:
 	Morgana() : champion(Champion::Morgana) {
 

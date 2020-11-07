@@ -63,3 +63,24 @@ void Morgana::Harass() {
 		}
 	}
 }
+
+bool Morgana::Evade(Vector /*evadePos*/)
+{
+	auto pLocal = Engine::GetLocalObject();
+
+	auto spell = pLocal->GetSpellBook()->GetSpellByID(static_cast<int>(ESpellSlot::E));
+	if (!spell->IsSpellReady())
+		return false;
+	auto spellData = spell->GetSpellInfo()->GetSpellData();
+	if (spellData->GetManaCostByLevel(spell->GetLevel()) > pLocal->GetMana())
+		return false;
+
+	//Autokey::MoveMouse(pLocal->GetPos());
+	//CycleManager::ResetMouseAtNextCycle();
+	Autokey::PressKey(SCANCODE_LEFTALT);
+	CycleManager::ReleaseKeyAtNextCycle(SCANCODE_LEFTALT);
+	Autokey::PressKey(SCANCODE_E);
+	CycleManager::ReleaseKeyAtNextCycle(SCANCODE_E);
+
+	return true;
+}

@@ -95,7 +95,7 @@ short CSpellData::GetCasterIndex() {
 
 float CSpellData::GetSpellRange()
 {
-	return *(float*)((DWORD)this + 0x398);
+	return *(float*)((DWORD)this + 0x398); // 0x3B4
 }
 
 float CSpellData::GetSpellRadius()

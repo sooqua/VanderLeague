@@ -218,12 +218,6 @@
     <ClInclude Include="Prediction.h">
       <Filter>Header\Prediction</Filter>
     </ClInclude>
-    <ClInclude Include="BuffEntry.h">
-      <Filter>Header\Buff</Filter>
-    </ClInclude>
-    <ClInclude Include="BuffManager.h">
-      <Filter>Header\Buff</Filter>
-    </ClInclude>
     <ClInclude Include="AIManager.h">
       <Filter>Header\AIManager</Filter>
     </ClInclude>
@@ -281,6 +275,15 @@
     <ClInclude Include="HvppIoctl.h">
       <Filter>Header\Hvpp</Filter>
     </ClInclude>
+    <ClInclude Include="Caitlyn.h">
+      <Filter>Header\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="CBuffManager.h">
+      <Filter>Header\Buff</Filter>
+    </ClInclude>
+    <ClInclude Include="CBuffEntry.h">
+      <Filter>Header\Buff</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -333,12 +336,6 @@
     </ClCompile>
     <ClCompile Include="Prediction.cpp">
       <Filter>Source\Prediction</Filter>
-    </ClCompile>
-    <ClCompile Include="BuffEntry.cpp">
-      <Filter>Source\Buff</Filter>
-    </ClCompile>
-    <ClCompile Include="BuffManager.cpp">
-      <Filter>Source\Buff</Filter>
     </ClCompile>
     <ClCompile Include="AIManager.cpp">
       <Filter>Source\AIManager</Filter>
@@ -393,6 +390,15 @@
     </ClCompile>
     <ClCompile Include="HvppIoctl.cpp">
       <Filter>Source\Hvpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Caitlyn.cpp">
+      <Filter>Source\Scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="CBuffEntry.cpp">
+      <Filter>Source\Buff</Filter>
+    </ClCompile>
+    <ClCompile Include="CBuffManager.cpp">
+      <Filter>Source\Buff</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

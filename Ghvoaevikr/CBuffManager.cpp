@@ -1,25 +1,25 @@
-#include "BuffManager.h"
+#include "CBuffManager.h"
 
-DWORD BuffManager::getStart()
+DWORD CBuffManager::GetStart()
 {
 	return *(DWORD*)(this + 0x10);
 }
 
-DWORD BuffManager::getEnd()
+DWORD CBuffManager::GetEnd()
 {
 	return *(DWORD*)(this + 0x14);
 }
 
-BuffEntry* BuffManager::GetBuffEntryByName(char* BuffName) {
+CBuffEntry* CBuffManager::GetBuffEntryByName(char* BuffName) {
 	int i = -1;
-	for (DWORD pBuffPtr = this->getStart(); pBuffPtr != this->getEnd(); pBuffPtr += 0x8)
+	for (DWORD pBuffPtr = this->GetStart(); pBuffPtr != this->GetEnd(); pBuffPtr += 0x8)
 	{
-		auto pBuff = *(BuffEntry**)pBuffPtr;
+		auto pBuff = *(CBuffEntry**)pBuffPtr;
 		i++;
 		if (!pBuff) continue;
 		if (!pBuff->IsValid()) continue;
 		if (pBuff->IsAlive()) {
-			if (!strcmp(pBuff->GetBuffName(), BuffName)) {
+			if (stristr(pBuff->GetBuffName(), BuffName)) {
 				return pBuff;
 			}
 		}
@@ -28,16 +28,16 @@ BuffEntry* BuffManager::GetBuffEntryByName(char* BuffName) {
 	return NULL;
 }
 
-bool BuffManager::IsImmobile(int Type) {
+bool CBuffManager::IsImmobile(int Type) {
 	int i = -1;
-	for (DWORD pBuffPtr = this->getStart(); pBuffPtr != this->getEnd(); pBuffPtr += 0x8)
+	for (DWORD pBuffPtr = this->GetStart(); pBuffPtr != this->GetEnd(); pBuffPtr += 0x8)
 	{
-		auto pBuff = *(BuffEntry**)pBuffPtr;
+		auto pBuff = *(CBuffEntry**)pBuffPtr;
 		i++;
 		if (!pBuff) continue;
 		if (!pBuff->IsValid()) continue;
 		if (pBuff->IsAlive()) {
-			if (pBuff->getBuffType() == Type)
+			if (pBuff->GetBuffType() == Type)
 				return true;
 		}
 
@@ -45,7 +45,7 @@ bool BuffManager::IsImmobile(int Type) {
 	return false;
 }
 
-bool BuffManager::isPartOf(char* w1, char* w2)
+bool CBuffManager::isPartOf(char* w1, char* w2)
 {
 	int i = 0;
 	int j = 0;
@@ -69,11 +69,11 @@ bool BuffManager::isPartOf(char* w1, char* w2)
 	return false;
 }
 
-bool BuffManager::IsPoisoned() {
+bool CBuffManager::IsPoisoned() {
 	int i = -1;
-	for (DWORD pBuffPtr = this->getStart(); pBuffPtr != this->getEnd(); pBuffPtr += 0x8)
+	for (DWORD pBuffPtr = this->GetStart(); pBuffPtr != this->GetEnd(); pBuffPtr += 0x8)
 	{
-		auto pBuff = *(BuffEntry**)pBuffPtr;
+		auto pBuff = *(CBuffEntry**)pBuffPtr;
 		i++;
 		if (!pBuff) continue;
 		if (!pBuff->IsValid()) continue;
@@ -86,7 +86,7 @@ bool BuffManager::IsPoisoned() {
 	return false;
 }
 
-bool BuffManager::IsImmobile() {
+bool CBuffManager::IsImmobile() {
 	if (this->IsImmobile(22) || IsImmobile(8) || IsImmobile(28) || IsImmobile(29) || IsImmobile(5) || IsImmobile(11)) {
 		return true;
 	}

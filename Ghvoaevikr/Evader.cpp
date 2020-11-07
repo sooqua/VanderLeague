@@ -4,6 +4,7 @@
 #include "Prediction.h"
 #include "Autokey.h"
 #include "CycleManager.h"
+#include "Script.h"
 #include "ImRender.h"
 
 #include "Debug.h"
@@ -30,7 +31,7 @@ void CEvader::drawEvent() {
 	if (CycleManager::GetBlockAllActions()) return;
 	for (auto pObject : CycleManager::GetObjects())
 	{
-		if (pObject->IsMissile())
+		if (pObject && pObject->IsMissile())
 		{
 			auto objCaster = Engine::GetObjectByID(pObject->GetMissileSourceIndex());
 			auto localObj = Engine::GetLocalObject();
@@ -79,21 +80,28 @@ void CEvader::drawEvent() {
 
 					Vector evadePos = localObjPos + direction4;
 
-					if (useAutokey) {
-						std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
-							std::chrono::system_clock::now().time_since_epoch());
-						if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
-							Autokey::MoveMouse(evadePos);
-							CycleManager::ResetMouseAtNextCycle();
-							Autokey::Click();
-							m_lastMoveClickTime = now;
-						}
+					bool usedAbilityToEvade = false;
+					if (championScript) {
+						usedAbilityToEvade = championScript->Evade(evadePos);
 					}
-					else {
-						if ((int)(Engine::GetGameTime() * 1000) >= m_nLastMoveCmdTick + 60) {
-							Engine::MoveTo(&evadePos);
-							m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);
+
+					if (!usedAbilityToEvade) {
+						/*if (useAutokey) {
+							std::chrono::milliseconds now = std::chrono::duration_cast<std::chrono::milliseconds>(
+								std::chrono::system_clock::now().time_since_epoch());
+							if (now >= m_lastMoveClickTime + std::chrono::milliseconds(100)) {
+								Autokey::MoveMouse(evadePos);
+								CycleManager::ResetMouseAtNextCycle();
+								Autokey::Click();
+								m_lastMoveClickTime = now;
+							}
 						}
+						else {
+							if ((int)(Engine::GetGameTime() * 1000) >= m_nLastMoveCmdTick + 60) {
+								Engine::MoveTo(&evadePos);
+								m_nLastMoveCmdTick = (int)(Engine::GetGameTime() * 1000);
+							}
+						}*/
 					}
 				}
 			}

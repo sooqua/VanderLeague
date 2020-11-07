@@ -66,7 +66,7 @@ namespace offsets {
 
 		uint32_t oMissileSpellInfo = 0x230;
 		uint32_t oMissileSourceIndex = 0x290;
-		uint32_t oMissileTargetIndex = 0x2E8; // 0x2DC?
+		uint32_t oMissileTargetIndex = 0x2E8;
 		uint32_t oMissileStartPos = 0x2A8;
 		uint32_t oMissileEndPos = 0x2B4;
 	}
@@ -108,8 +108,11 @@ namespace offsets {
 		uint32_t O_BUFFMGR_BUFFNAME = 0x08;
 		uint32_t O_BUFFMGR_STARTTIME = 0xC;
 		uint32_t O_BUFFMGR_ENDTIME = 0x10;
-		uint32_t O_BUFFMGR_flBUFFCOUNT = 0x2C;
-		uint32_t O_BUFFMGR_iBUFFCOUNT = 0x70;
+		uint32_t O_BUFFMGR_flBUFFCOUNT = 0x130;
+		uint32_t O_BUFFMGR_iBUFFCOUNT = 0x74;
+		uint32_t oBuffType = 0x4;
+		uint32_t oBuffCountAlt = 0x24;
+		uint32_t oBuffCountAlt2 = 0x20;
 	};
 
 	namespace aimgr {

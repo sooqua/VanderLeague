@@ -1,48 +1,48 @@
-#include "BuffEntry.h"
+#include "CBuffEntry.h"
 
 #include "Engine.h"
 
-BYTE BuffEntry::getBuffType() {
-	return *(BYTE*)((DWORD)this + 0x4);
+BYTE CBuffEntry::GetBuffType() {
+	return *(BYTE*)((DWORD)this + offsets::buff::oBuffType);
 }
 
-bool BuffEntry::isBuffEmpty() {
+bool CBuffEntry::IsBuffEmpty() {
 	return strptr == 0;
 }
 
-bool BuffEntry::IsAlive() {
+bool CBuffEntry::IsAlive() {
 	auto time = Engine::GetGameTime();
 	return this->GetBuffStartTime() < time && time < this->GetBuffEndTime();
 }
 
-bool BuffEntry::IsValid() {
+bool CBuffEntry::IsValid() {
 	if (this == NULL || (DWORD)this <= 0x1000)
 		return false;
 
 	return strcmp(GetBuffName(), "NULL") && GetBuffCountAlt() > 0;
 }
 
-float BuffEntry::GetBuffStartTime() {
+float CBuffEntry::GetBuffStartTime() {
 	return *(float*)((DWORD)this + offsets::buff::O_BUFFMGR_STARTTIME);
 }
 
-float BuffEntry::GetBuffEndTime() {
+float CBuffEntry::GetBuffEndTime() {
 	return *(float*)((DWORD)this + offsets::buff::O_BUFFMGR_ENDTIME);
 }
 
-int BuffEntry::GetBuffCountAlt() {
-	return (*(int*)((DWORD)this + 0x20) - *(int*)((DWORD)this + 0x1c)) >> 3;
+int CBuffEntry::GetBuffCountAlt() {
+	return (*(int*)((DWORD)this + offsets::buff::oBuffCountAlt) - *(int*)((DWORD)this + offsets::buff::oBuffCountAlt2)) >> 3;
 }
 
-float BuffEntry::GetBuffCountFloat() {
+float CBuffEntry::GetBuffCountFloat() {
 	return *(float*)((DWORD)this + offsets::buff::O_BUFFMGR_flBUFFCOUNT);
 }
 
-int BuffEntry::GetBuffCountInt() {
+int CBuffEntry::GetBuffCountInt() {
 	return *(int*)((DWORD)this + offsets::buff::O_BUFFMGR_iBUFFCOUNT);
 }
 
-char* BuffEntry::GetBuffName() {
+char* CBuffEntry::GetBuffName() {
 	DWORD aux = *(DWORD*)((DWORD)this + offsets::buff::O_BUFFMGR_BUFFNAME);
 	if (aux == NULL)
 		return "NULL";

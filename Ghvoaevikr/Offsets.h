@@ -110,6 +110,9 @@ namespace offsets {
 		extern uint32_t O_BUFFMGR_ENDTIME;
 		extern uint32_t O_BUFFMGR_flBUFFCOUNT;
 		extern uint32_t O_BUFFMGR_iBUFFCOUNT;
+		extern uint32_t oBuffType;
+		extern uint32_t oBuffCountAlt;
+		extern uint32_t oBuffCountAlt2;
 	};
 
 	namespace aimgr {
