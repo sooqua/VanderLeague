@@ -5,6 +5,9 @@
 *.pdb
 *.lastbuildstate
 *.recipe
+*.inf
+*.cer
+*.sys
 .vs
 
 # Prerequisites
