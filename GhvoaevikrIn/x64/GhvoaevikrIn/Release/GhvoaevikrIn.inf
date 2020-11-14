@@ -1,0 +1,89 @@
+;
+; GhvoaevikrIn.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=GhvoaevikrIn.cat
+DriverVer = 11/14/2020,20.20.56.39
+
+[DestinationDirs]
+DefaultDestDir = 12
+GhvoaevikrIn_Device_CoInstaller_CopyFiles = 11
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+GhvoaevikrIn.sys  = 1,,
+;
+
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64
+
+[Standard.NTamd64]
+%GhvoaevikrIn.DeviceDesc%=GhvoaevikrIn_Device, Root\GhvoaevikrIn ; TODO: edit hw-id
+
+[GhvoaevikrIn_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+GhvoaevikrIn.sys
+
+;-------------- Service installation
+[GhvoaevikrIn_Device.NT.Services]
+AddService = GhvoaevikrIn,%SPSVCINST_ASSOCSERVICE%, GhvoaevikrIn_Service_Inst
+
+; -------------- GhvoaevikrIn driver install sections
+[GhvoaevikrIn_Service_Inst]
+DisplayName    = %GhvoaevikrIn.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\GhvoaevikrIn.sys
+
+;
+;--- GhvoaevikrIn_Device Coinstaller installation ------
+;
+
+[GhvoaevikrIn_Device.NT.CoInstallers]
+AddReg=GhvoaevikrIn_Device_CoInstaller_AddReg
+CopyFiles=GhvoaevikrIn_Device_CoInstaller_CopyFiles
+
+[GhvoaevikrIn_Device_CoInstaller_AddReg]
+;
+
+
+[GhvoaevikrIn_Device_CoInstaller_CopyFiles]
+;
+
+
+[GhvoaevikrIn_Device.NT.Wdf]
+KmdfService =  GhvoaevikrIn, GhvoaevikrIn_wdfsect
+[GhvoaevikrIn_wdfsect]
+KmdfLibraryVersion = 1.15
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "GhvoaevikrIn Installation Disk"
+GhvoaevikrIn.DeviceDesc = "GhvoaevikrIn Device"
+GhvoaevikrIn.SVCDESC = "GhvoaevikrIn Service"

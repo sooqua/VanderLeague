@@ -6,9 +6,6 @@
 
 #include <string>
 
-IScript* GetScriptByChampionName(char*) {
-}
-
 IScript* ScriptUtils::GetScriptByChampionName(char* championName)
 {
 	if (strcmp(championName, "Morgana") == 0) {
